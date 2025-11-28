@@ -1,5 +1,5 @@
 # 💫 About Me:
-🔭 I’m currently working on:<br>Web designing, UI/UX design, creative editing, and modern responsive interfaces.<br><br>👯 I’m looking to collaborate on:<br>Front-end projects, website redesigns, brand/logo design, and UI/UX prototypes.<br><br>🤝 I’m looking for help with:<br>Advanced UI animations, responsive layouts, and improving design workflows.<br><br>🌱 I’m currently learning:<br>Figma, advanced CSS animations, JavaScript frameworks, and design systems.<br><br>💬 Ask me about:<br>Web designing, editing, logo designing, UI/UX, and brand aesthetics.<br><br>⚡ Fun fact:<br>I can turn a simple idea into a clean, modern, and aesthetic design.
+🔭 I’m currently working on:<br>Web designing, UI/UX design, creative editing, and modern responsive interfaces.<br>👯 I’m looking to collaborate on:<br>Front-end projects, website redesigns, brand/logo design, and UI/UX prototypes.<br>🤝 I’m looking for help with:<br>Advanced UI animations, responsive layouts, and improving design workflows.<br>🌱 I’m currently learning:<br>Figma, advanced CSS animations, JavaScript frameworks, and design systems.<br>💬 Ask me about:<br>Web designing, editing, logo designing, UI/UX, and brand aesthetics.<br>⚡ Fun fact:<br>I can turn a simple idea into a clean, modern, and aesthetic design.
 
 
 ## 🌐 Socials:
