@@ -1,0 +1,77 @@
+<svg width="1280" height="420" viewBox="0 0 1280 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="g" x1="90" y1="70" x2="1170" y2="350" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#A855F7"/>
+    <stop offset="0.48" stop-color="#7C3AED"/>
+    <stop offset="1" stop-color="#4F46E5"/>
+  </linearGradient>
+  <linearGradient id="line" x1="140" y1="0" x2="1130" y2="420" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#A855F7" stop-opacity="0"/>
+    <stop offset="0.5" stop-color="#A855F7" stop-opacity="0.8"/>
+    <stop offset="1" stop-color="#4F46E5" stop-opacity="0"/>
+  </linearGradient>
+  <filter id="blur">
+    <feGaussianBlur stdDeviation="45"/>
+  </filter>
+</defs>
+
+<rect width="1280" height="420" rx="28" fill="#F8FAFC"/>
+<circle cx="1010" cy="100" r="155" fill="#7C3AED" fill-opacity=".13" filter="url(#blur)"/>
+<circle cx="260" cy="350" r="135" fill="#A855F7" fill-opacity=".09" filter="url(#blur)"/>
+
+<path d="M0 340 C190 250 270 410 455 300 C650 185 690 365 870 250 C1010 162 1135 260 1280 145" stroke="url(#line)" stroke-width="1"/>
+<path d="M0 365 C180 280 290 430 470 325 C625 235 735 380 890 275 C1045 170 1150 280 1280 180" stroke="url(#line)" stroke-opacity=".35"/>
+
+<g opacity=".22" stroke="#D4D4D8">
+  <path d="M80 70H1200"/>
+  <path d="M80 110H1200"/>
+  <path d="M80 150H1200"/>
+  <path d="M80 190H1200"/>
+  <path d="M80 230H1200"/>
+  <path d="M80 270H1200"/>
+  <path d="M80 310H1200"/>
+  <path d="M80 350H1200"/>
+  <path d="M120 50V370"/>
+  <path d="M200 50V370"/>
+  <path d="M280 50V370"/>
+  <path d="M360 50V370"/>
+  <path d="M440 50V370"/>
+  <path d="M520 50V370"/>
+  <path d="M600 50V370"/>
+  <path d="M680 50V370"/>
+  <path d="M760 50V370"/>
+  <path d="M840 50V370"/>
+  <path d="M920 50V370"/>
+  <path d="M1000 50V370"/>
+  <path d="M1080 50V370"/>
+  <path d="M1160 50V370"/>
+</g>
+
+<rect x="80" y="58" width="1120" height="304" rx="20" stroke="#D4D4D8"/>
+<rect x="80.5" y="58.5" width="1119" height="303" rx="19.5" stroke="url(#g)" stroke-opacity=".22"/>
+
+<text x="112" y="112" fill="#52525B" font-family="Inter,Arial,sans-serif" font-size="14" letter-spacing="3">SIDDHARTHA PERURI / CREATIVE TECHNOLOGY</text>
+
+<text x="110" y="194" fill="#18181B" font-family="Inter,Arial,sans-serif" font-size="64" font-weight="700" letter-spacing="-2">DESIGN</text>
+<text x="435" y="194" fill="#71717A" font-family="Inter,Arial,sans-serif" font-size="52" font-weight="300">×</text>
+<text x="480" y="194" fill="url(#g)" font-family="Inter,Arial,sans-serif" font-size="64" font-weight="700" letter-spacing="-2">TECHNOLOGY</text>
+
+<text x="113" y="236" fill="#52525B" font-family="Inter,Arial,sans-serif" font-size="18">Visual design, software, AI, interfaces, and interactive experiences.</text>
+
+<g font-family="Inter,Arial,sans-serif" font-size="12" font-weight="600">
+  <rect x="112" y="280" width="105" height="34" rx="17" fill="#FFFFFF" stroke="#D4D4D8"/>
+  <text x="164.5" y="302" text-anchor="middle" fill="#3F3F46">UI / UX</text>
+  <rect x="227" y="280" width="105" height="34" rx="17" fill="#FFFFFF" stroke="#D4D4D8"/>
+  <text x="279.5" y="302" text-anchor="middle" fill="#3F3F46">AI / ML</text>
+  <rect x="342" y="280" width="122" height="34" rx="17" fill="#FFFFFF" stroke="#D4D4D8"/>
+  <text x="403" y="302" text-anchor="middle" fill="#3F3F46">FULL-STACK</text>
+  <rect x="474" y="280" width="105" height="34" rx="17" fill="#FFFFFF" stroke="#D4D4D8"/>
+  <text x="526.5" y="302" text-anchor="middle" fill="#3F3F46">WEBGL</text>
+  <rect x="589" y="280" width="125" height="34" rx="17" fill="#FFFFFF" stroke="#D4D4D8"/>
+  <text x="651.5" y="302" text-anchor="middle" fill="#3F3F46">VISUAL DESIGN</text>
+</g>
+
+<circle cx="1138" cy="105" r="7" fill="#A855F7"/>
+<circle cx="1160" cy="105" r="7" fill="#7C3AED"/>
+<circle cx="1182" cy="105" r="7" fill="#4F46E5"/>
+</svg>
