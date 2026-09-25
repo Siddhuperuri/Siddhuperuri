@@ -19,12 +19,21 @@ UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/130.0 Safari/537.36"
 SOURCES = {
     "anton": "https://fonts.gstatic.com/s/anton/v27/1Ptgg87LROyAm3Kz-C8.woff2",
     "inter": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+    # Geist / Geist Mono are served as one static file per weight
+    "geist-400": "https://fonts.gstatic.com/s/geist/v5/gyBhhwUxId8gMGYQMKR3pzfaWI_RnOM4nQ.ttf",
+    "geist-500": "https://fonts.gstatic.com/s/geist/v5/gyBhhwUxId8gMGYQMKR3pzfaWI_RruM4nQ.ttf",
+    "geist-600": "https://fonts.gstatic.com/s/geist/v5/gyBhhwUxId8gMGYQMKR3pzfaWI_RQuQ4nQ.ttf",
+    "geist-700": "https://fonts.gstatic.com/s/geist/v5/gyBhhwUxId8gMGYQMKR3pzfaWI_Re-Q4nQ.ttf",
+    "geistmono-400": "https://fonts.gstatic.com/s/geistmono/v6/or3yQ6H-1_WfwkMZI_qYPLs1a-t7PU0AbeE9KJ5T.ttf",
+    "geistmono-500": "https://fonts.gstatic.com/s/geistmono/v6/or3yQ6H-1_WfwkMZI_qYPLs1a-t7PU0AbeEPKJ5T.ttf",
+    "geistmono-600": "https://fonts.gstatic.com/s/geistmono/v6/or3yQ6H-1_WfwkMZI_qYPLs1a-t7PU0AbeHjL55T.ttf",
 }
 
 
 def _fetch(name):
     os.makedirs(CACHE, exist_ok=True)
-    p = os.path.join(CACHE, name + ".woff2")
+    ext = os.path.splitext(SOURCES[name])[1]
+    p = os.path.join(CACHE, name + ext)
     if not os.path.exists(p):
         req = urllib.request.Request(SOURCES[name], headers={"User-Agent": UA})
         with urllib.request.urlopen(req, timeout=30) as r, open(p, "wb") as f:

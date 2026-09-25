@@ -3,7 +3,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/hero-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="./assets/hero-light.svg">
-  <img alt="Siddhartha Peruri — design × technology. Creative technologist working across visual design, engineering, AI and interactive 3D." src="./assets/hero-dark.svg" width="100%">
+  <img alt="Siddhartha Peruri — product-minded visual designer and creative front-end builder. An ID badge hangs from a red lanyard reading design, build." src="./assets/hero-dark.svg" width="100%">
 </picture>
 
 <br>
@@ -17,6 +17,12 @@
 <a href="mailto:YOUR_EMAIL"><b>EMAIL</b></a>
 
 </div>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/marquee-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/marquee-light.svg">
+  <img alt="Tools and craft — UI/UX design, Figma, Framer, Next.js, Three.js, Python, FastAPI, PyTorch and more." src="./assets/marquee-dark.svg" width="100%">
+</picture>
 
 <br>
 
@@ -74,12 +80,11 @@
 **Backend** — FastAPI · PostgreSQL / pgvector · Redis · Docker  
 **Tools** — Git · Jupyter · Figma · Lightroom
 
-## How I work
-
-Interfaces should feel considered, not merely functional. In practice that means
-intentional layout over templates, restrained motion over constant animation,
-3D that carries meaning rather than decoration, and typography doing the heavy
-lifting.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/process-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/process-light.svg">
+  <img alt="Process — understand the signal, make the system visible, test through making, polish what people feel." src="./assets/process-dark.svg" width="100%">
+</picture>
 
 <br>
 

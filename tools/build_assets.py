@@ -2,11 +2,15 @@
 
 Design system
 -------------
+Derived from the shipped tokens of the Portfolio2 site so the profile and the
+portfolio read as one identity.
+
 Grid      1280 canvas, 72 margin, 12 columns
-Type      Anton (display) / Inter (text), converted to outlines
-Colour    ink + paper + a single accent; no gradients
-Spacing   4 / 8 / 16 / 24 / 32 scale
+Type      Anton (display) / Geist (text) / Geist Mono (labels), all outlined
+Colour    ink + paper + one red accent; cyan is a status signal only
+Motion    CSS only; loops are slow and semantic; all off under reduced-motion
 """
+import math
 import os
 import sys
 import html
@@ -20,18 +24,25 @@ CW = W - 2 * M
 R = W - M
 
 THEMES = {
-    "dark": dict(paper="#08080A", panel="#0E0E11", rule="#232329", rule_soft="#161619",
-                 ink="#F5F5F6", ink2="#9A9AA3", ink3="#5C5C65", accent="#FF4A1C"),
-    "light": dict(paper="#FBFBF9", panel="#FFFFFF", rule="#DEDED8", rule_soft="#EDEDE8",
-                  ink="#0A0A0B", ink2="#61616A", ink3="#9695A0", accent="#E03A0C"),
+    # dark values are Portfolio2's --ink-* / --paper-* / --red-500 / rule alphas
+    "dark": dict(paper="#0A0A0A", panel="#101010", panel2="#151515",
+                 rule="#2C2C2C", rule_soft="#1C1C1C", rule_strong="#454545",
+                 ink="#F5F5F5", ink2="#9A9A9A", ink3="#6F6F6F",
+                 accent="#FF3D2E", signal="#1CE0C4", dot="#FFFFFF", dot_a=".13",
+                 glow="#1B1B1B", card="#F5F5F5", card_fg="#0A0A0A", card_dim="#7A7A7A"),
+    "light": dict(paper="#F7F7F5", panel="#FFFFFF", panel2="#EFEFEC",
+                  rule="#D9D9D4", rule_soft="#E9E9E5", rule_strong="#BDBDB6",
+                  ink="#0A0A0A", ink2="#5A5A5A", ink3="#8A8A8A",
+                  accent="#D92C22", signal="#0E9F8B", dot="#000000", dot_a=".14",
+                  glow="#E6E6E1", card="#0A0A0A", card_fg="#F5F5F5", card_dim="#8A8A8A"),
 }
 
 ANTON = Face("anton", key="a")
-INTER = {w: Face("inter", w, key="i%d" % (w // 100)) for w in (400, 500, 600, 700)}
+SANS = {w: Face("geist-%d" % w, key="s%d" % (w // 100)) for w in (400, 500, 600, 700)}
+MONO = {w: Face("geistmono-%d" % w, key="m%d" % (w // 100)) for w in (400, 500, 600)}
 
-# Glyphs used by the document currently being built: every distinct letterform is
-# defined once in <defs> and referenced with <use>, which keeps these files small
-# even though all type is outlined.
+# Every distinct letterform is defined once per document and re-used with <use>,
+# which keeps files small even though all type is outlined.
 POOL = {}
 
 
@@ -40,10 +51,7 @@ def pool_reset():
 
 
 def pool_defs():
-    if not POOL:
-        return ""
-    return "<defs>%s</defs>" % "".join(
-        '<path id="%s" d="%s"/>' % (gid, d) for gid, d in POOL.values())
+    return "".join('<path id="%s" d="%s"/>' % (gid, d) for gid, d in POOL.values())
 
 
 # ---------------------------------------------------------------- primitives
@@ -64,15 +72,19 @@ def txt(face, s, x, y, size, fill, tracking=0.0, anchor="start"):
         key = (face.key, name)
         if key not in POOL:
             POOL[key] = ("%s%d" % (face.key, len(POOL)), face.glyph_d(name))
-        gid = POOL[key][0]
         uses.append('<use href="#%s" x="%d"%s/>'
-                    % (gid, gx, ' y="%d"' % gy if gy else ""))
-    return ('<g transform="translate(%g,%g) scale(%s)" fill="%s">%s</g>'
-            % (x, y, "%.6f" % (size / 1000.0), fill, "".join(uses)), w)
+                    % (POOL[key][0], gx, ' y="%d"' % gy if gy else ""))
+    return ('<g transform="translate(%g,%g) scale(%.6f)" fill="%s">%s</g>'
+            % (x, y, size / 1000.0, fill, "".join(uses)), w)
 
 
 def T(*a, **k):
     return txt(*a, **k)[0]
+
+
+def eyebrow(s, x, y, fill, size=16, anchor="start", tracking=.14, weight=500):
+    """Mono uppercase label - the 'technical journal' voice."""
+    return T(MONO[weight], s, x, y, size, fill, tracking, anchor=anchor)
 
 
 def hline(x1, x2, y, stroke, w=1, cls=""):
@@ -117,10 +129,44 @@ def crops(t, h, size=14, off=28):
     return "".join(parts)
 
 
-# Motion. GitHub serves these with `style-src 'unsafe-inline'`, so inline CSS
-# animation runs inside the <img>; script and webfonts stay blocked. Anything
-# below the fold loops slowly, because a one-shot would finish before it is
-# scrolled into view. Everything is dropped under prefers-reduced-motion.
+def ring_mark(cx, cy, r, t, dot=None):
+    """Ring + dot: the mark from the WebGL portfolio's loader, in the accent."""
+    return ('<circle cx="%g" cy="%g" r="%g" stroke="%s" stroke-width="1.6"/>'
+            '<circle cx="%g" cy="%g" r="%g" fill="%s"/>'
+            % (cx, cy, r, t["accent"], cx, cy, r * .38, dot or t["ink"]))
+
+
+def asterisk(cx, cy, r, color, w=1.7):
+    return "".join('<path d="M%.2f %.2fL%.2f %.2f" stroke="%s" stroke-width="%g" '
+                   'stroke-linecap="round"/>'
+                   % (cx - r * math.cos(math.radians(a)), cy - r * math.sin(math.radians(a)),
+                      cx + r * math.cos(math.radians(a)), cy + r * math.sin(math.radians(a)),
+                      color, w) for a in (90, 30, -30))
+
+
+def globe_plus(cx, cy, r, color):
+    """The circled plus that precedes the timezone readout (not in Geist)."""
+    return ('<circle cx="%g" cy="%g" r="%g" stroke="%s" stroke-width="1.5"/>'
+            '<path d="M%g %gH%g M%g %gV%g" stroke="%s" stroke-width="1.5"/>'
+            % (cx, cy, r, color, cx - r, cy, cx + r, cx, cy - r, cy + r, color))
+
+
+def glint(cx, cy, arm, color, cls=""):
+    """Pinched four-arm star - the glint printed on Portfolio2's badge."""
+    k = .17
+    d = ("M0 %g C0 %g %g 0 %g 0 C%g 0 0 %g 0 %g C0 %g %g 0 %g 0 C%g 0 0 %g 0 %g Z"
+         % (-arm, -arm * k, arm * k, arm, arm * k, arm * k, arm, arm * k, -arm * k,
+            -arm, -arm * k, -arm * k, -arm))
+    return '<path%s transform="translate(%g,%g)" d="%s" fill="%s"/>' % (
+        ' class="%s"' % cls if cls else "", cx, cy, d, color)
+
+
+# ------------------------------------------------------------------- motion
+# GitHub serves README SVGs with `style-src 'unsafe-inline'`, so inline CSS
+# animation runs inside the <img>; script and webfonts stay blocked. Above the
+# fold plays once then settles; below the fold loops slowly, because a one-shot
+# would have finished before it is scrolled into view. All of it is dropped
+# under prefers-reduced-motion, leaving the static composition.
 def anim(css):
     return ("<style>%s@media(prefers-reduced-motion:reduce){"
             "*{animation:none!important}.rv{opacity:1!important}"
@@ -128,17 +174,17 @@ def anim(css):
 
 
 def wrap_g(cls, *parts):
-    """Group with no transform attribute of its own, so CSS transforms are free."""
+    """Plain group (no transform attribute) so CSS transforms are free to animate."""
     return '<g class="%s">%s</g>' % (cls, "".join(parts))
 
 
-def doc(h, t, body, title, desc="", style=""):
+def doc(w, h, t, body, title, desc="", style="", defs=""):
     return ('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" '
             'viewBox="0 0 %d %d" fill="none" role="img" aria-label="%s">'
-            '<title>%s</title><desc>%s</desc>%s'
-            '%s<rect width="%d" height="%d" fill="%s"/>%s</svg>'
-            % (W, h, W, h, esc(title), esc(title), esc(desc), style, pool_defs(),
-               W, h, t["paper"], body))
+            '<title>%s</title><desc>%s</desc>%s<defs>%s%s</defs>'
+            '<rect width="%d" height="%d" fill="%s"/>%s</svg>'
+            % (w, h, w, h, esc(title), esc(title), esc(desc), style, defs, pool_defs(),
+               w, h, t["paper"], body))
 
 
 def write(name, svg):
@@ -149,60 +195,187 @@ def write(name, svg):
     return os.path.getsize(path)
 
 
+def dot_field(t, x, y, w, h, cx, cy, rx, ry):
+    """CSS-grade dot texture, faded out toward the edges (Portfolio2's --texture-dot)."""
+    defs = ('<pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">'
+            '<circle cx="1.5" cy="1.5" r="1.1" fill="%s" fill-opacity="%s"/></pattern>'
+            '<radialGradient id="df" cx="%g" cy="%g" r="1" gradientUnits="userSpaceOnUse" '
+            'gradientTransform="translate(%g %g) scale(%g %g) translate(%g %g)">'
+            '<stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/>'
+            '</radialGradient><mask id="dm"><rect x="%g" y="%g" width="%g" height="%g" '
+            'fill="url(#df)"/></mask>'
+            % (t["dot"], t["dot_a"], 0, 0, cx, cy, rx, ry, 0, 0, x, y, w, h))
+    return defs, '<rect x="%g" y="%g" width="%g" height="%g" fill="url(#dots)" mask="url(#dm)"/>' % (
+        x, y, w, h)
+
+
 # --------------------------------------------------------------------- hero
+ROLE = "Product-minded visual designer and creative front-end builder."
+STATEMENT = ("I use visual systems, interaction, and working prototypes to make digital "
+             "ideas clearer, more useful, and more memorable.")
+
+HERO_CSS = (
+    "@keyframes rv{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}"
+    "@keyframes up{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}"
+    "@keyframes dr{to{stroke-dashoffset:0}}"
+    "@keyframes swing{0%{transform:rotate(11deg)}14%{transform:rotate(-8deg)}"
+    "28%{transform:rotate(5.5deg)}42%{transform:rotate(-3.5deg)}56%{transform:rotate(2.2deg)}"
+    "70%{transform:rotate(-1.2deg)}85%{transform:rotate(.5deg)}100%{transform:rotate(0)}}"
+    "@keyframes sway{0%,100%{transform:rotate(0)}25%{transform:rotate(1.1deg)}"
+    "75%{transform:rotate(-1.1deg)}}"
+    "@keyframes tw{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}"
+    ".rv{opacity:0;animation:rv .8s cubic-bezier(.16,1,.3,1) both}"
+    ".up{animation-name:up;animation-duration:1s}"
+    ".dr{stroke-dasharray:@CW@;stroke-dashoffset:@CW@;"
+    "animation:dr 1.2s cubic-bezier(.16,1,.3,1) both}"
+    ".d1{animation-delay:.05s}.d2{animation-delay:.2s}.d3{animation-delay:.35s}"
+    ".d4{animation-delay:.5s}.d5{animation-delay:.65s}"
+    ".sw{transform-origin:@BX@px 0px;transform-box:view-box;"
+    "animation:swing 5.5s cubic-bezier(.3,0,.3,1) .3s both,sway 9s ease-in-out 5.8s infinite}"
+    ".gl{transform-box:fill-box;transform-origin:center;animation:tw 4.5s ease-in-out infinite}"
+)
+
+
 def hero(t):
     pool_reset()
-    h = 748
+    h = 800
+    bx = 968                                    # badge centre line; clear of the HUD label
     s = [column_grid(t, h), crops(t, h)]
 
-    s.append(wrap_g(
-        "rv d1",
-        '<rect x="%d" y="34" width="14" height="14" fill="%s"/>' % (M, t["accent"]),
-        T(INTER[600], "CREATIVE TECHNOLOGY", M + 26, 46, 19, t["ink2"], .16),
-        T(INTER[500], "INDIA  ·  UTC +05:30", R, 46, 19, t["ink3"], .16, anchor="end")))
+    ddefs, dots = dot_field(t, 760, 66, 448, 650, bx, 400, 270, 300)
+    gdef = ('<radialGradient id="spot" cx="%d" cy="400" r="300" gradientUnits="userSpaceOnUse">'
+            '<stop offset="0" stop-color="%s"/><stop offset="1" stop-color="%s" stop-opacity="0"/>'
+            '</radialGradient>' % (bx, t["glow"], t["glow"]))
+    s.append('<rect x="700" y="66" width="508" height="650" fill="url(#spot)"/>')
+    s.append(dots)
+
+    # HUD row
+    s.append(wrap_g("rv d1", ring_mark(M + 10, 41, 10, t),
+                    eyebrow("SIDDHARTHA PERURI", M + 34, 46, t["ink2"]),
+                    eyebrow("PROFILE  /  2026", R, 46, t["ink3"], anchor="end")))
     s.append(hline(M, R, 66, t["rule"], cls="dr"))
 
-    # name set to the full measure; the positioning line hangs off the same baseline
-    size = ANTON.size_for_width("SIDDHARTHA", CW)
-    s.append(wrap_g("rv up d2", T(ANTON, "SIDDHARTHA", M, 292, size, t["ink"])))
-    s.append(wrap_g("rv up d3",
-                    T(ANTON, "PERURI", M, 498, size, t["ink"]),
-                    T(INTER[700], "DESIGN × TECHNOLOGY", R, 498, 23, t["accent"], .12,
-                      anchor="end")))
+    # name, set to a fixed measure on the left
+    left = 690
+    size = ANTON.size_for_width("SIDDHARTHA", left)
+    cap = ANTON.cap * size / ANTON.upem
+    y1 = 120 + cap
+    y2 = y1 + cap * 1.1
+    s.append(wrap_g("rv d2", eyebrow("01 — PROFILE", M, 104, t["accent"], 15, weight=600)))
+    s.append(wrap_g("rv up d2", T(ANTON, "SIDDHARTHA", M, y1, size, t["ink"])))
+    s.append(wrap_g("rv up d3", T(ANTON, "PERURI", M, y2, size, t["ink"])))
 
-    s.append(hline(M, R, 546, t["rule"], cls="dr d3"))
-    s.append(wrap_g("rv d4", block(
-        INTER[400],
-        "I design and build digital products end to end — visual systems, "
-        "interfaces, full-stack applications, AI, and interactive 3D.",
-        M, 594, 27, 38, CW, t["ink2"])))
+    ry = y2 + 44
+    s.append(hline(M, M + left, ry, t["rule"], cls="dr d3"))
+    role = block(SANS[600], ROLE, M, ry + 58, 30, 40, left - 30, t["ink"], -.005)
+    s.append(wrap_g("rv d4", role))
+    ny = ry + 58 + 40 * len(wrap(SANS[600], ROLE, 30, left - 30, -.005)) + 14
+    s.append(wrap_g("rv d4", block(SANS[400], STATEMENT, M, ny, 20, 30, left - 60,
+                                   t["ink2"])))
 
-    s.append(hline(M, R, 668, t["rule"], cls="dr d4"))
-    tags = ["VISUAL DESIGN", "UI / UX", "FULL-STACK", "AI / ML", "COMPUTER VISION", "WEBGL"]
-    x, row = M, []
-    for i, tag in enumerate(tags):
-        part, tw = txt(INTER[600], tag, x, 706, 18, t["ink2"], .16)
-        row.append(part)
-        x += tw + 26
-        if i < len(tags) - 1:
-            row.append(vline(x - 15, 694, 710, t["rule"]))
-    s.append(wrap_g("rv d5", *row))
+    # bottom HUD
+    s.append(hline(M, R, 716, t["rule"], cls="dr d4"))
+    s.append(wrap_g("rv d5",
+                    eyebrow("DESIGN BY", M, 758, t["ink3"], 14),
+                    eyebrow("SIDDHARTHA", M + 108, 758, t["ink"], 14, weight=600),
+                    globe_plus(M + 8, 780, 7, t["ink3"]),
+                    eyebrow("INDIA  ·  IST +05:30", M + 24, 785, t["ink2"], 14),
+                    eyebrow("B.TECH CSE  ·  2027", R, 758, t["ink3"], 14, anchor="end"),
+                    eyebrow("VISUAL DESIGN  ·  FRONT-END  ·  AI", R, 785, t["ink2"],
+                            14, anchor="end")))
 
-    # one-shot: the hero is always above the fold, so it is seen as it plays
-    css = ("@keyframes rv{from{opacity:0;transform:translateY(10px)}"
-           "to{opacity:1;transform:translateY(0)}}"
-           "@keyframes up{from{opacity:0;transform:translateY(26px)}"
-           "to{opacity:1;transform:translateY(0)}}"
-           "@keyframes dr{to{stroke-dashoffset:0}}"
-           ".rv{opacity:0;animation:rv .75s cubic-bezier(.22,.61,.36,1) both}"
-           ".up{animation-name:up;animation-duration:.9s}"
-           ".dr{stroke-dasharray:%d;stroke-dashoffset:%d;"
-           "animation:dr 1.1s cubic-bezier(.22,.61,.36,1) both}"
-           ".d1{animation-delay:.05s}.d2{animation-delay:.18s}.d3{animation-delay:.32s}"
-           ".d4{animation-delay:.46s}.d5{animation-delay:.60s}" % (CW, CW))
-    return doc(h, t, "".join(s), "Siddhartha Peruri — design × technology",
-               "Creative technologist working across visual design, engineering, "
-               "AI and interactive 3D.", anim(css))
+    # scaled about the pivot so the swing origin stays on the lanyard's top edge
+    s.append('<g transform="translate(%d,0) scale(1.08) translate(%d,0)">%s</g>'
+             % (bx, -bx, _badge(t, bx)))
+    css = HERO_CSS.replace("@CW@", str(CW)).replace("@BX@", str(bx))
+    return doc(W, h, t, "".join(s), "Siddhartha Peruri — visual designer and front-end builder",
+               "Product-minded visual designer and creative front-end builder.",
+               anim(css), ddefs + gdef)
+
+
+def _badge(t, cx):
+    """Hanging ID badge: lanyard from the top edge, clip, vinyl sleeve, printed card."""
+    sw = 300
+    sx, sy, sh = cx - sw / 2, 236, 404
+    card_x, card_y, card_w, card_h = cx - 136, sy + 30, 272, 362
+    ink, dim = t["card_fg"], t["card_dim"]
+    p = []
+    # lanyard, stitched
+    p.append('<rect x="%g" y="0" width="28" height="200" fill="%s"/>' % (cx - 14, t["accent"]))
+    p.append('<path d="M%g 0V200" stroke="%s" stroke-width="1.2" stroke-dasharray="6 6" '
+             'stroke-opacity=".55"/>' % (cx, t["paper"]))
+    # clip
+    p.append('<rect x="%g" y="196" width="44" height="44" rx="8" fill="%s" stroke="%s"/>'
+             % (cx - 22, t["panel2"], t["rule_strong"]))
+    p.append('<rect x="%g" y="206" width="20" height="10" rx="5" fill="%s"/>' % (cx - 10, t["paper"]))
+    # sleeve + slot
+    p.append('<rect x="%g" y="%g" width="%d" height="%d" rx="24" fill="%s" stroke="%s" '
+             'stroke-width="1.4"/>' % (sx, sy, sw, sh, t["panel2"], t["rule_strong"]))
+    p.append('<rect x="%g" y="%g" width="64" height="9" rx="4.5" fill="%s"/>'
+             % (cx - 32, sy + 12, t["paper"]))
+    # card
+    p.append('<rect x="%g" y="%g" width="%d" height="%d" rx="12" fill="%s"/>'
+             % (card_x, card_y, card_w, card_h, t["card"]))
+    pad = 22
+    tx, tw = card_x + pad, card_w - 2 * pad
+    p.append(eyebrow("ID  001", tx, card_y + 38, dim, 13, weight=600))
+    p.append(ring_mark(card_x + card_w - pad - 8, card_y + 32, 8, t, dot=ink))
+    # two words, each fitted flush to the measure
+    s1 = ANTON.size_for_width("DESIGN", tw)
+    c1 = ANTON.cap * s1 / ANTON.upem
+    s2 = ANTON.size_for_width("BUILD", tw)
+    c2 = ANTON.cap * s2 / ANTON.upem
+    b1 = card_y + 64 + c1
+    b2 = b1 + 16 + c2
+    p.append(T(ANTON, "DESIGN", tx, b1, s1, ink))
+    p.append(T(ANTON, "BUILD", tx, b2, s2, ink))
+    p.append(glint(tx + tw - 26, b1 + 8, 30, t["accent"], "gl"))
+    fy = card_y + card_h - 30
+    p.append(hline(tx, tx + tw, fy - 44, dim, 1))
+    p.append(eyebrow("SIDDHARTHA PERURI", tx, fy - 14, ink, 13, weight=600))
+    p.append(eyebrow("CSE  ·  2027", tx, fy + 6, dim, 12))
+    return wrap_g("sw", "".join(p))
+
+
+# ------------------------------------------------------------------ marquee
+SKILLS = ["UI/UX design", "Website design", "Visual design", "Branding", "Logo design",
+          "Wireframing", "Figma", "Framer", "Photoshop", "Illustrator", "Lightroom",
+          "Canva", "HTML", "CSS", "JavaScript", "TypeScript", "Next.js", "Three.js",
+          "Python", "Java", "FastAPI", "PyTorch"]
+
+
+def marquee(t):
+    pool_reset()
+    h = 168
+    size, gap, sep = 27, 56, 14
+    s = [hline(0, W, 0.5, t["rule"]), hline(0, W, h - 0.5, t["rule"])]
+    s.append(eyebrow("TOOLS  &  CRAFT", W / 2, 44, t["ink3"], 14, anchor="middle"))
+
+    def run(x0):
+        x, out = x0, []
+        for name in SKILLS:
+            out.append(asterisk(x + sep / 2, 104, sep / 2, t["ink3"]))
+            x += sep + 16
+            part, w = txt(SANS[400], name, x, 113, size, t["ink"], -.01)
+            out.append(part)
+            x += w + gap
+        return "".join(out), x - x0
+
+    first, span = run(0)
+    second, _ = run(span)
+    s.append('<g clip-path="url(#mq)"><g class="mq">%s%s</g></g>' % (first, second))
+    fade = ('<linearGradient id="fl" x1="0" x2="1"><stop offset="0" stop-color="%s"/>'
+            '<stop offset="1" stop-color="%s" stop-opacity="0"/></linearGradient>'
+            '<linearGradient id="fr" x1="1" x2="0"><stop offset="0" stop-color="%s"/>'
+            '<stop offset="1" stop-color="%s" stop-opacity="0"/></linearGradient>'
+            '<clipPath id="mq"><rect x="0" y="66" width="%d" height="72"/></clipPath>'
+            % (t["paper"], t["paper"], t["paper"], t["paper"], W))
+    s.append('<rect x="0" y="66" width="180" height="72" fill="url(#fl)"/>')
+    s.append('<rect x="%d" y="66" width="180" height="72" fill="url(#fr)"/>' % (W - 180))
+    css = ("@keyframes mq{to{transform:translateX(-@S@px)}}"
+           ".mq{animation:mq 90s linear infinite}").replace("@S@", "%d" % round(span))
+    return doc(W, h, t, "".join(s), "Tools and craft",
+               "Design, tooling and build skills.", anim(css), fade)
 
 
 # ------------------------------------------------------------------- matrix
@@ -220,52 +393,47 @@ DISCIPLINES = [
 
 def matrix(t):
     pool_reset()
-    h = 452
+    h = 462
     s = [crops(t, h)]
-    s.append(T(INTER[600], "CAPABILITIES", M, 46, 19, t["ink2"], .16))
-    s.append(T(INTER[500], "FOUR DISCIPLINES  ·  ONE PRACTICE", R, 46, 19, t["ink3"],
-               .16, anchor="end"))
+    s.append(eyebrow("CAPABILITIES", M, 46, t["ink2"]))
+    s.append(eyebrow("FOUR DISCIPLINES  ·  ONE PRACTICE", R, 46, t["ink3"], anchor="end"))
     s.append(hline(M, R, 66, t["rule"]))
     step = CW / 4.0
     for i, (num, title, items) in enumerate(DISCIPLINES):
         x = M + i * step
         if i:
-            s.append(vline(x - 16, 66, 396, t["rule"]))
-        s.append(T(INTER[700], num, x, 108, 18, t["accent"], .12))
-        s.append(T(ANTON, title, x, 158, 38, t["ink"]))
-        s.append(hline(x, x + step - 40, 182, t["rule"]))
+            s.append(vline(x - 16, 66, 404, t["rule"]))
+        s.append(eyebrow(num, x, 112, t["accent"], 15, weight=600))
+        s.append(T(ANTON, title, x, 162, 38, t["ink"]))
+        s.append(hline(x, x + step - 40, 186, t["rule"]))
         for j, item in enumerate(items):
-            s.append(T(INTER[400], item, x, 216 + j * 30, 21, t["ink2"]))
-    s.append(hline(M, R, 396, t["rule"]))
-    s.append(T(INTER[500], "Design and engineering treated as one discipline, not two.",
-               M, 428, 20, t["ink2"]))
-    return doc(h, t, "".join(s), "Capabilities",
+            s.append(T(SANS[400], item, x, 222 + j * 31, 21, t["ink2"]))
+    s.append(hline(M, R, 404, t["rule"]))
+    s.append(T(SANS[500], "Design and engineering treated as one discipline, not two.",
+               M, 438, 20, t["ink2"]))
+    return doc(W, h, t, "".join(s), "Capabilities",
                "Design, engineering, intelligence and creative technology.")
 
 
 # -------------------------------------------------------------------- cards
 def motif_orbit(t, cx, cy):
     p = ['<circle cx="%d" cy="%d" r="%d" stroke="%s" stroke-width="1"/>'
-         % (cx, cy, r, t["rule"]) for r in (34, 58, 82)]
+         % (cx, cy, r, t["rule_strong"]) for r in (34, 58, 82)]
     p.append('<circle cx="%d" cy="%d" r="7" fill="%s"/>' % (cx, cy, t["accent"]))
-    p.append('<circle class="orb" cx="%d" cy="%d" r="5" fill="%s"/>'
-             % (cx + 58, cy, t["ink3"]))
+    p.append('<circle class="orb" cx="%d" cy="%d" r="5" fill="%s"/>' % (cx + 58, cy, t["ink3"]))
     return "".join(p)
 
 
 def motif_sun(t, cx, cy):
-    import math
     p = []
     for i in range(12):
         a = math.radians(i * 30)
-        x1, y1 = cx + 46 * math.cos(a), cy + 46 * math.sin(a)
-        x2, y2 = cx + 82 * math.cos(a), cy + 82 * math.sin(a)
         p.append('<path d="M%.1f %.1f L%.1f %.1f" stroke="%s" stroke-width="1"/>'
-                 % (x1, y1, x2, y2, t["rule"]))
-    rays = '<g class="ray">%s</g>' % "".join(p)
-    return rays + ('<circle cx="%d" cy="%d" r="34" stroke="%s" stroke-width="1"/>'
-                   '<circle cx="%d" cy="%d" r="13" fill="%s"/>'
-                   % (cx, cy, t["rule"], cx, cy, t["accent"]))
+                 % (cx + 46 * math.cos(a), cy + 46 * math.sin(a),
+                    cx + 82 * math.cos(a), cy + 82 * math.sin(a), t["rule_strong"]))
+    return ('<g class="ray">%s</g><circle cx="%d" cy="%d" r="34" stroke="%s" stroke-width="1"/>'
+            '<circle cx="%d" cy="%d" r="13" fill="%s"/>'
+            % ("".join(p), cx, cy, t["rule_strong"], cx, cy, t["accent"]))
 
 
 def motif_wave(t, cx, cy):
@@ -274,51 +442,52 @@ def motif_wave(t, cx, cy):
         y = cy - 50 + i * 20
         p.append('<path d="M%d %d C%d %d, %d %d, %d %d" stroke="%s" stroke-width="1"/>'
                  % (cx - 84, y, cx - 42, y - 22 + i * 3, cx + 42, y + 22 - i * 3,
-                    cx + 84, y, t["rule"]))
+                    cx + 84, y, t["rule_strong"]))
     return ('<g class="wv">%s</g><circle cx="%d" cy="%d" r="6" fill="%s"/>'
             % ("".join(p), cx, cy, t["accent"]))
 
 
 def motif_spectrum(t, cx, cy):
-    p = []
-    for i, bh in enumerate([26, 54, 38, 82, 46, 68, 30]):
-        p.append('<rect class="bar b%d" x="%d" y="%d" width="10" height="%d" fill="%s"/>'
-                 % (i, cx - 84 + i * 26, cy + 50 - bh, bh,
-                    t["accent"] if i == 3 else t["rule"]))
-    return "".join(p)
+    return "".join('<rect class="bar b%d" x="%d" y="%d" width="10" height="%d" fill="%s"/>'
+                   % (i, cx - 84 + i * 26, cy + 50 - bh, bh,
+                      t["accent"] if i == 3 else t["rule_strong"])
+                   for i, bh in enumerate([26, 54, 38, 82, 46, 68, 30]))
 
 
 PROJECTS = [
-    dict(num="01", name="ORBIT", kicker="INTELLIGENT KNOWLEDGE PLATFORM",
+    dict(num="01", name="ORBIT", kicker="INTELLIGENT KNOWLEDGE PLATFORM", live=True,
          status="IN DEVELOPMENT",
          desc="Full-stack RAG platform — documents are chunked, embedded into "
               "pgvector, and retrieved to ground answers in cited sources.",
          tags=["FASTAPI", "PGVECTOR", "RAG"], motif=motif_orbit),
-    dict(num="02", name="HELIOS", kicker="SOLAR ENERGY INTELLIGENCE",
+    dict(num="02", name="HELIOS", kicker="SOLAR ENERGY INTELLIGENCE", live=True,
          status="IN DEVELOPMENT",
          desc="Physics and ML engine for solar forecasting, behind a one-second "
               "calculator and a fourteen-view analysis console.",
          tags=["FASTAPI", "SCIKIT-LEARN", "NEXT.JS"], motif=motif_sun),
-    dict(num="03", name="SPECTRA", kicker="MULTIMODAL PERCEPTION", status="PLANNED",
+    dict(num="03", name="SPECTRA", kicker="MULTIMODAL PERCEPTION", live=False,
+         status="PLANNED",
          desc="Multimodal AI system exploring how models reason across images, text and "
               "structured signals together.",
          tags=["AI", "VISION", "MULTIMODAL"], motif=motif_spectrum),
-    dict(num="04", name="AETHER", kicker="CREATIVE COMPUTING", status="PLANNED",
+    dict(num="04", name="AETHER", kicker="CREATIVE COMPUTING", live=False,
+         status="PLANNED",
          desc="Experimental WebGL work — shaders, real-time 3D and expressive "
               "interfaces built for the browser.",
          tags=["WEBGL", "R3F", "SHADERS"], motif=motif_wave),
 ]
 
-
 CARD_CSS = (
     "@keyframes sp{to{transform:rotate(360deg)}}"
     "@keyframes dft{from{transform:translateX(-6px)}to{transform:translateX(6px)}}"
     "@keyframes shm{0%,100%{opacity:.45}50%{opacity:1}}"
+    "@keyframes pl{0%,100%{opacity:1}50%{opacity:.25}}"
     ".orb,.ray{transform-origin:502px 150px;transform-box:view-box}"
     ".orb{animation:sp 20s linear infinite}"
     ".ray{animation:sp 90s linear infinite}"
     ".wv{animation:dft 11s ease-in-out infinite alternate}"
     ".bar{animation:shm 6s ease-in-out infinite}"
+    ".pl{animation:pl 2.4s ease-in-out infinite}"
     ".b0{animation-delay:0s}.b1{animation-delay:.3s}.b2{animation-delay:.6s}"
     ".b3{animation-delay:.9s}.b4{animation-delay:1.2s}.b5{animation-delay:1.5s}"
     ".b6{animation-delay:1.8s}")
@@ -330,26 +499,26 @@ def card(t, p):
     s = ['<rect x="0.5" y="0.5" width="%d" height="%d" fill="%s" stroke="%s"/>'
          % (w - 1, h - 1, t["panel"], t["rule"])]
     s.append(p["motif"](t, w - 138, 150))
-    s.append(T(INTER[700], p["num"], pad, 74, 19, t["accent"], .12))
-    s.append(T(INTER[500], p["status"], pad + 44, 74, 19, t["ink3"], .16))
+    s.append(eyebrow(p["num"], pad, 74, t["accent"], 15, weight=600))
+    if p["live"]:
+        s.append('<circle class="pl" cx="%d" cy="69" r="4.5" fill="%s"/>' % (pad + 50, t["signal"]))
+    else:
+        s.append('<circle cx="%d" cy="69" r="4" stroke="%s" stroke-width="1.3"/>'
+                 % (pad + 50, t["ink3"]))
+    s.append(eyebrow(p["status"], pad + 66, 74, t["ink3"], 15))
     s.append(T(ANTON, p["name"], pad, 190, 78, t["ink"]))
-    s.append(T(INTER[600], p["kicker"], pad, 224, 20, t["ink2"], .1))
-    s.append(block(INTER[400], p["desc"], pad, 274, 22, 31, 470, t["ink2"]))
-    s.append(hline(pad, w - pad, 346, t["rule"]))
+    s.append(eyebrow(p["kicker"], pad, 226, t["ink2"], 15, weight=500, tracking=.1))
+    s.append(block(SANS[400], p["desc"], pad, 272, 21, 30, 470, t["ink2"]))
+    s.append(hline(pad, w - pad, 356, t["rule"]))
     x = pad
     for i, tag in enumerate(p["tags"]):
-        part, tw = txt(INTER[600], tag, x, 382, 18, t["ink2"], .16)
+        part, tw = txt(MONO[600], tag, x, 391, 15, t["ink2"], .12)
         s.append(part)
         x += tw + 24
         if i < len(p["tags"]) - 1:
-            s.append(vline(x - 13, 370, 386, t["rule"]))
-    return ('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" '
-            'viewBox="0 0 %d %d" fill="none" role="img" aria-label="%s">'
-            '<title>%s</title><desc>%s</desc>%s'
-            '%s<rect width="%d" height="%d" fill="%s"/>%s</svg>'
-            % (w, h, w, h, esc(p["name"] + " — " + p["kicker"].title()),
-               esc(p["name"]), esc(p["desc"]), anim(CARD_CSS), pool_defs(),
-               w, h, t["paper"], "".join(s)))
+            s.append(vline(x - 13, 379, 395, t["rule"]))
+    return doc(w, h, t, "".join(s), p["name"] + " — " + p["kicker"].title(), p["desc"],
+               anim(CARD_CSS))
 
 
 # ---------------------------------------------------------------------- now
@@ -365,24 +534,24 @@ def now(t):
     pool_reset()
     h = 358
     s = [crops(t, h)]
-    s.append('<rect x="%d" y="34" width="14" height="14" fill="%s"/>' % (M, t["accent"]))
-    s.append(T(INTER[600], "CURRENTLY BUILDING", M + 26, 46, 19, t["accent"], .16))
-    s.append(T(INTER[500], "2026", R, 46, 19, t["ink3"], .16, anchor="end"))
+    s.append('<circle class="pl" cx="%d" cy="41" r="5.5" fill="%s"/>' % (M + 6, t["signal"]))
+    s.append(eyebrow("CURRENTLY BUILDING", M + 24, 46, t["accent"], weight=600))
+    s.append(eyebrow("2026", R, 46, t["ink3"], anchor="end"))
     s.append(hline(M, R, 66, t["rule"]))
 
     s.append(T(ANTON, "HELIOS", M, 188, 116, t["ink"]))
     ow = ANTON.measure("HELIOS", 116)
     s.append('<rect x="%d" y="206" width="%g" height="4" fill="%s"/>' % (M, ow, t["accent"]))
-    s.append(block(INTER[400],
+    s.append(block(SANS[400],
                    "Two interfaces over one physics-and-ML engine: a one-second "
-                   "calculator, and a console for analysis.", M, 248, 22, 31, 420, t["ink2"]))
+                   "calculator, and a console for analysis.", M, 250, 21, 31, 420, t["ink2"]))
 
     cx = M + 520
-    s.append(T(INTER[600], "SYSTEM FLOW", cx, 120, 18, t["ink3"], .16))
+    s.append(eyebrow("SYSTEM FLOW", cx, 118, t["ink3"], 14))
     s.append(hline(cx, R, 140, t["rule"]))
     x = cx
     for i, name in enumerate(PIPELINE):
-        part, tw = txt(INTER[600], name, x, 178, 19, t["ink"], .1)
+        part, tw = txt(MONO[600], name, x, 178, 17, t["ink"], .08)
         s.append(wrap_g("fl f%d" % i, part))
         x += tw + 14
         if i < len(PIPELINE) - 1:
@@ -392,16 +561,60 @@ def now(t):
     for i, (k, v) in enumerate([("STACK", "FastAPI · scikit-learn · Next.js"),
                                 ("MODEL", "XGBoost · hold-out R² 0.856"),
                                 ("FOCUS", "Calibrated intervals, no leakage")]):
-        y = 242 + i * 30
-        s.append(T(INTER[600], k, cx, y, 17, t["ink3"], .16))
-        s.append(T(INTER[400], v, cx + 96, y, 20, t["ink2"]))
+        y = 244 + i * 30
+        s.append(eyebrow(k, cx, y, t["ink3"], 14, weight=600))
+        s.append(T(SANS[400], v, cx + 100, y, 20, t["ink2"]))
     css = ("@keyframes fl{0%,22%,100%{opacity:.45}8%{opacity:1}}"
+           "@keyframes pl{0%,100%{opacity:1}50%{opacity:.25}}"
            ".fl{opacity:.45;animation:fl 7s ease-in-out infinite}"
+           ".pl{animation:pl 2.4s ease-in-out infinite}"
            ".f0{animation-delay:0s}.f1{animation-delay:.55s}.f2{animation-delay:1.1s}"
            ".f3{animation-delay:1.65s}.f4{animation-delay:2.2s}")
-    return doc(h, t, "".join(s), "Currently building HELIOS",
-               "HELIOS — solar energy intelligence platform in development.",
-               anim(css))
+    return doc(W, h, t, "".join(s), "Currently building HELIOS",
+               "HELIOS — solar energy intelligence platform in development.", anim(css))
+
+
+# ------------------------------------------------------------------ process
+STEPS = [
+    ("01", "Understand the signal",
+     "Frame the user, context, constraint, and success condition before choosing a "
+     "visual direction."),
+    ("02", "Make the system visible",
+     "Turn the strongest idea into a simple information structure, flow, or interaction "
+     "model."),
+    ("03", "Test through making",
+     "Prototype early so pacing, usability, and visual hierarchy can be evaluated in motion."),
+    ("04", "Polish what people feel",
+     "Refine the details that shape trust: clarity, state changes, accessibility, and "
+     "performance."),
+]
+
+
+def process(t):
+    pool_reset()
+    h = 452
+    s = [crops(t, h)]
+    s.append(eyebrow("PROCESS", M, 46, t["ink2"]))
+    s.append(eyebrow("FOUR STEPS  ·  IN ORDER", R, 46, t["ink3"], anchor="end"))
+    s.append(hline(M, R, 66, t["rule"]))
+    ly = 122
+    s.append(hline(M, R, ly, t["rule_strong"]))
+    step = CW / 4.0
+    for i, (num, title, detail) in enumerate(STEPS):
+        x = M + i * step
+        s.append('<circle cx="%g" cy="%d" r="6" fill="%s" stroke="%s" stroke-width="1.5"/>'
+                 % (x + 6, ly, t["paper"], t["accent"]))
+        s.append(eyebrow(num, x, 176, t["accent"], 15, weight=600))
+        s.append(block(SANS[600], title, x, 214, 25, 32, step - 40, t["ink"], -.01))
+        n = len(wrap(SANS[600], title, 25, step - 40, -.01))
+        s.append(block(SANS[400], detail, x, 214 + 32 * n + 14, 18, 27, step - 44, t["ink2"]))
+    s.append('<circle class="tv" cx="%d" cy="%d" r="4" fill="%s"/>' % (M, ly, t["accent"]))
+    css = ("@keyframes tv{0%{transform:translateX(0);opacity:0}6%{opacity:1}"
+           "94%{opacity:1}100%{transform:translateX(@L@px);opacity:0}}"
+           ".tv{animation:tv 12s cubic-bezier(.45,0,.55,1) infinite}").replace("@L@", str(CW))
+    return doc(W, h, t, "".join(s), "Process",
+               "Understand the signal, make the system visible, test through making, "
+               "polish what people feel.", anim(css))
 
 
 # ------------------------------------------------------------------- footer
@@ -413,9 +626,10 @@ def footer(t):
     size = ANTON.size_for_width("DESIGN × TECHNOLOGY", CW)
     s.append(T(ANTON, "DESIGN × TECHNOLOGY", M, 190, size, t["ink"]))
     s.append(hline(M, R, 222, t["rule"]))
-    s.append(T(INTER[600], "SIDDHARTHA PERURI", M, 256, 19, t["ink2"], .16))
-    s.append(T(INTER[500], "BUILT, NOT TEMPLATED", R, 256, 19, t["ink3"], .16, anchor="end"))
-    return doc(h, t, "".join(s), "Design × technology")
+    s.append(ring_mark(M + 10, 251, 10, t))
+    s.append(eyebrow("SIDDHARTHA PERURI", M + 34, 256, t["ink2"]))
+    s.append(eyebrow("CSE  ·  2027", R, 256, t["ink3"], anchor="end"))
+    return doc(W, h, t, "".join(s), "Design × technology")
 
 
 # --------------------------------------------------------------------- main
@@ -423,12 +637,13 @@ def main():
     total = 0
     for name, t in THEMES.items():
         files = {"hero-%s.svg" % name: hero(t),
+                 "marquee-%s.svg" % name: marquee(t),
                  "matrix-%s.svg" % name: matrix(t),
                  "now-%s.svg" % name: now(t),
+                 "process-%s.svg" % name: process(t),
                  "footer-%s.svg" % name: footer(t)}
         for p in PROJECTS:
-            key = p["name"].lower().replace("-", "")
-            files["card-%s-%s.svg" % (key, name)] = card(t, p)
+            files["card-%s-%s.svg" % (p["name"].lower().replace("-", ""), name)] = card(t, p)
         for fn, svg in sorted(files.items()):
             size = write(fn, svg)
             total += size
