@@ -23,6 +23,25 @@ rules embedded in the SVG — both silently fall back to the visitor's default
 font. Outlines are the only way to guarantee the typography renders as designed.
 A glyph pool (`<defs>` + `<use>`) keeps the files small despite this.
 
+## Motion
+
+CSS animation inside the SVG runs on GitHub — the same CSP that blocks fonts
+allows `style-src 'unsafe-inline'`. Script does not run, and SMIL is avoided
+because it ignores `prefers-reduced-motion`.
+
+- **Hero** plays a one-shot staged reveal: rules draw on, type rises. It is
+  above the fold, so it is seen while it plays.
+- **Cards and the Helios panel** loop slowly instead, because a one-shot would
+  finish long before the reader scrolls to them. The loops are semantic — a dot
+  orbiting ORBIT's rings, Helios's rays turning once every 90s, the pipeline
+  lighting up step by step — never decoration for its own sake.
+- Every animation is disabled under `prefers-reduced-motion: reduce`, and the
+  static end state is what renders.
+
+Keyframes live next to the composition that uses them: `hero()` for the reveal,
+`CARD_CSS` for the motifs, `now()` for the pipeline. To strip motion entirely,
+make `anim()` return `""`.
+
 ## Editing content
 
 | What | Where in `tools/build_assets.py` |
