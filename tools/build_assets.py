@@ -217,11 +217,18 @@ def motif_orbit(t, cx, cy):
     return "".join(p)
 
 
-def motif_scan(t, cx, cy):
-    p = [hline(cx - 82, cx + 82, cy - 56 + i * 28, t["rule"]) for i in range(5)]
-    p += [vline(cx - 82 + i * 41, cy - 56, cy + 56, t["rule"]) for i in range(5)]
-    p.append('<rect x="%d" y="%d" width="36" height="36" stroke="%s" stroke-width="2"/>'
-             % (cx - 18, cy - 18, t["accent"]))
+def motif_sun(t, cx, cy):
+    import math
+    p = []
+    for i in range(12):
+        a = math.radians(i * 30)
+        x1, y1 = cx + 46 * math.cos(a), cy + 46 * math.sin(a)
+        x2, y2 = cx + 82 * math.cos(a), cy + 82 * math.sin(a)
+        p.append('<path d="M%.1f %.1f L%.1f %.1f" stroke="%s" stroke-width="1"/>'
+                 % (x1, y1, x2, y2, t["rule"]))
+    p.append('<circle cx="%d" cy="%d" r="34" stroke="%s" stroke-width="1"/>'
+             % (cx, cy, t["rule"]))
+    p.append('<circle cx="%d" cy="%d" r="13" fill="%s"/>' % (cx, cy, t["accent"]))
     return "".join(p)
 
 
@@ -245,14 +252,16 @@ def motif_spectrum(t, cx, cy):
 
 
 PROJECTS = [
-    dict(num="01", name="ORBIT", kicker="SOLAR ENERGY INTELLIGENCE", status="IN DEVELOPMENT",
-         desc="Full-stack AI and cloud platform predicting solar generation from location, "
-              "weather, time and panel configuration.",
-         tags=["AI / ML", "FULL-STACK", "CLOUD"], motif=motif_orbit),
-    dict(num="02", name="VIGIL-88", kicker="URBAN SAFETY AI", status="BUILT",
-         desc="Desktop computer-vision application built with PyQt6 and a ResNet-18 "
-              "classifier for real-time urban scene analysis.",
-         tags=["PYTHON", "PYQT6", "VISION"], motif=motif_scan),
+    dict(num="01", name="ORBIT", kicker="INTELLIGENT KNOWLEDGE PLATFORM",
+         status="IN DEVELOPMENT",
+         desc="Full-stack RAG platform — documents are chunked, embedded into "
+              "pgvector, and retrieved to ground answers in cited sources.",
+         tags=["FASTAPI", "PGVECTOR", "RAG"], motif=motif_orbit),
+    dict(num="02", name="HELIOS", kicker="SOLAR ENERGY INTELLIGENCE",
+         status="IN DEVELOPMENT",
+         desc="Physics and ML engine for solar forecasting, behind a one-second "
+              "calculator and a fourteen-view analysis console.",
+         tags=["FASTAPI", "SCIKIT-LEARN", "NEXT.JS"], motif=motif_sun),
     dict(num="03", name="SPECTRA", kicker="MULTIMODAL PERCEPTION", status="PLANNED",
          desc="Multimodal AI system exploring how models reason across images, text and "
               "structured signals together.",
@@ -293,7 +302,7 @@ def card(t, p):
 
 
 # ---------------------------------------------------------------------- now
-PIPELINE = ["DATA", "MODEL", "PREDICTION", "EXPLANATION", "DECISION"]
+PIPELINE = ["DATA", "PHYSICS", "MODEL", "INTERVALS", "DECISION"]
 
 
 def arrow(x, y, c, size=9):
@@ -310,12 +319,12 @@ def now(t):
     s.append(T(INTER[500], "2026", R, 46, 19, t["ink3"], .16, anchor="end"))
     s.append(hline(M, R, 66, t["rule"]))
 
-    s.append(T(ANTON, "ORBIT", M, 188, 116, t["ink"]))
-    ow = ANTON.measure("ORBIT", 116)
+    s.append(T(ANTON, "HELIOS", M, 188, 116, t["ink"]))
+    ow = ANTON.measure("HELIOS", 116)
     s.append('<rect x="%d" y="206" width="%g" height="4" fill="%s"/>' % (M, ow, t["accent"]))
     s.append(block(INTER[400],
-                   "Turning raw environmental data into solar-energy decisions people "
-                   "can actually act on.", M, 248, 22, 31, 420, t["ink2"]))
+                   "Two interfaces over one physics-and-ML engine: a one-second "
+                   "calculator, and a console for analysis.", M, 248, 22, 31, 420, t["ink2"]))
 
     cx = M + 520
     s.append(T(INTER[600], "SYSTEM FLOW", cx, 120, 18, t["ink3"], .16))
@@ -329,14 +338,14 @@ def now(t):
             s.append(arrow(x, 172, t["ink3"]))
             x += 23
     s.append(hline(cx, R, 206, t["rule"]))
-    for i, (k, v) in enumerate([("STACK", "Next.js · Python · Cloud"),
-                                ("MODEL", "Weather-driven prediction"),
-                                ("FOCUS", "Explainable, beginner-safe UX")]):
+    for i, (k, v) in enumerate([("STACK", "FastAPI · scikit-learn · Next.js"),
+                                ("MODEL", "XGBoost · hold-out R² 0.856"),
+                                ("FOCUS", "Calibrated intervals, no leakage")]):
         y = 242 + i * 30
         s.append(T(INTER[600], k, cx, y, 17, t["ink3"], .16))
         s.append(T(INTER[400], v, cx + 96, y, 20, t["ink2"]))
-    return doc(h, t, "".join(s), "Currently building ORBIT",
-               "ORBIT — solar energy intelligence platform in development.")
+    return doc(h, t, "".join(s), "Currently building HELIOS",
+               "HELIOS — solar energy intelligence platform in development.")
 
 
 # ------------------------------------------------------------------- footer

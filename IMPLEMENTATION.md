@@ -30,7 +30,7 @@ A glyph pool (`<defs>` + `<use>`) keeps the files small despite this.
 | Colours, accent | `THEMES` |
 | Capability columns | `DISCIPLINES` |
 | Project cards | `PROJECTS` (and the `motif_*` functions) |
-| ORBIT panel | `now()` |
+| Helios panel | `now()` |
 | Name, strapline, tags | `hero()` |
 
 Canvas is 1280 wide with a 72 margin and a 12-column grid; cards are 640×420.
@@ -50,7 +50,7 @@ Project cards are deliberately unlinked — those repos do not exist yet. To lin
 one once it does, wrap its `<picture>` block:
 
 ```html
-<a href="https://github.com/Siddhuperuri/orbit"><picture>...</picture></a>
+<a href="https://github.com/Siddhuperuri/helios"><picture>...</picture></a>
 ```
 
 ## Publish

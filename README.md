@@ -35,12 +35,12 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/card-orbit-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="./assets/card-orbit-light.svg">
-  <img alt="ORBIT — solar energy intelligence. Full-stack AI and cloud platform." src="./assets/card-orbit-dark.svg" width="49%">
+  <img alt="ORBIT — intelligent knowledge platform. Full-stack RAG over your own documents." src="./assets/card-orbit-dark.svg" width="49%">
 </picture>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/card-vigil88-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="./assets/card-vigil88-light.svg">
-  <img alt="VIGIL-88 — urban safety AI. PyQt6 desktop app with a ResNet-18 classifier." src="./assets/card-vigil88-dark.svg" width="49%">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/card-helios-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/card-helios-light.svg">
+  <img alt="HELIOS — solar energy intelligence. Physics and ML engine for solar forecasting." src="./assets/card-helios-dark.svg" width="49%">
 </picture>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/card-spectra-dark.svg">
@@ -60,7 +60,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/now-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="./assets/now-light.svg">
-  <img alt="Currently building ORBIT — turning environmental data into solar-energy decisions. Flow: data, model, prediction, explanation, decision." src="./assets/now-dark.svg" width="100%">
+  <img alt="Currently building HELIOS — two interfaces over one physics-and-ML engine. Flow: data, physics, model, intervals, decision." src="./assets/now-dark.svg" width="100%">
 </picture>
 
 <br>
@@ -70,8 +70,8 @@
 **Languages** — Python · Java · TypeScript  
 **Web** — React · Next.js · TypeScript · Tailwind CSS  
 **Creative** — WebGL · Three.js / R3F · GSAP · Shaders  
-**AI / ML** — PyTorch · Computer vision · LLM APIs  
-**Backend** — MySQL · Hibernate · Maven · Tomcat  
+**AI / ML** — PyTorch · scikit-learn · RAG · LLM APIs  
+**Backend** — FastAPI · PostgreSQL / pgvector · Redis · Docker  
 **Tools** — Git · Jupyter · Figma · Lightroom
 
 ## How I work
