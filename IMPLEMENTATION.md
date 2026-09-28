@@ -51,6 +51,15 @@ the place where computed, arranged and measured add up. The ember sits at the
 incentre of the A that SIDDHA and ARTHA share.
 Every plate shares `frame()`: crop marks, plate number, title, rule at y=84.
 
+**Labels.** The words between the plates are set in the same alphabet, in
+`assets/labels/`: wall labels with no ground (printed on the page, not on a plate),
+aligned to the plates' 72 margin so plate and label share one grid. Each label's
+full wording is its alt text. In the README every label is a single-line
+`<p><picture>…</picture></p>`, linked labels as `<p><a><picture>…</picture></a></p>`.
+Keep them on one line: a line that starts `<a…><picture>` and continues is not an
+HTML block to CommonMark, and GitHub splits the picture apart. Whitespace beside a
+full-width image also adds an empty line box.
+
 ## Motion
 
 CSS animation runs inside the `<img>`, because the same CSP allows inline styles.
@@ -84,6 +93,7 @@ stats service is involved, and the numbers on the plate are exactly the API's.
 | Unbuilt projects | `OPEN` |
 | The punched card | `TOOLS` (columns), `WORKS` (rows, with the tools each is made with) |
 | Closing sentence | `SENTENCE` |
+| Label wording | `LABELS`, `statement()`, `end_label()`, `LINKS` (then the matching alt text in README.md) |
 
 The card's rows must stay evidence: a tool goes in a work's set only if that
 work's repository or record shows it. Tools without a public work are listed in

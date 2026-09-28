@@ -86,6 +86,9 @@ class Doc:
 
     def text(self, s, x, y, cap, color, weight=None, track=0.32, anchor="start", cls=""):
         """Micro-type: a run of pooled glyphs with its baseline at y. Returns the width."""
+        missing = sorted({c for c in s if c.upper() not in S.G})
+        if missing:
+            raise ValueError("no glyph for %r in %r" % ("".join(missing), s))
         lay, w = S.text_layout(s, track)
         width = w * cap
         if anchor == "end":
@@ -961,6 +964,202 @@ def end(t):
     return doc.svg()
 
 
+# -------------------------------------------------------------------- labels
+# The words between the plates, set in the same alphabet. Labels have no ground:
+# they are printed on the page, not on a plate, and share the plates' 72 margin so
+# plate and label sit on one grid. Each label's full wording is also its alt text.
+LC = M + 360            # the label's text column
+
+
+def wrap_caps(text, cap, width, track=0.32):
+    lines, cur = [], ""
+    for w in text.split():
+        trial = (cur + " " + w).strip()
+        if cur and S.text_width(trial, track) * cap > width:
+            lines.append(cur)
+            cur = w
+        else:
+            cur = trial
+    return lines + ([cur] if cur else [])
+
+
+def rich(doc, segs, x, y, cap, anchor="start", weight=None):
+    """One line of type in several tones: [(text, colour), ...]."""
+    gap = (S.G[" "]["w"] + 2 * 0.32) * cap        # a word space between segments
+    widths = [S.text_width(s) * cap for s, _ in segs]
+    total = sum(widths) + gap * (len(segs) - 1)
+    x -= total / 2 if anchor == "middle" else 0
+    for (s, c), w in zip(segs, widths):
+        doc.text(s, x, y, cap, c, weight=weight)
+        x += w + gap
+
+
+LABELS = {
+    "artwork": dict(
+        pl="PL. II", name="SIDDHARTHA", kind="INTERACTIVE ARTWORK", stage="2026 · MEASURED",
+        body="AN ARTWORK ABOUT A PERSON, AND THE SOURCE OF EVERY DRAWING ON THIS PAGE. THE NAME "
+             "IS FIVE SHEETS OF LIGHT AT FIVE DEPTHS; FROM EXACTLY ONE POINT THEY ADD UP TO A WORD. "
+             "ONE CONTINUOUS WORLD IN FOUR PARTS, AND IT CAN BE PULLED OUT OF ITS OWN WINDOW.",
+        rows=[("MADE WITH", "HTML, CSS, JAVASCRIPT · THREE.JS, VENDORED, FOR THREE MOMENTS"),
+              ("WITHOUT", "A FRAMEWORK, A BUILD STEP, FONT FILES OR NETWORK REQUESTS"),
+              ("SOURCE", "SIDDHUPERURI/MIRACLE →")]),
+    "orbit": dict(
+        pl="PL. III", name="ORBIT", kind="KNOWLEDGE AND DOCUMENT PLATFORM", stage="2026 · ARRANGED",
+        body="UPLOAD DOCUMENTS INTO A WORKSPACE AND ASK QUESTIONS ANSWERED FROM THEIR CONTENTS, "
+             "CITED TO THE EXACT PASSAGE. IDENTITY, WORKSPACES, UPLOAD AND THE ASYNCHRONOUS "
+             "PIPELINE ARE BUILT; RETRIEVAL AND CHAT ARE NOT. A MODULAR MONOLITH WHOSE LAYERING "
+             "FAILS THE BUILD IF IT IS BROKEN.",
+        rows=[("MADE WITH", "PYTHON, FASTAPI, CELERY · NEXT.JS, REACT, TYPESCRIPT, TAILWIND"),
+              ("STORES", "POSTGRESQL + PGVECTOR · REDIS · MINIO"),
+              ("SHIPS WITH", "DOCKER · GITHUB ACTIONS · 24 DECISION RECORDS"),
+              ("SOURCE", "SIDDHUPERURI/ORBIT →")]),
+    "helios": dict(
+        pl="PL. IV", name="HELIOS", kind="SOLAR ENERGY INTELLIGENCE", stage="2026 · INFERRED",
+        body="PHYSICS AND MACHINE LEARNING FOR SOLAR FORECASTING, WITH CALIBRATED PREDICTION "
+             "INTERVALS: A FORECAST THAT SAYS HOW SURE IT IS. TWO INTERFACES OVER ONE ENGINE, A "
+             "ONE-SECOND CALCULATOR AND A FOURTEEN-VIEW ANALYSIS CONSOLE.",
+        rows=[("MODEL", "XGBOOST · HOLD-OUT R² 0.856"),
+              ("MADE WITH", "PYTHON, FASTAPI, SCIKIT-LEARN · NEXT.JS"),
+              ("SOURCE", "NOT PUBLIC YET. THE CURVE ABOVE IS A SCHEMATIC, NOT ITS DATA.")]),
+    "not-yet": dict(
+        pl="PL. V", name="NOT YET", kind="SPECTRA · SYNCHRO · AETHER", stage="SKETCHED",
+        body="NAMED, NOT BUILT, AND NOT YET PRINTED AS PLATES. EACH HOLDS A QUESTION INSTEAD OF "
+             "A DESCRIPTION.",
+        rows=[("SPECTRA", "WHAT DOES A MACHINE NOTICE, MISS OR MISTAKE WHEN IT LOOKS?"),
+              ("SYNCHRO", "WHAT DO STATE, LATENCY AND COORDINATION FEEL LIKE WHEN SYSTEMS MOVE "
+                          "TOGETHER?"),
+              ("AETHER", "WHAT HAPPENS WHEN WEBGL, GENERATIVE SYSTEMS AND SPATIAL INTERFACES "
+                         "BECOME AN ATMOSPHERE?")]),
+    "card": dict(
+        pl="PL. VI", name="THE STACK", kind="PUNCHED", stage="WORKS × TOOLS",
+        body="ROWS ARE WORKS, COLUMNS ARE TOOLS, AND A HOLE IS ONLY PUNCHED WHERE THE WORK'S "
+             "REPOSITORY OR RECORD SHOWS THE TOOL.",
+        rows=[("ALSO IN HAND", "PHOTOSHOP, ILLUSTRATOR, LIGHTROOM, CANVA, PYTORCH, REACT THREE "
+                               "FIBER, GSAP, JAVA, C. NO PUBLIC WORK TO SHOW FOR THEM YET."),
+              ("EARLIER", "GRAVITY PLAYGROUND, A CUSTOM PHYSICS ENGINE · TRAVELEASE, A "
+                          "LOCATION-BASED TREASURE HUNT · PETPONKS, IDENTITY AND WIREFRAMES")]),
+    "trace": dict(
+        pl="PL. VII", name="TRACE", kind="LAST 52 WEEKS", stage="REDRAWN DAILY",
+        body="REDRAWN EACH MORNING FROM THE GITHUB API BY A WORKFLOW IN THIS REPOSITORY, NOT BY "
+             "A STATS SERVICE. THE NUMBERS ARE THE API'S, UNROUNDED.",
+        rows=[("SOURCE", "GITHUB GRAPHQL API · CONTRIBUTION CALENDAR"),
+              ("WORKFLOW", ".GITHUB/WORKFLOWS/TRACE.YML · 06:47 IST")]),
+}
+
+
+def label(t, key):
+    d = LABELS[key]
+    doc = Doc(t, 0, "%s: %s" % (d["name"].title(), d["kind"].lower()), d["body"].capitalize(),
+              ground=False)
+    doc.add(hline(M, R, 8, t["fg20"]))
+    doc.text(d["pl"], M, 40, 10, t["fg50"])
+    ly = 72
+    doc.text(d["name"], M, ly, 21, t["fg"], weight=2)
+    ly += 28
+    for ln in wrap_caps(d["kind"], 11, LC - M - 48):
+        doc.text(ln, M, ly, 11, t["fg72"])
+        ly += 19
+    doc.text(d["stage"], M, ly + 6, 10, t["fg50"])
+    ry = 72
+    for ln in wrap_caps(d["body"], 15, R - LC):
+        doc.text(ln, LC, ry, 15, t["fg72"], weight=1.45)
+        ry += 27
+    ry += 14
+    kw = 150
+    for k, v in d["rows"]:
+        doc.text(k, LC, ry, 9, t["fg50"])
+        for ln in wrap_caps(v, 11, R - LC - kw):
+            doc.text(ln, LC + kw, ry, 11, t["fg72"])
+            ry += 20
+        ry += 6
+    doc.h = int(max(ly + 6, ry - 6) + 22)
+    return doc.svg()
+
+
+def statement(t):
+    """The words under the hero, and a key to the stages the plates are drawn at."""
+    fg, dim = t["fg"], t["fg50"]
+    doc = Doc(t, 0, "Jai Sai Siddhartha Peruri",
+              "Jai Sai Siddhartha Peruri, computer science, India. A hand sketches it. A model "
+              "infers it. A grid computes it. A layout arranges it. An instrument measures it. "
+              "From one place, they add up to a name. I study computer science and work in all "
+              "five: drawing, models, code, interfaces, systems. Each name on the plates below is "
+              "drawn only as far as its evidence goes: sketched, named with no code yet; inferred, "
+              "built but not yet public; arranged, public but unfinished; measured, public and "
+              "running.", ground=False)
+    cx, y = W / 2, 34
+    rich(doc, [("JAI SAI SIDDHARTHA PERURI", fg), ("·", dim), ("COMPUTER SCIENCE", t["fg72"]),
+               ("·", dim), ("INDIA", t["fg72"])], cx, y, 12, "middle")
+    y += 78
+    for segs in ([("A HAND", dim), ("SKETCHES", fg), ("IT. A MODEL", dim), ("INFERS", fg),
+                  ("IT. A GRID", dim), ("COMPUTES", fg), ("IT.", dim)],
+                 [("A LAYOUT", dim), ("ARRANGES", fg), ("IT. AN INSTRUMENT", dim), ("MEASURES", fg),
+                  ("IT.", dim)],
+                 [("FROM ONE PLACE, THEY ADD UP TO A NAME.", fg)]):
+        rich(doc, segs, cx, y, 17, "middle", weight=1.55)
+        y += 36
+    y += 30
+    doc.text("I STUDY COMPUTER SCIENCE AND WORK IN ALL FIVE:", cx, y, 14, t["fg72"], anchor="middle")
+    doc.text("DRAWING, MODELS, CODE, INTERFACES, SYSTEMS.", cx, y + 27, 14, t["fg72"],
+             anchor="middle")
+    y += 92
+    doc.add(hline(cx - 150, cx + 150, y - 30, t["fg20"]))
+    doc.text("EACH NAME ON THE PLATES BELOW IS DRAWN ONLY AS FAR AS ITS EVIDENCE GOES", cx, y, 10,
+             dim, anchor="middle")
+    y += 34
+    key = [("sketch", "SKETCHED", "NAMED, NO CODE YET"), ("field", "INFERRED", "BUILT, NOT YET PUBLIC"),
+           ("design", "ARRANGED", "PUBLIC, UNFINISHED"), ("measure", "MEASURED", "PUBLIC, AND IT RUNS")]
+    C, step = 34, 250
+    for i, (stage, name, means) in enumerate(key):
+        ix = cx + (i - 1.5) * step
+        gx = ix - 76
+        if stage == "sketch":
+            stage_sketch(doc, "A", gx, y + C, C, 5, weight=1.2, wobble=2.2)
+        elif stage == "field":
+            stage_field(doc, "A", gx, y + C, C, 6, density=1.5)
+        elif stage == "design":
+            stage_design(doc, "A", gx, y + C, C, weight=1.4)
+        else:
+            stage_measure(doc, "A", gx, y + C, C, 0.13 * C)
+        doc.text(name, ix - 24, y + 14, 11, fg)
+        doc.text(means, ix - 24, y + 33, 9, dim)
+    doc.h = int(y + C + 26)
+    return doc.svg()
+
+
+def end_label(t):
+    doc = Doc(t, 0, "Colophon",
+              "The last sentence of SIDDHARTHA, left as a sketch: nothing measures it. There is "
+              "one more, at the bottom of the well. Plates drawn by tools/build_assets.py in the "
+              "artwork's own stroke alphabet. No font files, no scripts, no third-party services; "
+              "light and dark printed from one source.", ground=False)
+    cx = W / 2
+    doc.text("THE LAST SENTENCE OF SIDDHARTHA, LEFT AS A SKETCH: NOTHING MEASURES IT.", cx, 40, 13,
+             t["fg72"], anchor="middle")
+    doc.text("THERE IS ONE MORE, AT THE BOTTOM OF THE WELL.", cx, 64, 13, t["fg72"], anchor="middle")
+    doc.add(hline(cx - 60, cx + 60, 100, t["fg20"]))
+    doc.text("PLATES DRAWN BY TOOLS/BUILD_ASSETS.PY IN THE ARTWORK'S OWN STROKE ALPHABET", cx, 132, 9,
+             t["fg50"], anchor="middle")
+    doc.text("NO FONT FILES · NO SCRIPTS · NO THIRD-PARTY SERVICES · LIGHT AND DARK FROM ONE SOURCE",
+             cx, 152, 9, t["fg50"], anchor="middle")
+    doc.h = 176
+    return doc.svg()
+
+
+LINKS = {"artwork": "THE ARTWORK →", "linkedin": "LINKEDIN →", "behance": "BEHANCE →",
+         "card-text": "READ THE CARD AS TEXT ↓"}
+
+
+def link(t, key):
+    text, cap = LINKS[key], 12
+    w = S.text_width(text) * cap
+    doc = Doc(t, 34, text.replace(" →", "").title(), "Link: " + text.replace(" →", "").title(),
+              w=int(w + 10), ground=False)
+    doc.text(text, 5, 20, cap, t["fg"], weight=1.45)
+    doc.add(hline(5, 5 + w, 28, t["fg34"]))
+    return doc.svg()
+
+
 # ---------------------------------------------------------------------- main
 def load_trace(fetch):
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
@@ -977,12 +1176,15 @@ def main(argv):
     plates = [("hero", hero), ("artwork", artwork), ("orbit", orbit), ("helios", helios),
               ("not-yet", not_yet), ("card", card), ("trace", lambda t: trace(t, data)),
               ("end", end)]
+    plates += [("labels/" + k, lambda t, k=k: label(t, k)) for k in LABELS]
+    plates += [("labels/statement", statement), ("labels/end", end_label)]
+    plates += [("labels/link-" + k, lambda t, k=k: link(t, k)) for k in LINKS]
     only = [a for a in argv if not a.startswith("--")]
     total = 0
-    os.makedirs(OUT, exist_ok=True)
+    os.makedirs(os.path.join(OUT, "labels"), exist_ok=True)
     for t in THEMES:
         for name, fn in plates:
-            if only and name not in only:
+            if only and name not in only and name.split("/")[0] not in only:
                 continue
             path = os.path.join(OUT, "%s-%s.svg" % (name, t["name"]))
             with open(path, "w", encoding="utf-8", newline="\n") as f:
