@@ -62,16 +62,27 @@ full-width image also adds an empty line box.
 
 ## Motion
 
-CSS animation runs inside the `<img>`, because the same CSP allows inline styles.
-Script does not. Everything stops under `prefers-reduced-motion`, and each plate is
-designed so its static state is the meaningful one.
+CSS animation runs inside the `<img>`, because GitHub's CSP allows inline styles.
+Script does not. Every plate and label moves, and every motion says something about
+its content. Loops below the fold rest for most of each cycle (stillness is the
+artwork's first law). Everything stops under `prefers-reduced-motion`, and each
+static state is the complete image: no scan bar, no curtain, every observation shown.
 
-- **Hero:** a one-shot reveal in the order the name becomes: JAI is drawn, SAI
-  gathers, SIDDHARTHA's grid, construction and letters arrive. Then the ember breathes.
-- **ORBIT:** the ember pulse runs through the five built stages and dies at index.
-  At rest it sits on index, the frontier.
-- **Last plate:** the sentence sways very slowly ("the room breathes").
-- Every ember ring breathes. Nothing else moves.
+| Where | Motion | What it says |
+|---|---|---|
+| Hero | one-shot reveal: JAI drawn, SAI gathers, SIDDHARTHA's grid, construction and letters arrive; SAI then keeps shimmering | the name becoming; inference is probabilistic |
+| II artwork | the displaced eye swings about the nearest mark onto V\*; every sheet's mark lands on its ray and lights; it drifts off | stillness resolves, motion scatters |
+| III ORBIT | the ember runs the five built stages and dies at index; dependency arrows redraw in the one allowed direction | what exists, and the rule that holds it |
+| IV HELIOS | observations arrive through the day, a gap marking now; the dashed forecast flows; the title cloud shimmers | a forecast meeting its data |
+| V not yet | streams advance and stop short of the line; three clocks run at different rates; the sphere turns | intentions, not yet resolved |
+| VI card | a reader scans the rows; light passes through each row's holes as it goes | a hole is where light gets through |
+| VII trace | a pen redraws the year to today, then rests | the record, replayed |
+| VIII end | the hand keeps redrawing the sentence; the room sways | it never reaches the last stage |
+| Statement | the five verbs light in reading order; the key's A performs each stage | the grammar of the page |
+| Labels, links | rules draw and words set as they arrive; arrows nudge toward their links | where to go next |
+
+The ember breathes wherever it appears. Keyframes live next to the plate that uses
+them; the shared ones are `DRAW`, `EMBER`, `REDRAW`, `SHIMMER` and `NUDGE`.
 
 ## Trace
 

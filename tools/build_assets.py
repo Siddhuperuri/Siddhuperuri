@@ -456,20 +456,33 @@ def hero(t):
 
     # one-shot reveal, in the order a letter becomes: sketched, inferred, computed,
     # arranged, measured. The hero is above the fold, so it is seen while it plays.
-    motion(doc, DRAW + EMBER + (
+    motion(doc, DRAW + EMBER + SHIMMER + (
         "@keyframes up{from{opacity:0;transform:translateY(6px)}}"
         ".ln{animation:dw 1s %(e)s both}"
         ".rv{animation:fi .8s %(e)s .1s both}"
         ".s1{animation:dw 1.1s %(e)s both}.s1.p0{animation-delay:.25s}"
         ".s1.p1{animation-delay:.4s}.s1.p2{animation-delay:.55s}"
-        ".s2{animation:fi 1s ease-out both}.s2.fn{animation-delay:.55s}"
-        ".s2.fl{animation-delay:.75s}.s2.ft{animation-delay:.95s}"
+        ".s2.ft{animation:fi 1s ease-out .95s both}"
+        ".s2.fn{animation:fi 1s ease-out .55s both,shn 3.4s ease-in-out 2.6s infinite alternate}"
+        ".s2.fl{animation:fi 1s ease-out .75s both,shl 4.8s ease-in-out 2.6s infinite alternate}"
         ".s3{animation:fi .6s steps(4) 1.2s both}"
         ".s4.c{animation:fi .8s ease 1.5s both}"
         ".s5{animation:up .7s %(e)s 1.9s both}"
         ".em{animation:fi .6s ease 2.6s both}"
         ".er{animation-delay:3.2s}" % {"e": EASE}))
     return doc.svg()
+
+
+# Loops below the fold rest for most of each cycle: stillness is the artwork's first law.
+# Every static state is the complete image, so prefers-reduced-motion loses nothing.
+REDRAW = ("@keyframes rd{0%{stroke-dasharray:1;stroke-dashoffset:1;opacity:1}"
+          "18%{stroke-dasharray:1;stroke-dashoffset:0}18.1%,90%{stroke-dasharray:none;opacity:1}"
+          "97%{opacity:0}97.1%,100%{stroke-dasharray:1;stroke-dashoffset:1;opacity:0}}")
+SHIMMER = "@keyframes shn{from{opacity:1}to{opacity:.25}}@keyframes shl{from{opacity:1}to{opacity:.55}}"
+NUDGE = ("@keyframes nd{0%,62%,100%{transform:translate(0,0)}76%{transform:translate(5px,0)}}"
+         ".nd{animation:nd 3.6s ease-in-out infinite}"
+         "@keyframes ndd{0%,62%,100%{transform:translate(0,0)}76%{transform:translate(0,4px)}}"
+         ".ndd{animation:ndd 3.6s ease-in-out infinite}")
 
 
 # ------------------------------------------------------------ plate helpers
@@ -496,7 +509,7 @@ def ember(doc, x, y, r=6, ring=14):
     motion(doc, EMBER)
 
 
-def word(doc, text, x, y, C, stage, seed=1, track=0.3, **kw):
+def word(doc, text, x, y, C, stage, seed=1, track=0.3, cls="", **kw):
     """A word drawn at one stage of resolution. Returns its width."""
     lay, w = S.text_layout(text, track)
     for n, (g, gx, ch) in enumerate(lay):
@@ -505,9 +518,9 @@ def word(doc, text, x, y, C, stage, seed=1, track=0.3, **kw):
         X = x + gx * C
         if stage == "sketch":
             stage_sketch(doc, ch, X, y, C, seed + n, weight=kw.get("weight", 1.6),
-                         passes=kw.get("passes", 3))
+                         passes=kw.get("passes", 3), cls=cls)
         elif stage == "field":
-            stage_field(doc, ch, X, y, C, seed + n, density=kw.get("density", 1.0))
+            stage_field(doc, ch, X, y, C, seed + n, density=kw.get("density", 1.0), cls=cls)
         elif stage == "lattice":
             stage_lattice(doc, ch, X, y, C, C / 12, C * 0.075, (x, y - C), empties=False)
         elif stage == "design":
@@ -524,15 +537,15 @@ def rtext(doc, s, x, y, cap, color, **kw):
     doc.add("</g>")
 
 
-def arrow(doc, x1, y1, x2, y2, c, w=1.2, head=6, dash=""):
+def arrow(doc, x1, y1, x2, y2, c, w=1.2, head=6, dash="", extra=""):
     a = math.atan2(y2 - y1, x2 - x1)
     hx1, hy1 = x2 - head * math.cos(a - 0.45), y2 - head * math.sin(a - 0.45)
     hx2, hy2 = x2 - head * math.cos(a + 0.45), y2 - head * math.sin(a + 0.45)
-    doc.add('<path d="M%s %sL%s %s" stroke="%s" stroke-width="%s"%s/>'
+    doc.add('<path d="M%s %sL%s %s" stroke="%s" stroke-width="%s"%s%s/>'
             % (num(x1), num(y1), num(x2), num(y2), c, num(w),
-               ' stroke-dasharray="%s"' % dash if dash else ""),
-            '<path d="M%s %sL%s %sL%s %s" stroke="%s" stroke-width="%s"/>'
-            % (num(hx1), num(hy1), num(x2), num(y2), num(hx2), num(hy2), c, num(w)))
+               ' stroke-dasharray="%s"' % dash if dash else "", extra),
+            '<path d="M%s %sL%s %sL%s %s" stroke="%s" stroke-width="%s"%s/>'
+            % (num(hx1), num(hy1), num(x2), num(y2), num(hx2), num(hy2), c, num(w), extra))
 
 
 # ------------------------------------------------------ PL. II  the artwork
@@ -574,12 +587,21 @@ def artwork(t):
     u, s0 = us[4], depth[0][0]
     m0 = vy + u * k * (s0 - vx)
     sl = (m0 - oy) / (s0 - ox)
-    doc.add(line(ox, oy, far + 14, m0 + sl * (far + 14 - s0), t["fg72"], 1,
-                 ' stroke-dasharray="3 4"'))
     for sx, _ in depth[1:]:
-        doc.add('<circle cx="%s" cy="%s" r="5.5" stroke="%s"/>'
-                % (num(sx), num(vy + u * k * (sx - vx)), t["fg72"]))
-    doc.add('<circle cx="%s" cy="%s" r="3.5" stroke="%s"/>' % (num(ox), num(oy), t["fg72"]))
+        doc.add('<circle class="hit" cx="%s" cy="%s" r="5.5" stroke="%s" fill="%s"/>'
+                % (num(sx), num(vy + u * k * (sx - vx)), t["fg72"], t["fg"]))
+    # in motion the eye swings about the nearest mark until its ray is V*'s ray; then
+    # every sheet's mark lies on it, and they light. Then it drifts off again.
+    doc.add('<g class="eye">',
+            line(ox, oy, far + 14, m0 + sl * (far + 14 - s0), t["fg72"], 1, ' stroke-dasharray="3 4"'),
+            '<circle cx="%s" cy="%s" r="3.5" stroke="%s"/>' % (num(ox), num(oy), t["fg72"]), '</g>')
+    swing = math.degrees(math.atan2(m0 - vy, s0 - vx) - math.atan2(m0 - oy, s0 - ox))
+    motion(doc, "@keyframes eye{0%%,24%%{transform:rotate(0)}44%%,74%%{transform:rotate(%.3fdeg)}"
+                "92%%,100%%{transform:rotate(0)}}"
+                ".eye{transform-box:view-box;transform-origin:%spx %spx;"
+                "animation:eye 11s cubic-bezier(.45,0,.3,1) infinite}"
+                "@keyframes hit{0%%,43%%{fill-opacity:0}50%%,71%%{fill-opacity:1}78%%,100%%{fill-opacity:0}}"
+                ".hit{fill-opacity:0;animation:hit 11s ease infinite}" % (swing, num(s0), num(m0)))
     doc.text("MOVE: THEY SLIDE APART", ox + 6, oy + 30, 9, t["fg72"])
     ember(doc, vx, vy, 6, 14)
     doc.text("V*", vx - 24, vy + 5, 12, t["fg"], anchor="end")
@@ -646,12 +668,18 @@ def orbit(t):
     for name, (x, y) in nodes.items():
         doc.text(name, x, y + 4, 10, t["fg"])
     ww = lambda n: S.text_width(n) * 10
-    arrow(doc, 560 + ww("COMPOSITION") + 10, dy, 706, dy, t["fg50"])
-    arrow(doc, 716 + ww("API") + 10, dy - 4, 822, dy - 30, t["fg50"])
-    arrow(doc, 716 + ww("API") + 10, dy + 4, 822, dy + 30, t["fg50"])
-    arrow(doc, 832 + ww("APPLICATION") + 10, dy - 30, 1030, dy - 4, t["fg50"])
-    arrow(doc, 832 + ww("INFRASTRUCTURE") + 10, dy + 30, 1030, dy + 4, t["fg50"])
-    arrow(doc, 1040 + ww("DOMAIN") + 10, dy, 1140, dy, t["fg50"])
+    da = ' class="da d%d" pathLength="1"'
+    arrow(doc, 560 + ww("COMPOSITION") + 10, dy, 706, dy, t["fg50"], extra=da % 0)
+    arrow(doc, 716 + ww("API") + 10, dy - 4, 822, dy - 30, t["fg50"], extra=da % 1)
+    arrow(doc, 716 + ww("API") + 10, dy + 4, 822, dy + 30, t["fg50"], extra=da % 1)
+    arrow(doc, 832 + ww("APPLICATION") + 10, dy - 30, 1030, dy - 4, t["fg50"], extra=da % 2)
+    arrow(doc, 832 + ww("INFRASTRUCTURE") + 10, dy + 30, 1030, dy + 4, t["fg50"], extra=da % 2)
+    arrow(doc, 1040 + ww("DOMAIN") + 10, dy, 1140, dy, t["fg50"], extra=da % 3)
+    # imports may only flow one way: the arrows redraw in that order
+    motion(doc, "@keyframes da{0%,5%{stroke-dasharray:1;stroke-dashoffset:1}"
+                "13%{stroke-dasharray:1;stroke-dashoffset:0}13.1%,100%{stroke-dasharray:none}}"
+                ".da{animation:da 8s cubic-bezier(.4,0,.2,1) infinite both}"
+                ".d1{animation-delay:.4s}.d2{animation-delay:.8s}.d3{animation-delay:1.2s}")
     doc.text("×", 880, dy + 5, 12, t["fg72"], weight=1.4)
     doc.text("DEPENDENCY DIRECTION · ENFORCED IN CI", 560, 408, 9, t["fg50"])
     doc.text("APPLICATION × INFRASTRUCTURE: NEITHER MAY IMPORT THE OTHER", 560, 428, 9, t["fg50"])
@@ -668,7 +696,7 @@ def helios(t):
               "points. Facts: physics plus machine learning, XGBoost with hold-out R-squared 0.856, "
               "calibrated prediction intervals.")
     frame(doc, "PL. IV", "HELIOS — SOLAR ENERGY INTELLIGENCE", "IN DEVELOPMENT · NOT PUBLIC")
-    word(doc, "HELIOS", M, 214, 96, "field", seed=40, density=1.1)
+    word(doc, "HELIOS", M, 214, 96, "field", seed=40, density=1.1, cls="sh")
     doc.text("INFERRED: EXISTS, NOT YET PUBLIC", M, 256, 9, t["fg50"])
     facts = ["PHYSICS + MACHINE LEARNING", "XGBOOST · HOLD-OUT R² 0.856",
              "CALIBRATED PREDICTION INTERVALS", "ONE-SECOND CALCULATOR", "FOURTEEN-VIEW CONSOLE"]
@@ -695,14 +723,20 @@ def helios(t):
             '<g clip-path="url(#%s)"><path d="%s" stroke="%s"/></g>' % (cid, hatch, t["fg34"]),
             '<path d="%s" stroke="%s" stroke-width=".8"/>' % (poly, t["fg34"]),
             '<path d="M%s" stroke="%s" stroke-width="1.2"/>' % (pts(clear), t["fg50"]),
-            '<path d="M%s" stroke="%s" stroke-width="2" stroke-dasharray="7 5"/>' % (pts(fc), t["fg"]))
+            '<path class="fc" d="M%s" stroke="%s" stroke-width="2" stroke-dasharray="7 5"/>'
+            % (pts(fc), t["fg"]))
     rng = random.Random(7)
-    obs = []
+    # observations arrive through the day, in the order they are made
     for i in range(27):
         h = 6.6 + i * 0.42
         v = min(clear(h), max(0.0, fc(h) + rng.gauss(0, band(h) * 0.5)))
-        obs.append("M%s %sh0" % (num(hx(h)), num(hy(v))))
-    doc.add('<path d="%s" stroke="%s" stroke-width="4.6"/>' % ("".join(obs), t["fg72"]))
+        doc.add('<path class="ob" style="animation-delay:%.2fs" d="M%s %sh0" stroke="%s" '
+                'stroke-width="4.6"/>' % (0.4 + i * 0.3, num(hx(h)), num(hy(v)), t["fg72"]))
+    motion(doc, SHIMMER + ".sh.fn{animation:shn 3.4s ease-in-out infinite alternate}"
+                ".sh.fl{animation:shl 4.8s ease-in-out infinite alternate}"
+                "@keyframes fc{to{stroke-dashoffset:-24}}.fc{animation:fc 2.4s linear infinite}"
+                "@keyframes ob{0%{opacity:0}3%,84%{opacity:1}92%,100%{opacity:0}}"
+                ".ob{animation:ob 14s ease infinite both}")
     for h in range(6, 20, 3):
         doc.add(vline(hx(h), base, base + 6, t["fg50"]))
         doc.text("%02d:00" % h, hx(h), base + 24, 8, t["fg50"], anchor="middle")
@@ -767,28 +801,39 @@ def not_yet(t):
                         "L%s %s" % (num(x + j * 1.7), num(my + 42 - 8 * math.sin(j * 0.45))) for j in range(21))
                     + '" stroke="%s"/>' % ic)
             for yy in (my - 40, my, my + 42):
-                arrow(doc, x + 50, yy, lx - 18, yy, c, 1, 5, "3 5")
+                arrow(doc, x + 50, yy, lx - 18, yy, c, 1, 5, "3 5", extra=' class="mv"')
             doc.add(vline(lx, my - 58, my + 58, t["fg50"], 1, dash))
         elif name == "SYNCHRO":    # three clocks, never quite in phase
             lx = x + 250
+            cid = doc.nid("k")
+            doc.defs.append('<clipPath id="%s"><rect x="%s" y="%s" width="%s" height="120"/></clipPath>'
+                            % (cid, num(x - 1), num(my - 60), num(lx - 12 - x)))
             for j, off in enumerate((0, 7, 15)):
                 yy = my - 36 + j * 36
                 doc.add(hline(x, lx - 12, yy, c, 1, dash))
-                doc.add('<path d="%s" stroke="%s" stroke-width="1.4"/>' % (
-                    "".join("M%s %sv-10" % (num(x + off + q * 30), num(yy + 5))
-                            for q in range(int((lx - 24 - x - off) / 30) + 1)), t["fg50"]))
+                # each clock runs at its own rate, so they never come into phase
+                doc.add('<g clip-path="url(#%s)"><path class="ck ck%d" d="%s" stroke="%s" '
+                        'stroke-width="1.4"/></g>' % (cid, j, "".join(
+                            "M%s %sv-10" % (num(x + off + q * 30), num(yy + 5))
+                            for q in range(-1, int((lx - 24 - x - off) / 30) + 1)), t["fg50"]))
             doc.add(vline(lx, my - 58, my + 58, t["fg50"], 1, dash))
             doc.text("?", lx + 12, my + 6, 16, t["fg50"], weight=1.4)
         else:                      # a sphere that is still only its construction
             cx, r = x + 110, 56
             doc.add('<circle cx="%s" cy="%s" r="%s" stroke="%s"%s/>' % (num(cx), my, r, c, dash))
-            for q in (0.35, 0.72):
-                doc.add('<ellipse cx="%s" cy="%s" rx="%s" ry="%s" stroke="%s"%s/>'
-                        % (num(cx), my, num(r * q), r, c, dash),
+            for n, q in enumerate((0.35, 0.72)):
+                doc.add('<ellipse class="mer" style="transform-origin:%spx %spx;animation-delay:-%ss" '
+                        'cx="%s" cy="%s" rx="%s" ry="%s" stroke="%s"%s/>'
+                        % (num(cx), my, 3.5 * n + 1, num(cx), my, num(r * q), r, c, dash),
                         '<ellipse cx="%s" cy="%s" rx="%s" ry="%s" stroke="%s"%s/>'
                         % (num(cx), my, r, num(r * q), c, dash))
     doc.text("EVERY NAME ON THESE PLATES IS DRAWN ONLY AS FAR AS ITS EVIDENCE GOES", M, H - 34, 9,
              t["fg50"])
+    motion(doc, "@keyframes mv{to{stroke-dashoffset:-16}}.mv{animation:mv 1.4s linear infinite}"
+                "@keyframes ck{to{transform:translateX(30px)}}.ck{animation:ck 3s linear infinite}"
+                ".ck1{animation-duration:3.35s}.ck2{animation-duration:3.8s}"
+                "@keyframes mer{0%{transform:scaleX(1)}50%{transform:scaleX(-1)}100%{transform:scaleX(1)}}"
+                ".mer{transform-box:view-box;animation:mer 7s linear infinite}")
     return doc.svg()
 
 
@@ -843,6 +888,9 @@ def card(t):
         rtext(doc, tool, x + 4, 290, 9, t["fg72"])
         doc.text("%d" % (cols.index((n, verb, tool)) + 1), x, 306, 7, t["fg34"], anchor="middle")
     hole_w, hole_h = 9, 15
+    row_y = [rows_y0 + r * rh + rh / 2 + (30 if not used else 0) for r, (_, used) in enumerate(WORKS)]
+    y_top, y_bot = row_y[0], row_y[-1]
+    halos = []
     for r, (work, used) in enumerate(WORKS):
         open_ = not used
         y = rows_y0 + r * rh + rh / 2 + (30 if open_ else 0)
@@ -862,9 +910,26 @@ def card(t):
             doc.add('<path d="%s" stroke="%s" stroke-width="1.6"/>' % ("".join(dots), t["fg20"]))
         if holes:
             doc.add('<path d="%s" fill="%s"/>' % ("".join(holes), t["fg"]))
+            ring = "".join("M%s %sh%sv%sh-%sz" % (num(x - hole_w / 2 - 3), num(y - hole_h / 2 - 3),
+                                                   hole_w + 6, hole_h + 6, hole_w + 6)
+                           for x, (_, _, tool) in zip(colx, cols) if tool in used)
+            # the moment the reader passes this row, as a share of the 9 s cycle
+            at = 9 * (0.04 + 0.62 * (y - y_top) / (y_bot - y_top))
+            halos.append('<path class="hl" style="animation-delay:%.2fs" d="%s" stroke="%s"/>'
+                         % (at, ring, t["fg"]))
+    doc.add(*halos)
+    doc.add('<path class="scn" d="M%s %sH%s" stroke="%s" stroke-width="1.5"/>'
+            % (num(cx0 + 16), num(y_top), num(cx1 - 10), t["fg50"]))
+    motion(doc, "@keyframes scn{0%%{opacity:0;transform:translateY(0)}4%%{opacity:1;transform:translateY(0)}"
+                "66%%{opacity:1;transform:translateY(%spx)}72%%,100%%{opacity:0;transform:translateY(%spx)}}"
+                ".scn{opacity:0;animation:scn 9s linear infinite}"
+                "@keyframes hl{0%%{opacity:0}1.5%%{opacity:1}10%%,100%%{opacity:0}}"
+                ".hl{opacity:0;animation:hl 9s ease-out infinite both}"
+                % (num(y_bot - y_top), num(y_bot - y_top)))
     # the corner cut says which way up the card goes; it is the only warm mark here
-    doc.add('<path d="M%s %sL%s %s" stroke="%s" stroke-width="2"/>'
+    doc.add('<path class="er" d="M%s %sL%s %s" stroke="%s" stroke-width="2"/>'
             % (num(cx0), num(cy0 + 26), num(cx0 + 26), num(cy0), t["ember"]))
+    motion(doc, EMBER)
     doc.text("WORKS × TOOLS", cx0 + 22, cy1 - 14, 8, t["fg50"])
     doc.text("SIDDHUPERURI · 2026", cx1 - 16, cy1 - 14, 8, t["fg50"], anchor="end")
     return doc.svg()
@@ -929,6 +994,13 @@ def trace(t, data):
         doc.text("FIRST ACTIVE DAY " + fmt(iso), fx + side * 38, base - 56, 9, t["fg72"],
                  anchor="end" if side < 0 else "start")
     ember(doc, x1 + 16, base, 4.5, 10)
+    # a curtain of ground with a pen at its edge draws back across the year, then rests
+    cw = x1 + 32 - (x0 - 6)
+    doc.add('<g class="cur"><rect x="%s" y="%s" width="%s" height="162" fill="%s"/>%s</g>'
+            % (num(x0 - 6), base - 154, num(cw), t["bg"], vline(x0 - 6, base - 154, base + 8, t["fg50"])))
+    motion(doc, "@keyframes cur{0%%{transform:translateX(0)}62%%,100%%{transform:translateX(%spx)}}"
+                ".cur{transform:translateX(%spx);animation:cur 12s cubic-bezier(.3,0,.7,1) infinite both}"
+                % (num(cw + 120), num(cw + 120)))
     doc.text("TODAY", x1 + 16, base + 34, 8, t["fg72"], anchor="middle")
     doc.text("%d CONTRIBUTIONS" % total, M, 128, 20, t["fg"], weight=1.7)
     doc.text("ON %d DAYS OF %d" % (active, len(days)), M, 156, 11, t["fg72"])
@@ -951,7 +1023,8 @@ def end(t):
     doc.add('<g class="sw">')
     for i, ln in enumerate(SENTENCE):
         w = S.text_width(ln, 0.3) * C
-        word(doc, ln, (W - w) / 2, 168 + i * 74, C, "sketch", seed=300 + i * 40, weight=1.5, passes=2)
+        word(doc, ln, (W - w) / 2, 168 + i * 74, C, "sketch", seed=300 + i * 40, weight=1.5, passes=2,
+             cls="rd l%d" % i)
     doc.add("</g>")
     ember(doc, W / 2, 360, 5, 12)
     doc.text("THE WISH IS AT THE BOTTOM OF THE WELL", W / 2, 398, 9, t["fg50"], anchor="middle")
@@ -960,7 +1033,9 @@ def end(t):
     doc.text("SET IN ITS OWN ALPHABET · NO FONT FILES", R, H - 30, 11, t["fg50"], anchor="end")
     # the room breathes, very slowly
     motion(doc, "@keyframes sw{from{transform:translateX(-5px)}to{transform:translateX(5px)}}"
-                ".sw{animation:sw 11s ease-in-out infinite alternate}")
+                ".sw{animation:sw 11s ease-in-out infinite alternate}" + REDRAW +
+                ".rd{animation:rd 16s ease-in-out infinite both}.l1{animation-delay:.7s}"
+                ".l2{animation-delay:1.4s}")
     return doc.svg()
 
 
@@ -984,14 +1059,26 @@ def wrap_caps(text, cap, width, track=0.32):
 
 
 def rich(doc, segs, x, y, cap, anchor="start", weight=None):
-    """One line of type in several tones: [(text, colour), ...]."""
+    """One line of type in several tones: [(text, colour[, class]), ...]."""
     gap = (S.G[" "]["w"] + 2 * 0.32) * cap        # a word space between segments
-    widths = [S.text_width(s) * cap for s, _ in segs]
+    widths = [S.text_width(sg[0]) * cap for sg in segs]
     total = sum(widths) + gap * (len(segs) - 1)
     x -= total / 2 if anchor == "middle" else 0
-    for (s, c), w in zip(segs, widths):
-        doc.text(s, x, y, cap, c, weight=weight)
+    for sg, w in zip(segs, widths):
+        doc.text(sg[0], x, y, cap, sg[1], weight=weight, cls=sg[2] if len(sg) > 2 else "")
         x += w + gap
+
+
+def text_arrow(doc, s, x, y, cap, color, weight=None, cls="lr"):
+    """A run whose trailing arrow nudges toward where it points."""
+    if s[-1] not in "→↓":
+        return doc.text(s, x, y, cap, color, weight=weight, cls=cls)
+    w = doc.text(s[:-1].rstrip(), x, y, cap, color, weight=weight, cls=cls)
+    doc.add('<g class="%s">' % ("ndd" if s[-1] == "↓" else "nd"))
+    doc.text(s[-1], x + w + (S.G[" "]["w"] + 0.64) * cap, y, cap, color, weight=weight, cls=cls)
+    doc.add("</g>")
+    motion(doc, NUDGE)
+    return w
 
 
 LABELS = {
@@ -1051,28 +1138,31 @@ def label(t, key):
     d = LABELS[key]
     doc = Doc(t, 0, "%s: %s" % (d["name"].title(), d["kind"].lower()), d["body"].capitalize(),
               ground=False)
-    doc.add(hline(M, R, 8, t["fg20"]))
-    doc.text(d["pl"], M, 40, 10, t["fg50"])
+    doc.add(hline(M, R, 8, t["fg20"], extra=' class="ln" pathLength="1"'))
+    doc.text(d["pl"], M, 40, 10, t["fg50"], cls="lr")
     ly = 72
-    doc.text(d["name"], M, ly, 21, t["fg"], weight=2)
+    doc.text(d["name"], M, ly, 21, t["fg"], weight=2, cls="lr")
     ly += 28
     for ln in wrap_caps(d["kind"], 11, LC - M - 48):
-        doc.text(ln, M, ly, 11, t["fg72"])
+        doc.text(ln, M, ly, 11, t["fg72"], cls="lr")
         ly += 19
-    doc.text(d["stage"], M, ly + 6, 10, t["fg50"])
+    doc.text(d["stage"], M, ly + 6, 10, t["fg50"], cls="lr")
     ry = 72
     for ln in wrap_caps(d["body"], 15, R - LC):
-        doc.text(ln, LC, ry, 15, t["fg72"], weight=1.45)
+        doc.text(ln, LC, ry, 15, t["fg72"], weight=1.45, cls="lr")
         ry += 27
     ry += 14
     kw = 150
     for k, v in d["rows"]:
-        doc.text(k, LC, ry, 9, t["fg50"])
+        doc.text(k, LC, ry, 9, t["fg50"], cls="lr")
         for ln in wrap_caps(v, 11, R - LC - kw):
-            doc.text(ln, LC + kw, ry, 11, t["fg72"])
+            text_arrow(doc, ln, LC + kw, ry, 11, t["fg72"])
             ry += 20
         ry += 6
     doc.h = int(max(ly + 6, ry - 6) + 22)
+    # the label is set as the page arrives: its rule draws, its words appear
+    motion(doc, DRAW + ".ln{animation:dw 1.2s cubic-bezier(.2,.7,.1,1) both}"
+                ".lr{animation:fi 1s ease .25s both}")
     return doc.svg()
 
 
@@ -1091,10 +1181,10 @@ def statement(t):
     rich(doc, [("JAI SAI SIDDHARTHA PERURI", fg), ("·", dim), ("COMPUTER SCIENCE", t["fg72"]),
                ("·", dim), ("INDIA", t["fg72"])], cx, y, 12, "middle")
     y += 78
-    for segs in ([("A HAND", dim), ("SKETCHES", fg), ("IT. A MODEL", dim), ("INFERS", fg),
-                  ("IT. A GRID", dim), ("COMPUTES", fg), ("IT.", dim)],
-                 [("A LAYOUT", dim), ("ARRANGES", fg), ("IT. AN INSTRUMENT", dim), ("MEASURES", fg),
-                  ("IT.", dim)],
+    for segs in ([("A HAND", dim), ("SKETCHES", fg, "v v0"), ("IT. A MODEL", dim),
+                  ("INFERS", fg, "v v1"), ("IT. A GRID", dim), ("COMPUTES", fg, "v v2"), ("IT.", dim)],
+                 [("A LAYOUT", dim), ("ARRANGES", fg, "v v3"), ("IT. AN INSTRUMENT", dim),
+                  ("MEASURES", fg, "v v4"), ("IT.", dim)],
                  [("FROM ONE PLACE, THEY ADD UP TO A NAME.", fg)]):
         rich(doc, segs, cx, y, 17, "middle", weight=1.55)
         y += 36
@@ -1114,16 +1204,24 @@ def statement(t):
         ix = cx + (i - 1.5) * step
         gx = ix - 76
         if stage == "sketch":
-            stage_sketch(doc, "A", gx, y + C, C, 5, weight=1.2, wobble=2.2)
+            stage_sketch(doc, "A", gx, y + C, C, 5, weight=1.2, wobble=2.2, cls="rd")
         elif stage == "field":
-            stage_field(doc, "A", gx, y + C, C, 6, density=1.5)
+            stage_field(doc, "A", gx, y + C, C, 6, density=1.5, cls="sh")
         elif stage == "design":
-            stage_design(doc, "A", gx, y + C, C, weight=1.4)
+            stage_design(doc, "A", gx, y + C, C, weight=1.4, cls="kd")
         else:
             stage_measure(doc, "A", gx, y + C, C, 0.13 * C)
         doc.text(name, ix - 24, y + 14, 11, fg)
         doc.text(means, ix - 24, y + 33, 9, dim)
     doc.h = int(y + C + 26)
+    motion(doc, "@keyframes vv{0%%,9%%,100%%{stroke:%s}3.5%%{stroke:%s}}"
+                ".v{animation:vv 10s ease-in-out infinite}.v1{animation-delay:1.1s}"
+                ".v2{animation-delay:2.2s}.v3{animation-delay:3.3s}.v4{animation-delay:4.4s}"
+                % (fg, t["ember"]) + REDRAW + SHIMMER +
+                ".rd{animation:rd 12s ease-in-out infinite both}"
+                ".sh.fn{animation:shn 3.4s ease-in-out infinite alternate}"
+                ".sh.fl{animation:shl 4.8s ease-in-out infinite alternate}"
+                ".kd{animation:rd 12s ease-in-out 1.2s infinite both}.kd.c{animation:none}")
     return doc.svg()
 
 
@@ -1135,27 +1233,28 @@ def end_label(t):
               "light and dark printed from one source.", ground=False)
     cx = W / 2
     doc.text("THE LAST SENTENCE OF SIDDHARTHA, LEFT AS A SKETCH: NOTHING MEASURES IT.", cx, 40, 13,
-             t["fg72"], anchor="middle")
-    doc.text("THERE IS ONE MORE, AT THE BOTTOM OF THE WELL.", cx, 64, 13, t["fg72"], anchor="middle")
+             t["fg72"], anchor="middle", cls="lr")
+    doc.text("THERE IS ONE MORE, AT THE BOTTOM OF THE WELL.", cx, 64, 13, t["fg72"], anchor="middle",
+             cls="lr")
     doc.add(hline(cx - 60, cx + 60, 100, t["fg20"]))
     doc.text("PLATES DRAWN BY TOOLS/BUILD_ASSETS.PY IN THE ARTWORK'S OWN STROKE ALPHABET", cx, 132, 9,
-             t["fg50"], anchor="middle")
+             t["fg50"], anchor="middle", cls="lr")
     doc.text("NO FONT FILES · NO SCRIPTS · NO THIRD-PARTY SERVICES · LIGHT AND DARK FROM ONE SOURCE",
-             cx, 152, 9, t["fg50"], anchor="middle")
+             cx, 152, 9, t["fg50"], anchor="middle", cls="lr")
     doc.h = 176
+    motion(doc, DRAW + ".lr{animation:fi 1.2s ease .2s both}")
     return doc.svg()
 
 
-LINKS = {"artwork": "THE ARTWORK →", "linkedin": "LINKEDIN →", "behance": "BEHANCE →",
-         "card-text": "READ THE CARD AS TEXT ↓"}
+LINKS = {"artwork": ("THE ARTWORK →", "The artwork"), "linkedin": ("LINKEDIN →", "LinkedIn"),
+         "behance": ("BEHANCE →", "Behance"), "card-text": ("READ THE CARD AS TEXT ↓", "Read the card as text")}
 
 
 def link(t, key):
-    text, cap = LINKS[key], 12
+    (text, title), cap = LINKS[key], 12
     w = S.text_width(text) * cap
-    doc = Doc(t, 34, text.replace(" →", "").title(), "Link: " + text.replace(" →", "").title(),
-              w=int(w + 10), ground=False)
-    doc.text(text, 5, 20, cap, t["fg"], weight=1.45)
+    doc = Doc(t, 38, title, "Link: " + title, w=int(w + 12), ground=False)
+    text_arrow(doc, text, 5, 20, cap, t["fg"], weight=1.45, cls="")
     doc.add(hline(5, 5 + w, 28, t["fg34"]))
     return doc.svg()
 
