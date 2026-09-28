@@ -6,10 +6,10 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/hero-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="./assets/hero-light.svg">
-  <img alt="SIDDHARTHA, set in two rows, SIDDH over ARTHA, split at the A the two halves share. Each column draws its letters a different way: sketched by hand, inferred as a cloud of points, computed as a lattice of cells, arranged as construction geometry, measured as solid strokes with dimension lines. An ember sits in the shared A." src="./assets/hero-dark.svg" width="100%">
+  <img alt="JAI SAI SIDDHARTHA on one line, resolving as it is read: JAI sketched by hand, SAI inferred as a cloud of points, and SIDDHARTHA whole and measured, over a computed grid and inside its construction geometry, with dimension lines. An ember sits in the A that SIDDHA and ARTHA share." src="./assets/hero-dark.svg" width="100%">
 </picture>
 
-<p align="center"><sub><b>SIDDHARTHA PERURI</b> &nbsp;·&nbsp; COMPUTER SCIENCE &nbsp;·&nbsp; INDIA<br>
+<p align="center"><sub><b>JAI SAI SIDDHARTHA PERURI</b> &nbsp;·&nbsp; COMPUTER SCIENCE &nbsp;·&nbsp; INDIA<br>
 <a href="https://github.com/Siddhuperuri/miracle">THE ARTWORK</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/siddharthaperuri">LINKEDIN</a> &nbsp;·&nbsp; <a href="https://www.behance.net/siddharperuri">BEHANCE</a></sub></p>
 
 <br>

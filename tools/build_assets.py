@@ -34,7 +34,6 @@ LOGIN = "Siddhuperuri"
 W, M = 1280, 72
 CW = W - 2 * M
 R = W - M
-COL = CW / 5.0
 
 BASE = {
     "dark": dict(bg="#0A0908", fg="#E9E2D3", ember="#FF5C24"),
@@ -190,7 +189,7 @@ def _to_screen(x, y, C):
     return lambda gx, gy: (x + gx * C, y - gy * C)
 
 
-def stage_sketch(doc, ch, x, y, C, seed, weight=1.7, passes=3, cls=""):
+def stage_sketch(doc, ch, x, y, C, seed, weight=1.7, passes=3, wobble=1.0, cls=""):
     """TRACE - loose hand passes with overshoot. The piece's first, nearest layer."""
     t, g, rng = doc.t, S.G[ch], random.Random(seed)
     free = S.free_ends(g["s"])
@@ -202,8 +201,8 @@ def stage_sketch(doc, ch, x, y, C, seed, weight=1.7, passes=3, cls=""):
             rs = S.resample(pts, 6.0 / C)
             lam1, lam2 = rng.uniform(0.7, 1.1), rng.uniform(0.22, 0.34)
             ph1, ph2 = rng.uniform(0, 6.3), rng.uniform(0, 6.3)
-            a1 = (0.010 + 0.005 * p) * C
-            sx, sy = rng.gauss(0, 0.006 * C), rng.gauss(0, 0.006 * C)
+            a1 = (0.010 + 0.005 * p) * C * wobble
+            sx, sy = rng.gauss(0, 0.006 * C * wobble), rng.gauss(0, 0.006 * C * wobble)
             s_acc, prev, out = 0.0, None, []
             for px, py, tx, ty in rs:
                 if prev:
@@ -235,8 +234,9 @@ def stage_field(doc, ch, x, y, C, seed, density=1.0, cls=""):
     for st in g["s"]:
         samples += S.resample(S.stroke_points(st), 0.004)
     total = sum(S.length(S.stroke_points(st)) for st in g["s"]) * C
-    pops = (("t", total / 0.95 * density, 0.020, t["fg"], 2.5),
-            ("l", total / 4.2 * density, 0.065, t["fg50"], 2.0))
+    k = min(1.0, C / 96.0)
+    pops = (("t", total / 0.95 * density, 0.020, t["fg"], max(1.5, 2.5 * k)),
+            ("l", total / 4.2 * density, 0.065, t["fg50"], max(1.3, 2.0 * k)))
     for key, n, sigma, col, dia in pops:
         d = []
         for _ in range(int(n)):
@@ -251,11 +251,11 @@ def stage_field(doc, ch, x, y, C, seed, density=1.0, cls=""):
     for _ in range(int(55 * density)):
         d.append("M%s %sh0" % (num(x + rng.uniform(-0.12, gw + 0.12) * C),
                                num(y - rng.uniform(-0.08, 1.08) * C)))
-    doc.add('<path%s d="%s" stroke="%s" stroke-width="1.8"/>'
-            % (' class="%s fn"' % cls if cls else "", "".join(d), t["fg34"]))
+    doc.add('<path%s d="%s" stroke="%s" stroke-width="%s"/>'
+            % (' class="%s fn"' % cls if cls else "", "".join(d), t["fg34"], num(max(1.2, 1.8 * k))))
 
 
-def stage_lattice(doc, ch, x, y, C, cell, half, origin, cls="", empties=True):
+def stage_lattice(doc, ch, x, y, C, cell, half, origin, cls="", empties=True, fill=True):
     """LATTICE - the letter quantised into computed cells on a shared grid."""
     t, g = doc.t, S.G[ch]
     polys = [S.stroke_points(st) for st in g["s"]]
@@ -263,7 +263,7 @@ def stage_lattice(doc, ch, x, y, C, cell, half, origin, cls="", empties=True):
     pad = half + cell
     i0, i1 = math.floor((x - pad - ox) / cell), math.ceil((x + g["w"] * C + pad - ox) / cell)
     j0, j1 = math.floor((y - C - pad - oy) / cell), math.ceil((y + pad - oy) / cell)
-    full, empty, s = [], [], cell - 2.2
+    full, empty, s = [], [], cell * 0.81
     for i in range(i0, i1):
         for j in range(j0, j1):
             cx, cy = ox + (i + 0.5) * cell, oy + (j + 0.5) * cell
@@ -276,14 +276,18 @@ def stage_lattice(doc, ch, x, y, C, cell, half, origin, cls="", empties=True):
             elif empties and -0.02 <= p[0] <= g["w"] + 0.02 and -0.02 <= p[1] <= 1.02:
                 empty.append("M%s %sh0" % (num(cx), num(cy)))
     if empty:
-        doc.add('<path d="%s" stroke="%s" stroke-width="1.6"/>' % ("".join(empty), t["fg20"]))
-    doc.add('<path%s d="%s" fill="%s"/>' % (' class="%s"' % cls if cls else "", "".join(full), t["fg"]))
+        doc.add('<path%s d="%s" stroke="%s" stroke-width="1.6"/>'
+                % ("" if fill else ' class="%s"' % cls, "".join(empty), t["fg20"]))
+    if fill:
+        doc.add('<path%s d="%s" fill="%s"/>' % (' class="%s"' % cls if cls else "", "".join(full),
+                                              t["fg"]))
 
 
-def stage_design(doc, ch, x, y, C, weight=2.6, cls="", construction=True):
+def stage_design(doc, ch, x, y, C, weight=2.6, cls="", construction=True, strokes=True):
     """DESIGN - the exact geometry of the letter, with construction and survey ticks."""
     t, g = doc.t, S.G[ch]
     to = _to_screen(x, y, C)
+    n = 7 * min(1.0, C / 96.0)
     if construction:
         cons, nodes, seen = [], [], set()
         for st in g["s"]:
@@ -293,7 +297,9 @@ def stage_design(doc, ch, x, y, C, weight=2.6, cls="", construction=True):
                     X, Y = to(cx, cy)
                     cons.append('<ellipse cx="%s" cy="%s" rx="%s" ry="%s"/>'
                                 % (num(X), num(Y), num(rx * C), num(ry * C)))
-                    nodes.append("M%s %sh10M%s %sv10" % (num(X - 5), num(Y), num(X), num(Y - 5)))
+                    c = n * 5 / 7        # half the centre cross: 5 at full size
+                    nodes.append("M%s %sh%sM%s %sv%s" % (num(X - c), num(Y), num(2 * c),
+                                                          num(X), num(Y - c), num(2 * c)))
                 else:
                     for p in pc[1]:
                         key = (round(p[0], 3), round(p[1], 3))
@@ -301,10 +307,13 @@ def stage_design(doc, ch, x, y, C, weight=2.6, cls="", construction=True):
                             continue
                         seen.add(key)
                         X, Y = to(*p)
-                        nodes.append("M%s %sh7v7h-7z" % (num(X - 3.5), num(Y - 3.5)))
+                        nodes.append("M%s %sh%sv%sh-%sz" % (num(X - n / 2), num(Y - n / 2),
+                                                            num(n), num(n), num(n)))
         doc.add('<g%s stroke="%s">%s</g>' % (' class="%s c"' % cls if cls else "", t["fg20"], "".join(cons)),
                 '<path%s d="%s" stroke="%s"/>' % (' class="%s c"' % cls if cls else "",
                                                  "".join(nodes), t["fg50"]))
+    if not strokes:
+        return
     d = "".join(S.stroke_d(st, x, y, C) for st in g["s"])
     for a, b in S.ticks_for(g["s"]):
         (ax, ay), (bx, by) = to(*a), to(*b)
@@ -353,100 +362,108 @@ def measured_width(ch, C, weight):
 
 
 # ---------------------------------------------------------------------- hero
-STAGES = [("01", "SKETCHES", "TRACE"), ("02", "INFERS", "FIELD"), ("03", "COMPUTES", "LATTICE"),
-          ("04", "ARRANGES", "DESIGN"), ("05", "MEASURES", "INSTRUMENT")]
-ROWS = ["SIDDH", "ARTHA"]
+NAME = "JAI SAI SIDDHARTHA"
+# The name resolves as it is read. JAI is sketched, SAI inferred; SIDDHARTHA is kept
+# whole, and it is where the last three layers add up: a computed grid behind it,
+# construction geometry around it, the measured letter on top.
+PARTS = [((0, 3), "01", "SKETCHES", "TRACE"), ((4, 7), "02", "INFERS", "FIELD"),
+         ((8, 18), "03 – 05", "COMPUTES · ARRANGES · MEASURES", "LATTICE · DESIGN · INSTRUMENT")]
+DOOR = 13
 
 
 def hero(t):
-    C, H = 188, 792
-    caps = (206, 486)                     # cap line of each row
-    doc = Doc(t, H, "Siddhartha Peruri",
-              "The name SIDDHARTHA set in two rows, SIDDH over ARTHA, split at the A that SIDDHA "
-              "and ARTHA share. Each of the five columns draws its two letters a different way: "
-              "sketched by hand, inferred as a cloud of points, computed as a lattice of cells, "
-              "arranged as exact construction geometry, and measured as solid strokes with "
-              "dimension lines. An ember sits in the counter of the shared A.")
+    H, track, pad, cap = 410, 0.22, 10, 206
+    part = {i: k for k, ((a, b), *_) in enumerate(PARTS) for i in range(a, b)}
+    # a measured letter is inset by its own stroke, so it is 0.87w + 0.13 wide
+    widths = [0.87 * S.G[ch]["w"] + 0.13 if part.get(i) == 2 else S.G[ch]["w"]
+              for i, ch in enumerate(NAME)]
+    C = (CW - 2 * pad) / (sum(widths) + track * (len(NAME) - 1))
+    base, wm = cap + C, 0.13 * C
+    xs, x = [], M + pad
+    for w in widths:
+        xs.append(x)
+        x += (w + track) * C
+    span = [(xs[a], xs[b - 1] + widths[b - 1] * C) for (a, b), *_ in PARTS]
+
+    doc = Doc(t, H, "Jai Sai Siddhartha",
+              "The name JAI SAI SIDDHARTHA on one line, resolving as it is read: JAI sketched by "
+              "hand, SAI inferred as a cloud of points, and SIDDHARTHA whole and measured, over a "
+              "computed grid and inside its construction geometry, with dimension lines. An ember "
+              "sits in the A that SIDDHA and ARTHA share.")
     doc.add(crops(t, W, H))
 
-    # frame: metadata, rules, the instrument lines every row sits on
+    # frame: metadata, rules, the instrument lines the name sits on
     doc.text("PL. I", M, 62, 11, t["fg"], cls="rv")
-    doc.text("SIDDHARTHA PERURI", M + 66, 62, 11, t["fg72"], cls="rv")
+    doc.text("PERURI JAI SAI SIDDHARTHA", M + 66, 62, 11, t["fg72"], cls="rv")
     doc.text("FIVE LAYERS · ONE VANTAGE", R, 62, 11, t["fg50"], anchor="end", cls="rv")
     doc.add(hline(M, R, 84, t["fg20"], extra=' class="ln" pathLength="1"'))
-    for i in range(6):
-        doc.add(vline(M + i * COL, 96, 700, t["fg12"], extra=' class="ln" pathLength="1"'))
-    for i, (n, verb, layer) in enumerate(STAGES):
-        cx = M + i * COL + 16
-        doc.text(n, cx, 126, 10, t["fg50"], cls="rv")
-        doc.text(verb, cx + 26, 126, 13, t["fg"], weight=1.45, cls="rv")
-        doc.text(layer, cx + 26, 148, 9, t["fg50"], cls="rv")
-    for cap in caps:
-        for yy, lab in ((cap, "1"), (cap + C, "0")):
-            doc.add(hline(M, R, yy, t["fg20"], extra=' class="ln" pathLength="1"'))
-            doc.text(lab, M - 12, yy + 4, 8, t["fg50"], anchor="end", cls="rv")
-        doc.add(hline(M, R, cap + C / 2, t["fg7"], extra=' stroke-dasharray="2 6"'))
+    cuts = [M] + [(span[k][1] + span[k + 1][0]) / 2 for k in range(len(PARTS) - 1)] + [R]
+    for cx in cuts:
+        doc.add(vline(cx, 164, base + 50, t["fg12"], extra=' class="ln" pathLength="1"'))
+    for (_, n, verb, layer), (a, b) in zip(PARTS, span):
+        mid = (a + b) / 2
+        nw, vw = S.text_width(n) * 10, S.text_width(verb) * 12
+        left = mid - (nw + 8 + vw) / 2
+        doc.text(n, left, 128, 10, t["fg50"], cls="rv")
+        doc.text(verb, left + nw + 8, 128, 12, t["fg"], weight=1.4, cls="rv")
+        doc.text(layer, mid, 147, 8, t["fg50"], anchor="middle", cls="rv")
+    for yy, lab in ((cap, "1"), (base, "0")):
+        doc.add(hline(M, R, yy, t["fg20"], extra=' class="ln" pathLength="1"'))
+        doc.text(lab, M - 12, yy + 4, 8, t["fg50"], anchor="end", cls="rv")
+    doc.add(hline(M, R, cap + C / 2, t["fg7"], extra=' stroke-dasharray="2 6"'))
 
-    # the name, one stage per column
-    for r, word in enumerate(ROWS):
-        base = caps[r] + C
-        for i, ch in enumerate(word):
-            g = S.G[ch]
-            col_cx = M + (i + 0.5) * COL
-            seed = 11 + r * 5 + i
-            if i == 4:
-                wm = 25
-                x = col_cx - measured_width(ch, C, wm) / 2
-                stage_measure(doc, ch, x, base, C, wm, cls="s5")
-                continue
-            x = col_cx - g["w"] * C / 2
-            if i == 0:
-                stage_sketch(doc, ch, x, base, C, seed, cls="s1")
-            elif i == 1:
-                stage_field(doc, ch, x, base, C, seed, cls="s2")
-            elif i == 2:
-                stage_lattice(doc, ch, x, base, C, C / 16, 12.5, (M, caps[r]), cls="s3")
-            elif i == 3:
-                stage_design(doc, ch, x, base, C, cls="s4")
+    # the name, resolving as it is read
+    for i, ch in enumerate(NAME):
+        if ch == " ":
+            continue
+        k, x = part[i], xs[i]
+        if k == 0:
+            stage_sketch(doc, ch, x, base, C, 11 + i, weight=1.35, wobble=1.9, cls="s1")
+        elif k == 1:
+            stage_field(doc, ch, x, base, C, 11 + i, cls="s2")
+        else:
+            # computed, arranged and measured, in one place
+            stage_lattice(doc, ch, x, base, C, C / 11, 0.07 * C, (M, cap), cls="s3", fill=False)
+            stage_design(doc, ch, x + wm / 2, base - wm / 2, C - wm, cls="s4", strokes=False)
+            stage_measure(doc, ch, x, base, C, wm, cls="s5")
 
-    # instrument: true measurements of the measured column (cap-height units)
-    wm = 25
-    hx = M + 4.5 * COL - measured_width("H", C, wm) / 2
-    hw = measured_width("H", C, wm)
-    dim_h(doc, hx, hx + hw, caps[0] - 20, "%.2f" % (hw / C), ext_from=caps[0] - 4)
-    doc.add(line(hx, caps[0] + C + 16, hx + wm, caps[0] + C + 16, t["fg50"]),
-            vline(hx, caps[0] + C + 6, caps[0] + C + 22, t["fg50"]),
-            vline(hx + wm, caps[0] + C + 6, caps[0] + C + 22, t["fg50"]))
-    doc.text("%.2f" % (wm / C), hx + wm + 8, caps[0] + C + 20, 9, t["fg72"])
-    ax = M + 4.5 * COL + measured_width("A", C, wm) / 2
-    dim_v(doc, ax + 16, caps[1], caps[1] + C, "1.00")
-    doc.add(reg(t, R - 14, caps[0] - 34, 5), reg(t, R - 14, caps[1] + C + 34, 5))
+    # instrument: true measurements of the resolved word, in cap heights
+    a, b = span[2]
+    dim_h(doc, a, b, cap - 16, "%.2f" % ((b - a) / C), ext_from=cap - 4)
+    hx = xs[16]
+    doc.add(hline(hx, hx + wm, base + 15, t["fg50"]),
+            vline(hx, base + 8, base + 22, t["fg50"]), vline(hx + wm, base + 8, base + 22, t["fg50"]))
+    doc.text("%.2f" % (wm / C), hx + wm + 7, base + 19, 8, t["fg72"])
+    dim_v(doc, b + 14, cap, base, "1.00", cap=8)
+    doc.add(reg(t, R - 6, cap - 36, 4.5), reg(t, R - 6, base + 36, 4.5))
 
     # the door: SIDDHA + ARTHA share one A, and the ember waits in its counter
-    ga = S.G["A"]
-    door_x = M + 0.5 * COL - ga["w"] * C / 2
-    ex, ey = door_x + ga["anchor"][0] * C, caps[1] + C - 0.53 * C
-    doc.add('<circle class="em" cx="%s" cy="%s" r="7" fill="%s"/>' % (num(ex), num(ey), t["ember"]),
-            '<circle class="er" cx="%s" cy="%s" r="15" stroke="%s"/>' % (num(ex), num(ey), t["ember"]))
-    doc.text("↑ SIDDHA + ARTHA SHARE THIS A", door_x, caps[1] + C + 34, 9, t["fg72"], cls="rv")
+    # The A's anchor is the incentre of its counter; the ring is sized to the circle
+    # that fits inside the drawn counter (inradius 0.19 of the skeleton, less half a stroke).
+    ga, sk = S.G["A"], C - wm
+    ex, ey = xs[DOOR] + wm / 2 + ga["anchor"][0] * sk, base - wm / 2 - ga["anchor"][1] * sk
+    fit = 0.19 * sk - wm / 2
+    doc.add('<circle class="em" cx="%s" cy="%s" r="%s" fill="%s"/>' % (num(ex), num(ey), num(fit * 0.45), t["ember"]),
+            '<circle class="er" cx="%s" cy="%s" r="%s" stroke="%s"/>' % (num(ex), num(ey), num(fit - 1), t["ember"]))
+    doc.text("↑ SIDDHA + ARTHA SHARE THIS A", ex - 4, base + 38, 9, t["fg72"], cls="rv")
 
-    doc.add(hline(M, R, 720, t["fg20"], extra=' class="ln" pathLength="1"'))
-    doc.text("THE NAME IS WHAT THE PARTS ADD UP TO", M, 752, 11, t["fg72"], cls="rv")
-    doc.text("INDIA · UTC +05:30", R, 752, 11, t["fg50"], anchor="end", cls="rv")
+    doc.add(hline(M, R, H - 60, t["fg20"], extra=' class="ln" pathLength="1"'))
+    doc.text("THE NAME IS WHAT THE PARTS ADD UP TO", M, H - 28, 11, t["fg72"], cls="rv")
+    doc.text("INDIA · UTC +05:30", R, H - 28, 11, t["fg50"], anchor="end", cls="rv")
 
     # one-shot reveal, in the order a letter becomes: sketched, inferred, computed,
     # arranged, measured. The hero is above the fold, so it is seen while it plays.
     motion(doc, DRAW + EMBER + (
-        "@keyframes up{from{opacity:0;transform:translateY(8px)}}"
+        "@keyframes up{from{opacity:0;transform:translateY(6px)}}"
         ".ln{animation:dw 1s %(e)s both}"
         ".rv{animation:fi .8s %(e)s .1s both}"
         ".s1{animation:dw 1.1s %(e)s both}.s1.p0{animation-delay:.25s}"
         ".s1.p1{animation-delay:.4s}.s1.p2{animation-delay:.55s}"
         ".s2{animation:fi 1s ease-out both}.s2.fn{animation-delay:.55s}"
         ".s2.fl{animation-delay:.75s}.s2.ft{animation-delay:.95s}"
-        ".s3{animation:fi .5s steps(4) 1.3s both}"
-        ".s4{animation:dw 1s %(e)s 1.55s both}.s4.c{animation:fi 1s ease 1.45s both}"
-        ".s5{animation:up .7s %(e)s 2s both}"
+        ".s3{animation:fi .6s steps(4) 1.2s both}"
+        ".s4.c{animation:fi .8s ease 1.5s both}"
+        ".s5{animation:up .7s %(e)s 1.9s both}"
         ".em{animation:fi .6s ease 2.6s both}"
         ".er{animation-delay:3.2s}" % {"e": EASE}))
     return doc.svg()

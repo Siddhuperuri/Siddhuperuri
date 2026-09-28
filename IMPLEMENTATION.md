@@ -45,7 +45,10 @@ When that changes, change the stage in the plate function and the legend line in
 the README. HELIOS going public, for example, means `word(..., "design")` in
 `helios()`, plus a link and the new stage in its caption.
 
-**Grid.** 1280 wide, 72 margin; the hero's five columns (227 px) set the rhythm.
+**Grid.** 1280 wide, 72 margin. The hero sets JAI SAI SIDDHARTHA on one line,
+resolving as it is read: JAI sketched, SAI inferred, and SIDDHARTHA kept whole as
+the place where computed, arranged and measured add up. The ember sits at the
+incentre of the A that SIDDHA and ARTHA share.
 Every plate shares `frame()`: crop marks, plate number, title, rule at y=84.
 
 ## Motion
@@ -54,8 +57,8 @@ CSS animation runs inside the `<img>`, because the same CSP allows inline styles
 Script does not. Everything stops under `prefers-reduced-motion`, and each plate is
 designed so its static state is the meaningful one.
 
-- **Hero:** a one-shot reveal in the order a letter becomes: sketched, inferred,
-  computed, arranged, measured. Then the ember starts to breathe.
+- **Hero:** a one-shot reveal in the order the name becomes: JAI is drawn, SAI
+  gathers, SIDDHARTHA's grid, construction and letters arrive. Then the ember breathes.
 - **ORBIT:** the ember pulse runs through the five built stages and dies at index.
   At rest it sits on index, the frontier.
 - **Last plate:** the sentence sways very slowly ("the room breathes").
@@ -74,7 +77,7 @@ stats service is involved, and the numbers on the plate are exactly the API's.
 | What | Where in `tools/build_assets.py` |
 |---|---|
 | Palette | `BASE` |
-| Hero columns, verbs | `STAGES`, `ROWS`, `hero()` |
+| Hero name and its parts | `NAME`, `PARTS`, `hero()` |
 | The artwork plate | `artwork()` |
 | ORBIT pipeline, what is built | `ORBIT_STAGES`, `ORBIT_BUILT` |
 | HELIOS facts, schematic | `helios()` |
