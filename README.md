@@ -47,10 +47,10 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/helios-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="./assets/helios-light.svg">
-  <img alt="Plate IV. HELIOS, solar energy intelligence, its name drawn as a cloud of points. A schematic day of solar irradiance: a clear-sky curve, a dashed forecast, a hatched prediction interval and observed points. XGBoost, hold-out R-squared 0.856, calibrated prediction intervals." src="./assets/helios-dark.svg" width="100%">
+  <img alt="Plate IV. HELIOS, solar energy intelligence, its name drawn as construction geometry. A schematic day of solar irradiance: a clear-sky curve, a dashed forecast, a hatched prediction interval and observed points. XGBoost, hold-out R-squared 0.856, calibrated prediction intervals." src="./assets/helios-dark.svg" width="100%">
 </picture>
 
-<p><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/helios-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/helios-light.svg"><img alt="HELIOS. Solar energy intelligence, 2026, inferred. Physics and machine learning for solar forecasting, with calibrated prediction intervals: a forecast that says how sure it is. Two interfaces over one engine, a one-second calculator and a fourteen-view analysis console. Model: XGBoost, hold-out R-squared 0.856. Made with Python, FastAPI, scikit-learn and Next.js. Not public yet; the curve above is a schematic, not its data." src="./assets/labels/helios-dark.svg" width="100%"></picture></p>
+<p><a href="https://github.com/Siddhuperuri/helios"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/helios-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/helios-light.svg"><img alt="HELIOS. Solar energy intelligence, 2026, arranged. Physics and machine learning for solar forecasting, with calibrated prediction intervals: a forecast that says how sure it is. Two interfaces over one engine, a one-second calculator and a fourteen-view analysis console. Model: XGBoost, hold-out R-squared 0.856. Made with Python, FastAPI, scikit-learn and Next.js. The curve above is a schematic, not its data. Source: Siddhuperuri/helios." src="./assets/labels/helios-dark.svg" width="100%"></picture></a></p>
 
 <br>
 

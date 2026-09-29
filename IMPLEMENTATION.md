@@ -37,12 +37,12 @@ only as far as its evidence goes:
 | Stage | Means | Now |
 |---|---|---|
 | measured | public, and it runs | SIDDHARTHA |
-| arranged | public, unfinished | ORBIT |
-| inferred | built, not yet public | HELIOS |
+| arranged | public, unfinished | ORBIT, HELIOS |
+| inferred | built, not yet public | none |
 | sketched | named, no code yet | SPECTRA, SYNCHRO, AETHER |
 
 When that changes, change the stage in the plate function and the legend line in
-the README. HELIOS going public, for example, means `word(..., "design")` in
+the README. HELIOS going public, for example, meant `word(..., "design")` in
 `helios()`, plus a link and the new stage in its caption.
 
 **Grid.** 1280 wide, 72 margin. The hero sets JAI SAI SIDDHARTHA on one line,

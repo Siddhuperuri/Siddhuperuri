@@ -690,14 +690,14 @@ def orbit(t):
 def helios(t):
     H = 470
     doc = Doc(t, H, "HELIOS, solar energy intelligence",
-              "Plate IV. The title HELIOS, drawn as a cloud of points: the work exists but is not "
-              "public. A schematic day of solar irradiance: a clear-sky curve, a dashed modelled "
+              "Plate IV. The title HELIOS, drawn as exact construction geometry: public code, "
+              "still in development. A schematic day of solar irradiance: a clear-sky curve, a dashed modelled "
               "forecast, a hatched band for the calibrated prediction interval, and observed "
               "points. Facts: physics plus machine learning, XGBoost with hold-out R-squared 0.856, "
               "calibrated prediction intervals.")
-    frame(doc, "PL. IV", "HELIOS — SOLAR ENERGY INTELLIGENCE", "IN DEVELOPMENT · NOT PUBLIC")
-    word(doc, "HELIOS", M, 214, 96, "field", seed=40, density=1.1, cls="sh")
-    doc.text("INFERRED: EXISTS, NOT YET PUBLIC", M, 256, 9, t["fg50"])
+    frame(doc, "PL. IV", "HELIOS — SOLAR ENERGY INTELLIGENCE", "IN DEVELOPMENT · PUBLIC")
+    word(doc, "HELIOS", M, 214, 96, "design", weight=2.6)
+    doc.text("ARRANGED: PUBLIC CODE, UNFINISHED", M, 256, 9, t["fg50"])
     facts = ["PHYSICS + MACHINE LEARNING", "XGBOOST · HOLD-OUT R² 0.856",
              "CALIBRATED PREDICTION INTERVALS", "ONE-SECOND CALCULATOR", "FOURTEEN-VIEW CONSOLE"]
     for i, f in enumerate(facts):
@@ -1101,13 +1101,14 @@ LABELS = {
               ("SHIPS WITH", "DOCKER · GITHUB ACTIONS · 24 DECISION RECORDS"),
               ("SOURCE", "SIDDHUPERURI/ORBIT →")]),
     "helios": dict(
-        pl="PL. IV", name="HELIOS", kind="SOLAR ENERGY INTELLIGENCE", stage="2026 · INFERRED",
+        pl="PL. IV", name="HELIOS", kind="SOLAR ENERGY INTELLIGENCE", stage="2026 · ARRANGED",
         body="PHYSICS AND MACHINE LEARNING FOR SOLAR FORECASTING, WITH CALIBRATED PREDICTION "
              "INTERVALS: A FORECAST THAT SAYS HOW SURE IT IS. TWO INTERFACES OVER ONE ENGINE, A "
              "ONE-SECOND CALCULATOR AND A FOURTEEN-VIEW ANALYSIS CONSOLE.",
         rows=[("MODEL", "XGBOOST · HOLD-OUT R² 0.856"),
               ("MADE WITH", "PYTHON, FASTAPI, SCIKIT-LEARN · NEXT.JS"),
-              ("SOURCE", "NOT PUBLIC YET. THE CURVE ABOVE IS A SCHEMATIC, NOT ITS DATA.")]),
+              ("THE CURVE", "A SCHEMATIC, NOT ITS DATA"),
+              ("SOURCE", "SIDDHUPERURI/HELIOS →")]),
     "not-yet": dict(
         pl="PL. V", name="NOT YET", kind="SPECTRA · SYNCHRO · AETHER", stage="SKETCHED",
         body="NAMED, NOT BUILT, AND NOT YET PRINTED AS PLATES. EACH HOLDS A QUESTION INSTEAD OF "
