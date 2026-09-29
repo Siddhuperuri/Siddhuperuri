@@ -1247,7 +1247,7 @@ def end_label(t):
 
 
 LINKS = {"artwork": ("THE ARTWORK →", "The artwork"), "linkedin": ("LINKEDIN →", "LinkedIn"),
-         "behance": ("BEHANCE →", "Behance"), "card-text": ("READ THE CARD AS TEXT ↓", "Read the card as text")}
+         "portfolio": ("PORTFOLIO →", "Portfolio"), "behance": ("BEHANCE →", "Behance"), "card-text": ("READ THE CARD AS TEXT ↓", "Read the card as text")}
 
 
 def link(t, key):

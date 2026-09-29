@@ -15,6 +15,8 @@
 <p align="center">
 <a href="https://github.com/Siddhuperuri/miracle"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/link-artwork-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/link-artwork-light.svg"><img alt="The artwork" src="./assets/labels/link-artwork-dark.svg" height="22"></picture></a>
 &nbsp;&nbsp;
+<a href="https://siddhartha-portfolio-nine.vercel.app"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/link-portfolio-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/link-portfolio-light.svg"><img alt="Portfolio" src="./assets/labels/link-portfolio-dark.svg" height="22"></picture></a>
+&nbsp;&nbsp;
 <a href="https://www.linkedin.com/in/siddharthaperuri"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/link-linkedin-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/link-linkedin-light.svg"><img alt="LinkedIn" src="./assets/labels/link-linkedin-dark.svg" height="22"></picture></a>
 &nbsp;&nbsp;
 <a href="https://www.behance.net/siddharperuri"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/link-behance-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/link-behance-light.svg"><img alt="Behance" src="./assets/labels/link-behance-dark.svg" height="22"></picture></a>
