@@ -1,6 +1,6 @@
 name: trace
 
-# Redraws PL. VII (the contribution trace) from the GitHub API once a day.
+# Redraws PL. VIII (the contribution trace) from the GitHub API once a day.
 # Only tools/trace.json and assets/trace-*.svg are touched; nothing is
 # committed when they have not changed.
 
