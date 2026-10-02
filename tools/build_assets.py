@@ -615,22 +615,23 @@ def artwork(t):
 
 # ------------------------------------------------------------ PL. III  ORBIT
 ORBIT_STAGES = ["PARSE", "NORMALIZE", "CHUNK", "EMBED", "INDEX", "RETRIEVAL", "CHAT"]
-ORBIT_BUILT = 5
+ORBIT_BUILT = 7
 
 
 def orbit(t):
     H = 470
     doc = Doc(t, H, "ORBIT, a knowledge and document platform",
               "Plate III. The title ORBIT, drawn as exact construction geometry: public code, "
-              "still in development. A pipeline of seven stages: parse, normalize, chunk, embed "
-              "and index are built and drawn solid; retrieval and chat do not exist yet and are "
-              "drawn dashed. An ember pulse runs through the built stages and stops at index. "
+              "still in development and not production-ready. A pipeline of seven stages: parse, "
+              "normalize, chunk, embed, index, retrieval and chat are all implemented and drawn "
+              "solid. An ember pulse runs through the stages and stops at chat. "
               "Below, the dependency direction enforced in CI: composition, api, application "
               "and infrastructure, domain, core.")
     frame(doc, "PL. III", "ORBIT — KNOWLEDGE AND DOCUMENT PLATFORM", "IN DEVELOPMENT · PUBLIC")
     word(doc, "ORBIT", M, 214, 96, "design", weight=2.6)
     doc.text("ARRANGED: PUBLIC CODE, UNFINISHED", M, 256, 9, t["fg50"])
-    doc.text("M0–M4 BUILT", M, 336, 11, t["fg72"])
+    doc.text("M0–M7 IMPLEMENTED", M, 312, 11, t["fg72"])
+    doc.text("NOT PRODUCTION-READY: ITS README SAYS SO", M, 336, 11, t["fg72"])
     doc.text("24 ARCHITECTURE DECISION RECORDS", M, 360, 11, t["fg72"])
     doc.text("FASTAPI · NEXT.JS · POSTGRESQL + PGVECTOR", M, 404, 10, t["fg50"])
     doc.text("CELERY · REDIS · MINIO · DOCKER", M, 424, 10, t["fg50"])
@@ -639,9 +640,10 @@ def orbit(t):
     x0, x1, py = 560, R - 20, 178
     step = (x1 - x0) / (len(ORBIT_STAGES) - 1)
     xs = [x0 + i * step for i in range(len(ORBIT_STAGES))]
-    doc.text("PROCESSING PIPELINE", x0, 128, 9, t["fg50"])
-    doc.add(hline(x0, xs[ORBIT_BUILT - 1], py, t["fg"], 1.6),
-            hline(xs[ORBIT_BUILT - 1], x1, py, t["fg34"], 1.4, ' stroke-dasharray="4 6"'))
+    doc.text("FROM DOCUMENT TO CITED ANSWER", x0, 128, 9, t["fg50"])
+    doc.add(hline(x0, xs[ORBIT_BUILT - 1], py, t["fg"], 1.6))
+    if ORBIT_BUILT < len(ORBIT_STAGES):
+        doc.add(hline(xs[ORBIT_BUILT - 1], x1, py, t["fg34"], 1.4, ' stroke-dasharray="4 6"'))
     for i, (x, name) in enumerate(zip(xs, ORBIT_STAGES)):
         built = i < ORBIT_BUILT
         if built:
@@ -651,10 +653,14 @@ def orbit(t):
                     'stroke-dasharray="2 2"/>' % (num(x - 5), num(py - 5), t["bg"], t["fg50"]))
         doc.text(name, x, py - 20 if i % 2 == 0 else py + 32, 9, t["fg"] if built else t["fg50"],
                  anchor="middle")
-    doc.text("NOT BUILT YET", (xs[ORBIT_BUILT] + xs[-1]) / 2, py + 66, 9, t["fg50"], anchor="middle")
-    doc.add(hline(xs[ORBIT_BUILT] - 6, xs[-1] + 6, py + 50, t["fg20"]))
+    if ORBIT_BUILT < len(ORBIT_STAGES):
+        doc.text("NOT BUILT YET", (xs[ORBIT_BUILT] + xs[-1]) / 2, py + 66, 9, t["fg50"], anchor="middle")
+        doc.add(hline(xs[ORBIT_BUILT] - 6, xs[-1] + 6, py + 50, t["fg20"]))
+    else:
+        doc.text("ALL SEVEN STAGES IMPLEMENTED", (x0 + x1) / 2, py + 66, 9, t["fg50"], anchor="middle")
+        doc.add(hline(x0 - 6, x1 + 6, py + 50, t["fg20"]))
     span = xs[ORBIT_BUILT - 1] - x0
-    # at rest the ember marks the frontier (index); in motion it runs there and dies
+    # at rest the ember marks the frontier (the last built stage); in motion it runs there and dies
     doc.add('<circle class="pu" cx="%s" cy="%s" r="5" fill="%s"/>'
             % (num(xs[ORBIT_BUILT - 1]), num(py), t["ember"]))
     motion(doc, "@keyframes pu{0%%{transform:translateX(-%spx);opacity:0}8%%{opacity:1}"
@@ -765,7 +771,74 @@ def helios(t):
     return doc.svg()
 
 
-# ----------------------------------------------------------- PL. V  NOT YET
+# ---------------------------------------------------------- PL. V  VIGIL-88
+def vigil(t):
+    H = 470
+    doc = Doc(t, H, "VIGIL-88, incident detection that reasons across time",
+              "Plate V. The title VIGIL-88, drawn as exact construction geometry: public code, "
+              "a P0 foundation, nothing detected yet. Three lanes along one time axis. Capture: "
+              "frames arrive one after another, each a solid mark. Detector: a null detector "
+              "answers every frame with an empty ring. Evidence: a dashed line toward a candidate "
+              "event and an incident, drawn dashed because neither exists yet. An ember marks the "
+              "latest frame. A frame is evidence, not a verdict.")
+    frame(doc, "PL. V", "VIGIL-88 — INCIDENT DETECTION ACROSS TIME", "P0 FOUNDATION · PUBLIC")
+    word(doc, "VIGIL-88", M, 214, 70, "design", weight=2.2)
+    doc.text("ARRANGED: PUBLIC CODE, UNFINISHED", M, 256, 9, t["fg50"])
+    doc.text("P0 FOUNDATION BUILT", M, 312, 11, t["fg72"])
+    doc.text("NOTHING IS DETECTED YET", M, 336, 11, t["fg72"])
+    doc.text("TEN ARCHITECTURE DOCUMENTS", M, 360, 11, t["fg72"])
+    doc.text("PYTHON · PYDANTIC · OPENCV", M, 404, 10, t["fg50"])
+    doc.text("UV · MYPY · IMPORT-LINTER", M, 424, 10, t["fg50"])
+
+    # one time axis, three lanes: what arrives, what answers it, what is not built yet
+    x0, x1 = 560, R - 20
+    n = 28
+    xn = x0 + 0.66 * (x1 - x0)                       # "now": the latest frame
+    xs = [x0 + i * (xn - x0) / (n - 1) for i in range(n)]
+    ya, yb, yc = 176, 246, 348
+
+    doc.text("CAPTURE · TIMESTAMPED FRAMES", x0, 128, 9, t["fg50"])
+    for i, x in enumerate(xs):
+        doc.add('<path class="vt" style="animation-delay:%.2fs" d="M%s %sV%s" stroke="%s" '
+                'stroke-width="2.2" stroke-linecap="butt"/>'
+                % (0.3 + i * 0.3, num(x), ya, ya - 26, t["fg"]))
+    doc.add(hline(x0, xn, ya + 6, t["fg34"]))
+
+    doc.text("NULL DETECTOR · VALID, EMPTY OUTPUT", x0, 216, 9, t["fg50"])
+    for i, x in enumerate(xs):
+        doc.add('<circle class="vn" style="animation-delay:%.2fs" cx="%s" cy="%s" r="3.2" stroke="%s"/>'
+                % (0.45 + i * 0.3, num(x), yb, t["fg50"]))
+
+    doc.text("EVIDENCE → CANDIDATE EVENT → INCIDENT", x0, 296, 9, t["fg50"])
+    doc.add('<path class="vf" d="M%s %sH%s" stroke="%s" stroke-width="1.4" stroke-dasharray="4 6"/>'
+            % (num(x0), yc, num(x1), t["fg34"]))
+    cand = x0 + 0.72 * (x1 - x0)
+    for x, name, above in ((cand, "CANDIDATE EVENT", True), (x1, "INCIDENT", False)):
+        doc.add('<rect x="%s" y="%s" width="10" height="10" fill="%s" stroke="%s" stroke-dasharray="2 2"/>'
+                % (num(x - 5), yc - 5, t["bg"], t["fg50"]))
+        doc.text(name, x if above else R, yc - 20 if above else yc + 32, 9, t["fg50"],
+                 anchor="middle" if above else "end")
+    doc.add(hline(cand - 6, x1 + 6, yc + 50, t["fg20"]))
+    doc.text("NOT BUILT YET", (cand + x1) / 2, yc + 66, 9, t["fg50"], anchor="middle")
+
+    # the one curious thing: the latest frame, and what a frame is
+    ember(doc, xn, ya - 13, 4.5, 11)
+    doc.text("A FRAME IS EVIDENCE,", xn + 22, ya - 12, 9, t["fg72"])
+    doc.text("NOT A VERDICT.", xn + 22, ya + 4, 9, t["fg72"])
+    doc.text("NOW", xn, 128, 8, t["fg72"], anchor="middle")
+    doc.add(vline(xn, 134, 142, t["fg50"]))
+
+    # frames arrive in order and each is answered with an empty ring; the dashed
+    # line flows but nothing in it ever accumulates, because nothing is detected
+    motion(doc, "@keyframes vt{0%{opacity:0}3%,84%{opacity:1}92%,100%{opacity:0}}"
+                ".vt{animation:vt 12s ease infinite both}"
+                "@keyframes vn{0%{opacity:0}3%,84%{opacity:1}92%,100%{opacity:0}}"
+                ".vn{animation:vn 12s ease infinite both}"
+                "@keyframes vf{to{stroke-dashoffset:-20}}.vf{animation:vf 2.4s linear infinite}")
+    return doc.svg()
+
+
+# ----------------------------------------------------------- PL. VI  NOT YET
 OPEN = [("SPECTRA", "MULTIMODAL AI / COMPUTER VISION"),
         ("SYNCHRO", "DISTRIBUTED SYSTEMS / REAL-TIME"),
         ("AETHER", "CREATIVE COMPUTING / WEBGL")]
@@ -774,12 +847,12 @@ OPEN = [("SPECTRA", "MULTIMODAL AI / COMPUTER VISION"),
 def not_yet(t):
     H = 470
     doc = Doc(t, H, "Not yet: SPECTRA, SYNCHRO, AETHER",
-              "Plate V. Three names drawn only as sketches, because nothing public exists for "
+              "Plate VI. Three names drawn only as sketches, because nothing public exists for "
               "them yet: SPECTRA, multimodal AI and computer vision; SYNCHRO, distributed systems "
               "and real-time; AETHER, creative computing and WebGL. Each has a dashed mark of its "
               "question. There is no ember and no ground: nothing here is lit, or printed, yet.",
               ground=False)
-    frame(doc, "PL. V", "NOT YET", "NOTHING RESOLVES PAST THE EVIDENCE FOR IT")
+    frame(doc, "PL. VI", "NOT YET", "NOTHING RESOLVES PAST THE EVIDENCE FOR IT")
     third = CW / 3.0
     dash = ' stroke-dasharray="3 5"'
     for i, (name, kind) in enumerate(OPEN):
@@ -837,7 +910,7 @@ def not_yet(t):
     return doc.svg()
 
 
-# -------------------------------------------------------------- PL. VI  card
+# ------------------------------------------------------------- PL. VII  card
 TOOLS = [
     ("01", "SKETCHES", ["FIGMA", "FRAMER"]),
     ("02", "INFERS", ["SCIKIT-LEARN", "XGBOOST", "EMBEDDINGS", "PGVECTOR"]),
@@ -851,6 +924,7 @@ WORKS = [
     ("ORBIT", {"PYTHON", "TYPESCRIPT", "CELERY", "EMBEDDINGS", "PGVECTOR", "NEXT.JS", "TAILWIND",
                "FASTAPI", "POSTGRESQL", "REDIS", "MINIO", "DOCKER", "GH ACTIONS"}),
     ("HELIOS", {"PYTHON", "SCIKIT-LEARN", "XGBOOST", "NEXT.JS", "FASTAPI"}),
+    ("VIGIL-88", {"PYTHON"}),
     ("THIS PROFILE", {"PYTHON", "SVG", "GH ACTIONS"}),
     ("GRAVITY PLAYGROUND", {"JAVASCRIPT", "HTML + CSS"}),
     ("TRAVELEASE", {"JAVASCRIPT", "HTML + CSS"}),
@@ -860,13 +934,13 @@ WORKS = [
 
 
 def card(t):
-    H = 660
+    H = 684
     doc = Doc(t, H, "The stack, as a punched card",
-              "Plate VI. A punched card: one row per work, one column per tool, grouped by the "
+              "Plate VII. A punched card: one row per work, one column per tool, grouped by the "
               "five verbs. A hole means the tool is in that work. " + " ".join(
                   "%s: %s." % (w.title(), ", ".join(sorted(s)) if s else "no holes yet")
                   for w, s in WORKS))
-    frame(doc, "PL. VI", "THE STACK, PUNCHED", "A HOLE MEANS THE TOOL IS IN THE WORK")
+    frame(doc, "PL. VII", "THE STACK, PUNCHED", "A HOLE MEANS THE TOOL IS IN THE WORK")
     cols = [(n, verb, tool) for n, verb, tools in TOOLS for tool in tools]
     cx0, cy0, cx1, cy1 = M, 112, R, H - 44
     lab_w = 212
@@ -935,7 +1009,7 @@ def card(t):
     return doc.svg()
 
 
-# ------------------------------------------------------------ PL. VII trace
+# ------------------------------------------------------------ PL. VIII trace
 def fetch_trace(token):
     q = ('query($l:String!){user(login:$l){contributionsCollection{contributionCalendar{'
          'totalContributions weeks{contributionDays{date contributionCount}}}}}}')
@@ -962,10 +1036,10 @@ def trace(t, data):
     cmax = max(counts) or 1
     fmt = lambda iso: ".".join(reversed(iso.split("-")))
     doc = Doc(t, H, "Trace: public contributions, last 52 weeks",
-              "Plate VII. Every day of the last year as one mark on a line, from %s to %s. "
+              "Plate VIII. Every day of the last year as one mark on a line, from %s to %s. "
               "Days with public contributions rise from the line. %d contributions on %d days."
               % (fmt(days[0][0]), fmt(days[-1][0]), total, active))
-    frame(doc, "PL. VII", "TRACE — PUBLIC CONTRIBUTIONS, LAST 52 WEEKS",
+    frame(doc, "PL. VIII", "TRACE — PUBLIC CONTRIBUTIONS, LAST 52 WEEKS",
           "GITHUB API · %s" % fmt(data["fetched"]))
     base, x0, x1 = 236, M, R - 30
     step = (x1 - x0) / (len(days) - 1)
@@ -1008,17 +1082,17 @@ def trace(t, data):
     return doc.svg()
 
 
-# ------------------------------------------------------------ PL. VIII end
+# ------------------------------------------------------------ PL. IX  end
 SENTENCE = ["JACK OF ALL, MASTER OF NONE,", "BUT OFTEN TIMES BETTER", "THAN MASTER OF ONE."]
 
 
 def end(t):
     H = 470
     doc = Doc(t, H, "Jack of all, master of none, but often times better than master of one",
-              "Plate VIII, the last. The sentence 'Jack of all, master of none, but often times "
+              "Plate IX, the last. The sentence 'Jack of all, master of none, but often times "
               "better than master of one', left as a sketch: it never reaches the last stage. "
               "An ember waits below it. The wish is at the bottom of the well.")
-    frame(doc, "PL. VIII", "THE EDGE", "END OF PLATES")
+    frame(doc, "PL. IX", "THE EDGE", "END OF PLATES")
     C = 40
     doc.add('<g class="sw">')
     for i, ln in enumerate(SENTENCE):
@@ -1093,9 +1167,9 @@ LABELS = {
     "orbit": dict(
         pl="PL. III", name="ORBIT", kind="KNOWLEDGE AND DOCUMENT PLATFORM", stage="2026 · ARRANGED",
         body="UPLOAD DOCUMENTS INTO A WORKSPACE AND ASK QUESTIONS ANSWERED FROM THEIR CONTENTS, "
-             "CITED TO THE EXACT PASSAGE. IDENTITY, WORKSPACES, UPLOAD AND THE ASYNCHRONOUS "
-             "PIPELINE ARE BUILT; RETRIEVAL AND CHAT ARE NOT. A MODULAR MONOLITH WHOSE LAYERING "
-             "FAILS THE BUILD IF IT IS BROKEN.",
+             "CITED TO THE EXACT PASSAGE. IDENTITY, WORKSPACES, UPLOAD, THE ASYNCHRONOUS PIPELINE, "
+             "RETRIEVAL AND GROUNDED ANSWERING ARE IMPLEMENTED; IT IS NOT PRODUCTION-READY. A "
+             "MODULAR MONOLITH WHOSE LAYERING FAILS THE BUILD IF IT IS BROKEN.",
         rows=[("MADE WITH", "PYTHON, FASTAPI, CELERY · NEXT.JS, REACT, TYPESCRIPT, TAILWIND"),
               ("STORES", "POSTGRESQL + PGVECTOR · REDIS · MINIO"),
               ("SHIPS WITH", "DOCKER · GITHUB ACTIONS · 24 DECISION RECORDS"),
@@ -1109,8 +1183,17 @@ LABELS = {
               ("MADE WITH", "PYTHON, FASTAPI, SCIKIT-LEARN · NEXT.JS"),
               ("THE CURVE", "A SCHEMATIC, NOT ITS DATA"),
               ("SOURCE", "SIDDHUPERURI/HELIOS →")]),
+    "vigil-88": dict(
+        pl="PL. V", name="VIGIL-88", kind="INCIDENT DETECTION ACROSS TIME", stage="2026 · ARRANGED",
+        body="A COMPUTER-VISION PLATFORM THAT REASONS ACROSS TIME: A FRAME IS EVIDENCE, NOT A "
+             "VERDICT. THE P0 FOUNDATION IS BUILT; NOTHING IS DETECTED YET, AND ITS README SAYS SO. "
+             "LOCAL-FIRST, WITH NO FACIAL RECOGNITION OR IDENTITY PROFILING.",
+        rows=[("MADE WITH", "PYTHON, PYDANTIC · OPENCV, FOR CAPTURE"),
+              ("HOLDS", "LAYERED IMPORTS, A PURE DOMAIN LAYER AND ONE CLOCK MODULE, CHECKED BY MACHINE"),
+              ("NOT YET", "DETECTION, TRACKING, EVENTS, INCIDENTS, ALERTS, A CONSOLE"),
+              ("SOURCE", "SIDDHUPERURI/VIGIL-88 →")]),
     "not-yet": dict(
-        pl="PL. V", name="NOT YET", kind="SPECTRA · SYNCHRO · AETHER", stage="SKETCHED",
+        pl="PL. VI", name="NOT YET", kind="SPECTRA · SYNCHRO · AETHER", stage="SKETCHED",
         body="NAMED, NOT BUILT, AND NOT YET PRINTED AS PLATES. EACH HOLDS A QUESTION INSTEAD OF "
              "A DESCRIPTION.",
         rows=[("SPECTRA", "WHAT DOES A MACHINE NOTICE, MISS OR MISTAKE WHEN IT LOOKS?"),
@@ -1119,7 +1202,7 @@ LABELS = {
               ("AETHER", "WHAT HAPPENS WHEN WEBGL, GENERATIVE SYSTEMS AND SPATIAL INTERFACES "
                          "BECOME AN ATMOSPHERE?")]),
     "card": dict(
-        pl="PL. VI", name="THE STACK", kind="PUNCHED", stage="WORKS × TOOLS",
+        pl="PL. VII", name="THE STACK", kind="PUNCHED", stage="WORKS × TOOLS",
         body="ROWS ARE WORKS, COLUMNS ARE TOOLS, AND A HOLE IS ONLY PUNCHED WHERE THE WORK'S "
              "REPOSITORY OR RECORD SHOWS THE TOOL.",
         rows=[("ALSO IN HAND", "PHOTOSHOP, ILLUSTRATOR, LIGHTROOM, CANVA, PYTORCH, REACT THREE "
@@ -1127,7 +1210,7 @@ LABELS = {
               ("EARLIER", "GRAVITY PLAYGROUND, A CUSTOM PHYSICS ENGINE · TRAVELEASE, A "
                           "LOCATION-BASED TREASURE HUNT · PETPONKS, IDENTITY AND WIREFRAMES")]),
     "trace": dict(
-        pl="PL. VII", name="TRACE", kind="LAST 52 WEEKS", stage="REDRAWN DAILY",
+        pl="PL. VIII", name="TRACE", kind="LAST 52 WEEKS", stage="REDRAWN DAILY",
         body="REDRAWN EACH MORNING FROM THE GITHUB API BY A WORKFLOW IN THIS REPOSITORY, NOT BY "
              "A STATS SERVICE. THE NUMBERS ARE THE API'S, UNROUNDED.",
         rows=[("SOURCE", "GITHUB GRAPHQL API · CONTRIBUTION CALENDAR"),
@@ -1274,7 +1357,7 @@ def load_trace(fetch):
 def main(argv):
     data = load_trace("--fetch" in argv)
     plates = [("hero", hero), ("artwork", artwork), ("orbit", orbit), ("helios", helios),
-              ("not-yet", not_yet), ("card", card), ("trace", lambda t: trace(t, data)),
+              ("vigil-88", vigil), ("not-yet", not_yet), ("card", card), ("trace", lambda t: trace(t, data)),
               ("end", end)]
     plates += [("labels/" + k, lambda t, k=k: label(t, k)) for k in LABELS]
     plates += [("labels/statement", statement), ("labels/end", end_label)]

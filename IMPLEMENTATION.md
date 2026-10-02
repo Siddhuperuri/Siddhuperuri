@@ -1,6 +1,6 @@
 # Profile build notes
 
-The README is a catalogue of eight plates. Every plate is drawn by
+The README is a catalogue of nine plates. Every plate is drawn by
 `tools/build_assets.py`; nothing in `assets/` is edited by hand. Change the
 source, then rebuild.
 
@@ -26,8 +26,8 @@ Micro-type is pooled: each glyph is defined once in `<defs>` and placed with `<u
 
 **Colour.** Ground, paper, ember: the artwork's palette. Paper is the only text
 colour. Ember marks the one curious thing on each plate: the shared A, V\*, the
-frontier of ORBIT's pipeline, the width of HELIOS's interval, the card's corner cut,
-today. PL. V has no ember, because nothing on it is lit yet.
+frontier of ORBIT's pipeline, the width of HELIOS's interval, VIGIL-88's latest frame,
+the card's corner cut, today. PL. VI has no ember, because nothing on it is lit yet.
 
 **Stages.** The artwork's five layers are the page's grammar. The hero shows all
 five: `sketch` (trace), `field` (inferred cloud), `lattice` (computed cells),
@@ -37,7 +37,7 @@ only as far as its evidence goes:
 | Stage | Means | Now |
 |---|---|---|
 | measured | public, and it runs | SIDDHARTHA |
-| arranged | public, unfinished | ORBIT, HELIOS |
+| arranged | public, unfinished | ORBIT, HELIOS, VIGIL-88 |
 | inferred | built, not yet public | none |
 | sketched | named, no code yet | SPECTRA, SYNCHRO, AETHER |
 
@@ -72,12 +72,13 @@ static state is the complete image: no scan bar, no curtain, every observation s
 |---|---|---|
 | Hero | one-shot reveal: JAI drawn, SAI gathers, SIDDHARTHA's grid, construction and letters arrive; SAI then keeps shimmering | the name becoming; inference is probabilistic |
 | II artwork | the displaced eye swings about the nearest mark onto V\*; every sheet's mark lands on its ray and lights; it drifts off | stillness resolves, motion scatters |
-| III ORBIT | the ember runs the five built stages and dies at index; dependency arrows redraw in the one allowed direction | what exists, and the rule that holds it |
+| III ORBIT | the ember runs the seven stages and dies at chat; dependency arrows redraw in the one allowed direction | what exists, and the rule that holds it |
 | IV HELIOS | observations arrive through the day, a gap marking now; the dashed forecast flows; the title cloud shimmers | a forecast meeting its data |
-| V not yet | streams advance and stop short of the line; three clocks run at different rates; the sphere turns | intentions, not yet resolved |
-| VI card | a reader scans the rows; light passes through each row's holes as it goes | a hole is where light gets through |
-| VII trace | a pen redraws the year to today, then rests | the record, replayed |
-| VIII end | the hand keeps redrawing the sentence; the room sways | it never reaches the last stage |
+| V VIGIL-88 | frames arrive one by one; each is answered by an empty ring; the dashed evidence line flows and nothing in it accumulates | a detector that returns nothing, and a verdict not yet reached |
+| VI not yet | streams advance and stop short of the line; three clocks run at different rates; the sphere turns | intentions, not yet resolved |
+| VII card | a reader scans the rows; light passes through each row's holes as it goes | a hole is where light gets through |
+| VIII trace | a pen redraws the year to today, then rests | the record, replayed |
+| IX end | the hand keeps redrawing the sentence; the room sways | it never reaches the last stage |
 | Statement | the five verbs light in reading order; the key's A performs each stage | the grammar of the page |
 | Labels, links | rules draw and words set as they arrive; arrows nudge toward their links | where to go next |
 
@@ -101,6 +102,7 @@ stats service is involved, and the numbers on the plate are exactly the API's.
 | The artwork plate | `artwork()` |
 | ORBIT pipeline, what is built | `ORBIT_STAGES`, `ORBIT_BUILT` |
 | HELIOS facts, schematic | `helios()` |
+| VIGIL-88 lanes and facts | `vigil()` |
 | Unbuilt projects | `OPEN` |
 | The punched card | `TOOLS` (columns), `WORKS` (rows, with the tools each is made with) |
 | Closing sentence | `SENTENCE` |
@@ -112,10 +114,16 @@ the README caption under the card instead.
 
 ## Sources for the facts on the page
 
-- ORBIT: the repository README (M0–M4 built, retrieval and chat not yet, 24 ADRs,
-  import-linter contracts) and `web/package.json`.
+- ORBIT: the repository README roadmap (M0–M7 implemented, not production-ready, 24
+  ADRs, import-linter contracts), `docs/decisions/0022` and
+  `backend/src/orbit/application/{retrieval,answering}` for retrieval and grounded
+  answering, and `web/package.json`. The README header and its M6 row still say
+  chat is not started; the code and ADR say it is implemented, and the plate follows
+  them. Not run end to end by whoever drew this.
 - SIDDHARTHA: the `miracle` README (five layers, V\*, four modules, no framework,
   runs from `file://`).
+- VIGIL-88: its README, `docs/LIMITATIONS.md` (P0 foundation, nothing detected yet),
+  `docs/architecture/` (ten documents) and `pyproject.toml`.
 - HELIOS: author-supplied (XGBoost, hold-out R² 0.856, calibrated intervals, a
   one-second calculator and a fourteen-view console). The chart is a schematic.
 - Gravity Playground, Travelease, PETPONKS, and the tool list: the portfolio brief
