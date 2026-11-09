@@ -776,26 +776,28 @@ def vigil(t):
     H = 470
     doc = Doc(t, H, "VIGIL-88, incident detection that reasons across time",
               "Plate V. The title VIGIL-88, drawn as exact construction geometry: public code, "
-              "a P0 foundation, nothing detected yet. Three lanes along one time axis. Capture: "
-              "frames arrive one after another, each a solid mark. Detector: a null detector "
-              "answers every frame with an empty ring. Evidence: a dashed line toward a candidate "
-              "event and an incident, drawn dashed because neither exists yet. An ember marks the "
-              "latest frame. A frame is evidence, not a verdict.")
-    frame(doc, "PL. V", "VIGIL-88 — INCIDENT DETECTION ACROSS TIME", "P0 FOUNDATION · PUBLIC")
+              "built through P6 with a desktop console. Three lanes along one time axis. Capture: "
+              "frames arrive one after another, each a solid mark. Detector: each frame is answered "
+              "by a ring, empty or holding a detection. Evidence: a solid line accumulates toward a "
+              "verified event and a durable incident. Below, a dashed line for what is not measured: "
+              "detection accuracy, and fire and smoke, which are declared absent. An ember marks "
+              "the latest frame. A frame is evidence, not a verdict.")
+    frame(doc, "PL. V", "VIGIL-88 — INCIDENT DETECTION ACROSS TIME", "P0–P6 BUILT · PUBLIC")
     word(doc, "VIGIL-88", M, 214, 70, "design", weight=2.2)
     doc.text("ARRANGED: PUBLIC CODE, UNFINISHED", M, 256, 9, t["fg50"])
-    doc.text("P0 FOUNDATION BUILT", M, 312, 11, t["fg72"])
-    doc.text("NOTHING IS DETECTED YET", M, 336, 11, t["fg72"])
-    doc.text("TEN ARCHITECTURE DOCUMENTS", M, 360, 11, t["fg72"])
-    doc.text("PYTHON · PYDANTIC · OPENCV", M, 404, 10, t["fg50"])
-    doc.text("UV · MYPY · IMPORT-LINTER", M, 424, 10, t["fg50"])
+    doc.text("FRAMES → TRACKS → EVENTS → INCIDENTS", M, 312, 11, t["fg72"])
+    doc.text("A DESKTOP CONSOLE AND INSTALLER", M, 336, 11, t["fg72"])
+    doc.text("ACCURACY IS NOT MEASURED YET", M, 360, 11, t["fg72"])
+    doc.text("PYTHON · YOLOX · ONNX RUNTIME · OPENCV", M, 404, 10, t["fg50"])
+    doc.text("SQLITE · ELECTRON · TYPESCRIPT", M, 424, 10, t["fg50"])
 
-    # one time axis, three lanes: what arrives, what answers it, what is not built yet
+    # one time axis, three lanes: what arrives, what answers it, what accumulates from it
     x0, x1 = 560, R - 20
     n = 28
     xn = x0 + 0.66 * (x1 - x0)                       # "now": the latest frame
     xs = [x0 + i * (xn - x0) / (n - 1) for i in range(n)]
     ya, yb, yc = 176, 246, 348
+    hits = set(range(11, 20))                        # frames in which something is detected
 
     doc.text("CAPTURE · TIMESTAMPED FRAMES", x0, 128, 9, t["fg50"])
     for i, x in enumerate(xs):
@@ -804,22 +806,26 @@ def vigil(t):
                 % (0.3 + i * 0.3, num(x), ya, ya - 26, t["fg"]))
     doc.add(hline(x0, xn, ya + 6, t["fg34"]))
 
-    doc.text("NULL DETECTOR · VALID, EMPTY OUTPUT", x0, 216, 9, t["fg50"])
+    doc.text("DETECTOR · A RING PER FRAME, FILLED WHERE IT FINDS SOMETHING", x0, 216, 9, t["fg50"])
     for i, x in enumerate(xs):
-        doc.add('<circle class="vn" style="animation-delay:%.2fs" cx="%s" cy="%s" r="3.2" stroke="%s"/>'
-                % (0.45 + i * 0.3, num(x), yb, t["fg50"]))
+        fill = t["fg"] if i in hits else "none"
+        doc.add('<circle class="vn" style="animation-delay:%.2fs" cx="%s" cy="%s" r="3.2" '
+                'fill="%s" stroke="%s"/>'
+                % (0.45 + i * 0.3, num(x), yb, fill, t["fg"] if i in hits else t["fg50"]))
 
-    doc.text("EVIDENCE → CANDIDATE EVENT → INCIDENT", x0, 296, 9, t["fg50"])
-    doc.add('<path class="vf" d="M%s %sH%s" stroke="%s" stroke-width="1.4" stroke-dasharray="4 6"/>'
-            % (num(x0), yc, num(x1), t["fg34"]))
-    cand = x0 + 0.72 * (x1 - x0)
-    for x, name, above in ((cand, "CANDIDATE EVENT", True), (x1, "INCIDENT", False)):
-        doc.add('<rect x="%s" y="%s" width="10" height="10" fill="%s" stroke="%s" stroke-dasharray="2 2"/>'
-                % (num(x - 5), yc - 5, t["bg"], t["fg50"]))
-        doc.text(name, x if above else R, yc - 20 if above else yc + 32, 9, t["fg50"],
+    doc.text("EVIDENCE → VERIFIED EVENT → INCIDENT", x0, 296, 9, t["fg50"])
+    ev, inc = xs[19], xn
+    doc.add('<path class="vf" d="M%s %sH%s" stroke="%s" stroke-width="1.4"/>'
+            % (num(x0), yc, num(inc), t["fg50"]))
+    for x, name, above in ((ev, "VERIFIED EVENT", True), (inc, "INCIDENT", False)):
+        doc.add('<rect x="%s" y="%s" width="10" height="10" fill="%s" stroke="%s"/>'
+                % (num(x - 5), yc - 5, t["fg"], t["fg"]))
+        doc.text(name, x if above else R, yc - 20 if above else yc + 32, 9, t["fg72"],
                  anchor="middle" if above else "end")
-    doc.add(hline(cand - 6, x1 + 6, yc + 50, t["fg20"]))
-    doc.text("NOT BUILT YET", (cand + x1) / 2, yc + 66, 9, t["fg50"], anchor="middle")
+    doc.add('<path d="M%s %sH%s" stroke="%s" stroke-width="1.4" stroke-dasharray="4 6"/>'
+            % (num(x0), yc + 62, num(x1), t["fg34"]))
+    doc.text("NOT MEASURED · DETECTION ACCURACY", x0, yc + 82, 9, t["fg50"])
+    doc.text("DECLARED ABSENT · FIRE AND SMOKE", x0, yc + 98, 9, t["fg50"])
 
     # the one curious thing: the latest frame, and what a frame is
     ember(doc, xn, ya - 13, 4.5, 11)
@@ -828,13 +834,12 @@ def vigil(t):
     doc.text("NOW", xn, 128, 8, t["fg72"], anchor="middle")
     doc.add(vline(xn, 134, 142, t["fg50"]))
 
-    # frames arrive in order and each is answered with an empty ring; the dashed
-    # line flows but nothing in it ever accumulates, because nothing is detected
+    # frames arrive in order, each is answered by a ring, and the evidence line
+    # flows toward the incident
     motion(doc, "@keyframes vt{0%{opacity:0}3%,84%{opacity:1}92%,100%{opacity:0}}"
                 ".vt{animation:vt 12s ease infinite both}"
                 "@keyframes vn{0%{opacity:0}3%,84%{opacity:1}92%,100%{opacity:0}}"
-                ".vn{animation:vn 12s ease infinite both}"
-                "@keyframes vf{to{stroke-dashoffset:-20}}.vf{animation:vf 2.4s linear infinite}")
+                ".vn{animation:vn 12s ease infinite both}")
     return doc.svg()
 
 
@@ -914,17 +919,22 @@ def not_yet(t):
 TOOLS = [
     ("01", "SKETCHES", ["FIGMA", "FRAMER"]),
     ("02", "INFERS", ["SCIKIT-LEARN", "XGBOOST", "EMBEDDINGS", "PGVECTOR"]),
-    ("03", "COMPUTES", ["PYTHON", "TYPESCRIPT", "JAVASCRIPT", "CELERY"]),
-    ("04", "ARRANGES", ["NEXT.JS", "TAILWIND", "HTML + CSS", "THREE.JS", "SVG"]),
+    ("03", "COMPUTES", ["PYTHON", "TYPESCRIPT", "JAVASCRIPT", "JAVA", "CELERY"]),
+    ("04", "ARRANGES", ["NEXT.JS", "TAILWIND", "HTML + CSS", "THREE.JS", "R3F", "GSAP", "SVG"]),
     ("05", "MEASURES", ["FASTAPI", "POSTGRESQL", "REDIS", "MINIO", "DOCKER", "GH ACTIONS"]),
 ]
 # work -> tools it is made with, as its repository or record shows
 WORKS = [
     ("SIDDHARTHA", {"JAVASCRIPT", "HTML + CSS", "THREE.JS"}),
+    ("VANTAGE", {"TYPESCRIPT", "JAVASCRIPT", "HTML + CSS", "THREE.JS", "R3F"}),
     ("ORBIT", {"PYTHON", "TYPESCRIPT", "CELERY", "EMBEDDINGS", "PGVECTOR", "NEXT.JS", "TAILWIND",
                "FASTAPI", "POSTGRESQL", "REDIS", "MINIO", "DOCKER", "GH ACTIONS"}),
     ("HELIOS", {"PYTHON", "SCIKIT-LEARN", "XGBOOST", "NEXT.JS", "FASTAPI"}),
-    ("VIGIL-88", {"PYTHON"}),
+    ("VIGIL-88", {"PYTHON", "TYPESCRIPT"}),
+    ("FAMS", {"JAVA", "TYPESCRIPT", "NEXT.JS", "TAILWIND", "DOCKER"}),
+    ("PORTFOLIO", {"TYPESCRIPT", "NEXT.JS", "TAILWIND", "THREE.JS", "R3F", "GSAP"}),
+    ("TETRIX", {"TYPESCRIPT", "THREE.JS", "R3F"}),
+    ("HALFTONE GAMBIT", {"TYPESCRIPT", "THREE.JS", "R3F"}),
     ("THIS PROFILE", {"PYTHON", "SVG", "GH ACTIONS"}),
     ("GRAVITY PLAYGROUND", {"JAVASCRIPT", "HTML + CSS"}),
     ("TRAVELEASE", {"JAVASCRIPT", "HTML + CSS"}),
@@ -934,7 +944,7 @@ WORKS = [
 
 
 def card(t):
-    H = 684
+    H = 799
     doc = Doc(t, H, "The stack, as a punched card",
               "Plate VII. A punched card: one row per work, one column per tool, grouped by the "
               "five verbs. A hole means the tool is in that work. " + " ".join(
@@ -1163,6 +1173,8 @@ LABELS = {
              "ONE CONTINUOUS WORLD IN FOUR PARTS, AND IT CAN BE PULLED OUT OF ITS OWN WINDOW.",
         rows=[("MADE WITH", "HTML, CSS, JAVASCRIPT · THREE.JS, VENDORED, FOR THREE MOMENTS"),
               ("WITHOUT", "A FRAMEWORK, A BUILD STEP, FONT FILES OR NETWORK REQUESTS"),
+              ("CONTINUED IN", "VANTAGE: AN EXPLORABLE 3D VERSION OF THE SAME IDEA, IN FOUR PLACES · "
+                               "REACT THREE FIBER, TYPESCRIPT, TESTED END TO END"),
               ("SOURCE", "SIDDHUPERURI/MIRACLE →")]),
     "orbit": dict(
         pl="PL. III", name="ORBIT", kind="KNOWLEDGE AND DOCUMENT PLATFORM", stage="2026 · ARRANGED",
@@ -1186,11 +1198,14 @@ LABELS = {
     "vigil-88": dict(
         pl="PL. V", name="VIGIL-88", kind="INCIDENT DETECTION ACROSS TIME", stage="2026 · ARRANGED",
         body="A COMPUTER-VISION PLATFORM THAT REASONS ACROSS TIME: A FRAME IS EVIDENCE, NOT A "
-             "VERDICT. THE P0 FOUNDATION IS BUILT; NOTHING IS DETECTED YET, AND ITS README SAYS SO. "
-             "LOCAL-FIRST, WITH NO FACIAL RECOGNITION OR IDENTITY PROFILING.",
-        rows=[("MADE WITH", "PYTHON, PYDANTIC · OPENCV, FOR CAPTURE"),
+             "VERDICT. P0 TO P6 ARE BUILT: FRAMES BECOME TRACKS, TRACKS BECOME EVIDENCE, AND "
+             "VERIFIED EVIDENCE BECOMES A DURABLE INCIDENT, ON A LIVE CAMERA, WITH A DESKTOP "
+             "CONSOLE AND A WINDOWS INSTALLER. LOCAL-FIRST, WITH NO FACIAL RECOGNITION OR IDENTITY "
+             "PROFILING.",
+        rows=[("MADE WITH", "PYTHON, PYDANTIC · YOLOX ON ONNX RUNTIME · OPENCV · SQLITE · ELECTRON, TYPESCRIPT"),
               ("HOLDS", "LAYERED IMPORTS, A PURE DOMAIN LAYER AND ONE CLOCK MODULE, CHECKED BY MACHINE"),
-              ("NOT YET", "DETECTION, TRACKING, EVENTS, INCIDENTS, ALERTS, A CONSOLE"),
+              ("NOT YET", "ANY MEASURED ACCURACY: NO LABELLED DATA, SO NO PRECISION OR RECALL. FIRE AND "
+                          "SMOKE ARE DECLARED ABSENT. NO SIGNED INSTALLER, NO LONG SOAK RUN, NO LICENCE CHOSEN"),
               ("SOURCE", "SIDDHUPERURI/VIGIL-88 →")]),
     "not-yet": dict(
         pl="PL. VI", name="NOT YET", kind="SPECTRA · SYNCHRO · AETHER", stage="SKETCHED",
@@ -1205,8 +1220,11 @@ LABELS = {
         pl="PL. VII", name="THE STACK", kind="PUNCHED", stage="WORKS × TOOLS",
         body="ROWS ARE WORKS, COLUMNS ARE TOOLS, AND A HOLE IS ONLY PUNCHED WHERE THE WORK'S "
              "REPOSITORY OR RECORD SHOWS THE TOOL.",
-        rows=[("ALSO IN HAND", "PHOTOSHOP, ILLUSTRATOR, LIGHTROOM, CANVA, PYTORCH, REACT THREE "
-                               "FIBER, GSAP, JAVA, C. NO PUBLIC WORK TO SHOW FOR THEM YET."),
+        rows=[("ALSO IN HAND", "PHOTOSHOP, ILLUSTRATOR, LIGHTROOM, CANVA, PYTORCH, C. NO PUBLIC WORK "
+                               "TO SHOW FOR THEM YET."),
+              ("ALSO MADE", "FAMS, A FACULTY APPRAISAL SYSTEM FOR A COLLEGE · TETRIX, 3D TETRIS · "
+                            "HALFTONE GAMBIT, 3D CHESS IN ASCII GLYPHS. THE LAST TWO ARE PRIVATE "
+                            "REPOSITORIES, SHOWN ON THE PORTFOLIO."),
               ("EARLIER", "GRAVITY PLAYGROUND, A CUSTOM PHYSICS ENGINE · TRAVELEASE, A "
                           "LOCATION-BASED TREASURE HUNT · PETPONKS, IDENTITY AND WIREFRAMES")]),
     "trace": dict(

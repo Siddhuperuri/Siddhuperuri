@@ -74,7 +74,7 @@ static state is the complete image: no scan bar, no curtain, every observation s
 | II artwork | the displaced eye swings about the nearest mark onto V\*; every sheet's mark lands on its ray and lights; it drifts off | stillness resolves, motion scatters |
 | III ORBIT | the ember runs the seven stages and dies at chat; dependency arrows redraw in the one allowed direction | what exists, and the rule that holds it |
 | IV HELIOS | observations arrive through the day, a gap marking now; the dashed forecast flows; the title cloud shimmers | a forecast meeting its data |
-| V VIGIL-88 | frames arrive one by one; each is answered by an empty ring; the dashed evidence line flows and nothing in it accumulates | a detector that returns nothing, and a verdict not yet reached |
+| V VIGIL-88 | frames arrive one by one; each is answered by a ring, filled where something is detected; a solid evidence line accumulates to a verified event and an incident; a dashed line marks what is not measured | a frame is evidence, not a verdict; accuracy is unmeasured |
 | VI not yet | streams advance and stop short of the line; three clocks run at different rates; the sphere turns | intentions, not yet resolved |
 | VII card | a reader scans the rows; light passes through each row's holes as it goes | a hole is where light gets through |
 | VIII trace | a pen redraws the year to today, then rests | the record, replayed |
@@ -122,7 +122,7 @@ the README caption under the card instead.
   them. Not run end to end by whoever drew this.
 - SIDDHARTHA: the `miracle` README (five layers, V\*, four modules, no framework,
   runs from `file://`).
-- VIGIL-88: its README, `docs/LIMITATIONS.md` (P0 foundation, nothing detected yet),
+- VIGIL-88: its README, `docs/LIMITATIONS.md` (P0 to P6 built; accuracy unmeasured; fire and smoke declared absent),
   `docs/architecture/` (ten documents) and `pyproject.toml`.
 - HELIOS: author-supplied (XGBoost, hold-out R² 0.856, calibrated intervals, a
   one-second calculator and a fourteen-view console). The chart is a schematic.
