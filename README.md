@@ -7,10 +7,10 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/hero-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="./assets/hero-light.svg">
-  <img alt="JAI SAI SIDDHARTHA on one line, resolving as it is read: JAI sketched by hand, SAI inferred as a cloud of points, and SIDDHARTHA whole and measured, over a computed grid and inside its construction geometry, with dimension lines. An ember sits in the A that SIDDHA and ARTHA share." src="./assets/hero-dark.svg" width="100%">
+  <img alt="JAI SAI SIDDHARTHA on one line, resolving as it is read: JAI sketched by hand, SAI inferred as a cloud of points, and SIDDHARTHA whole and measured, over a computed grid and inside its construction geometry. An ember sits in the A that SIDDHA and ARTHA share." src="./assets/hero-dark.svg" width="100%">
 </picture>
 
-<p><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/statement-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/statement-light.svg"><img alt="Jai Sai Siddhartha Peruri. Computer science, India. A hand sketches it. A model infers it. A grid computes it. A layout arranges it. An instrument measures it. From one place, they add up to a name. I study computer science and work in all five: drawing, models, code, interfaces, systems. Each name on the plates below is drawn only as far as its evidence goes: sketched, named, no code yet; inferred, built, not yet public; arranged, public, unfinished; measured, public, and it runs." src="./assets/labels/statement-dark.svg" width="100%"></picture></p>
+<p><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/statement-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/statement-light.svg"><img alt="Jai Sai Siddhartha Peruri. Computer science, India. I design and build interfaces, models and systems. The projects below are drawn only as far as they exist: sketched, named with no code yet; inferred, built but not yet public; arranged, public but unfinished; measured, public and running." src="./assets/labels/statement-dark.svg" width="100%"></picture></p>
 
 <p align="center">
 <a href="https://github.com/Siddhuperuri/miracle"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/link-artwork-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/link-artwork-light.svg"><img alt="The artwork" src="./assets/labels/link-artwork-dark.svg" height="22"></picture></a>

@@ -375,13 +375,14 @@ DOOR = 13
 
 
 def hero(t):
-    H, track, pad, cap = 410, 0.22, 10, 206
+    track, pad, cap = 0.22, 10, 128
     part = {i: k for k, ((a, b), *_) in enumerate(PARTS) for i in range(a, b)}
     # a measured letter is inset by its own stroke, so it is 0.87w + 0.13 wide
     widths = [0.87 * S.G[ch]["w"] + 0.13 if part.get(i) == 2 else S.G[ch]["w"]
               for i, ch in enumerate(NAME)]
     C = (CW - 2 * pad) / (sum(widths) + track * (len(NAME) - 1))
     base, wm = cap + C, 0.13 * C
+    H = int(base + 56)
     xs, x = [], M + pad
     for w in widths:
         xs.append(x)
@@ -391,28 +392,17 @@ def hero(t):
     doc = Doc(t, H, "Jai Sai Siddhartha",
               "The name JAI SAI SIDDHARTHA on one line, resolving as it is read: JAI sketched by "
               "hand, SAI inferred as a cloud of points, and SIDDHARTHA whole and measured, over a "
-              "computed grid and inside its construction geometry, with dimension lines. An ember "
-              "sits in the A that SIDDHA and ARTHA share.")
+              "computed grid and inside its construction geometry. An ember sits in the A that "
+              "SIDDHA and ARTHA share.")
     doc.add(crops(t, W, H))
 
-    # frame: metadata, rules, the instrument lines the name sits on
+    # frame: a title, one rule, and the two lines the name sits between
     doc.text("PL. I", M, 62, 11, t["fg"], cls="rv")
-    doc.text("PERURI JAI SAI SIDDHARTHA", M + 66, 62, 11, t["fg72"], cls="rv")
-    doc.text("FIVE LAYERS · ONE VANTAGE", R, 62, 11, t["fg50"], anchor="end", cls="rv")
+    doc.text("JAI SAI SIDDHARTHA PERURI", M + 66, 62, 11, t["fg72"], cls="rv")
+    doc.text("COMPUTER SCIENCE · INDIA", R, 62, 11, t["fg50"], anchor="end", cls="rv")
     doc.add(hline(M, R, 84, t["fg20"], extra=' class="ln" pathLength="1"'))
-    cuts = [M] + [(span[k][1] + span[k + 1][0]) / 2 for k in range(len(PARTS) - 1)] + [R]
-    for cx in cuts:
-        doc.add(vline(cx, 164, base + 50, t["fg12"], extra=' class="ln" pathLength="1"'))
-    for (_, n, verb, layer), (a, b) in zip(PARTS, span):
-        mid = (a + b) / 2
-        nw, vw = S.text_width(n) * 10, S.text_width(verb) * 12
-        left = mid - (nw + 8 + vw) / 2
-        doc.text(n, left, 128, 10, t["fg50"], cls="rv")
-        doc.text(verb, left + nw + 8, 128, 12, t["fg"], weight=1.4, cls="rv")
-        doc.text(layer, mid, 147, 8, t["fg50"], anchor="middle", cls="rv")
-    for yy, lab in ((cap, "1"), (base, "0")):
+    for yy in (cap, base):
         doc.add(hline(M, R, yy, t["fg20"], extra=' class="ln" pathLength="1"'))
-        doc.text(lab, M - 12, yy + 4, 8, t["fg50"], anchor="end", cls="rv")
     doc.add(hline(M, R, cap + C / 2, t["fg7"], extra=' stroke-dasharray="2 6"'))
 
     # the name, resolving as it is read
@@ -430,16 +420,6 @@ def hero(t):
             stage_design(doc, ch, x + wm / 2, base - wm / 2, C - wm, cls="s4", strokes=False)
             stage_measure(doc, ch, x, base, C, wm, cls="s5")
 
-    # instrument: true measurements of the resolved word, in cap heights
-    a, b = span[2]
-    dim_h(doc, a, b, cap - 16, "%.2f" % ((b - a) / C), ext_from=cap - 4)
-    hx = xs[16]
-    doc.add(hline(hx, hx + wm, base + 15, t["fg50"]),
-            vline(hx, base + 8, base + 22, t["fg50"]), vline(hx + wm, base + 8, base + 22, t["fg50"]))
-    doc.text("%.2f" % (wm / C), hx + wm + 7, base + 19, 8, t["fg72"])
-    dim_v(doc, b + 14, cap, base, "1.00", cap=8)
-    doc.add(reg(t, R - 6, cap - 36, 4.5), reg(t, R - 6, base + 36, 4.5))
-
     # the door: SIDDHA + ARTHA share one A, and the ember waits in its counter
     # The A's anchor is the incentre of its counter; the ring is sized to the circle
     # that fits inside the drawn counter (inradius 0.19 of the skeleton, less half a stroke).
@@ -448,11 +428,6 @@ def hero(t):
     fit = 0.19 * sk - wm / 2
     doc.add('<circle class="em" cx="%s" cy="%s" r="%s" fill="%s"/>' % (num(ex), num(ey), num(fit * 0.45), t["ember"]),
             '<circle class="er" cx="%s" cy="%s" r="%s" stroke="%s"/>' % (num(ex), num(ey), num(fit - 1), t["ember"]))
-    doc.text("↑ SIDDHA + ARTHA SHARE THIS A", ex - 4, base + 38, 9, t["fg72"], cls="rv")
-
-    doc.add(hline(M, R, H - 60, t["fg20"], extra=' class="ln" pathLength="1"'))
-    doc.text("THE NAME IS WHAT THE PARTS ADD UP TO", M, H - 28, 11, t["fg72"], cls="rv")
-    doc.text("INDIA · UTC +05:30", R, H - 28, 11, t["fg50"], anchor="end", cls="rv")
 
     # one-shot reveal, in the order a letter becomes: sketched, inferred, computed,
     # arranged, measured. The hero is above the fold, so it is seen while it plays.
@@ -1566,32 +1541,21 @@ def statement(t):
     """The words under the hero, and a key to the stages the plates are drawn at."""
     fg, dim = t["fg"], t["fg50"]
     doc = Doc(t, 0, "Jai Sai Siddhartha Peruri",
-              "Jai Sai Siddhartha Peruri, computer science, India. A hand sketches it. A model "
-              "infers it. A grid computes it. A layout arranges it. An instrument measures it. "
-              "From one place, they add up to a name. I study computer science and work in all "
-              "five: drawing, models, code, interfaces, systems. Each name on the plates below is "
-              "drawn only as far as its evidence goes: sketched, named with no code yet; inferred, "
-              "built but not yet public; arranged, public but unfinished; measured, public and "
-              "running.", ground=False)
+              "Jai Sai Siddhartha Peruri, computer science, India. I design and build interfaces, "
+              "models and systems. The projects below are drawn only as far as they exist: "
+              "sketched, named with no code yet; inferred, built but not yet public; arranged, "
+              "public but unfinished; measured, public and running.", ground=False)
     cx, y = W / 2, 34
     rich(doc, [("JAI SAI SIDDHARTHA PERURI", fg), ("·", dim), ("COMPUTER SCIENCE", t["fg72"]),
                ("·", dim), ("INDIA", t["fg72"])], cx, y, 12, "middle")
-    y += 78
-    for segs in ([("A HAND", dim), ("SKETCHES", fg, "v v0"), ("IT. A MODEL", dim),
-                  ("INFERS", fg, "v v1"), ("IT. A GRID", dim), ("COMPUTES", fg, "v v2"), ("IT.", dim)],
-                 [("A LAYOUT", dim), ("ARRANGES", fg, "v v3"), ("IT. AN INSTRUMENT", dim),
-                  ("MEASURES", fg, "v v4"), ("IT.", dim)],
-                 [("FROM ONE PLACE, THEY ADD UP TO A NAME.", fg)]):
-        rich(doc, segs, cx, y, 17, "middle", weight=1.55)
-        y += 36
-    y += 30
-    doc.text("I STUDY COMPUTER SCIENCE AND WORK IN ALL FIVE:", cx, y, 14, t["fg72"], anchor="middle")
-    doc.text("DRAWING, MODELS, CODE, INTERFACES, SYSTEMS.", cx, y + 27, 14, t["fg72"],
+    y += 64
+    doc.text("I DESIGN AND BUILD INTERFACES, MODELS AND SYSTEMS.", cx, y, 17, fg, anchor="middle",
+             weight=1.55)
+    y += 40
+    doc.text("THE PROJECTS BELOW ARE DRAWN ONLY AS FAR AS THEY EXIST.", cx, y, 14, t["fg72"],
              anchor="middle")
-    y += 92
-    doc.add(hline(cx - 150, cx + 150, y - 30, t["fg20"]))
-    doc.text("EACH NAME ON THE PLATES BELOW IS DRAWN ONLY AS FAR AS ITS EVIDENCE GOES", cx, y, 10,
-             dim, anchor="middle")
+    y += 40
+    doc.add(hline(cx - 150, cx + 150, y - 24, t["fg20"]))
     y += 34
     key = [("sketch", "SKETCHED", "NAMED, NO CODE YET"), ("field", "INFERRED", "BUILT, NOT YET PUBLIC"),
            ("design", "ARRANGED", "PUBLIC, UNFINISHED"), ("measure", "MEASURED", "PUBLIC, AND IT RUNS")]
