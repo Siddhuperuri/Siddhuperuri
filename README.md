@@ -65,9 +65,59 @@
 <br>
 
 <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/vantage-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/vantage-light.svg">
+  <img alt="Plate VI. The title VANTAGE, drawn as exact construction geometry: public code, live on GitHub Pages. An axis with four places: Vantage, The Inside, The Edge, The Deep, and an ember travelling along it. Below, five sheets of light seen from the side: from the vantage a line of sight passes through the same point on every sheet and they sum; one step aside, the points no longer line up. Stillness resolves. Motion scatters. Attention pulls." src="./assets/vantage-dark.svg" width="100%">
+</picture>
+
+<p><a href="https://github.com/Siddhuperuri/vantage"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/vantage-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/vantage-light.svg"><img alt="VANTAGE. Explorable 3D artwork, 2026, measured. An explorable 3D version of SIDDHARTHA: five layers of light at five depths that sum into a name from one point, and only if you stop. Four places along one axis, with no cuts between them. One law governs it: stillness resolves, motion scatters, attention pulls. Made with TypeScript, React, React Three Fiber, three.js and Vite. Tests: 19 unit, 21 end-to-end and a frame-rate test on the real GPU. Live on GitHub Pages. Source: Siddhuperuri/vantage." src="./assets/labels/vantage-dark.svg" width="100%"></picture></a></p>
+
+<br>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/fams-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/fams-light.svg">
+  <img alt="Plate VII. The title FAMS, drawn as exact construction geometry: public code. Three boxes joined by arrows: Faculty, with eleven sections and self-scores; Head of Department, who approves and forwards; Principal, the final decision. Beneath them a line of ticks, the audit trail, with an ember travelling along it. Read-only from submission. Dashed, not built: self-service password reset, e-mail delivery, SSO." src="./assets/fams-dark.svg" width="100%">
+</picture>
+
+<p><a href="https://github.com/Siddhuperuri/faculty-apraisal"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/fams-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/fams-light.svg"><img alt="FAMS. Faculty Appraisal Management System, 2026, arranged. A digital version of a college's faculty self-appraisal form. Faculty complete it section by section and submit it to their Head of Department, who approves and forwards it to the Principal for the final decision, and every step is audited. Made with Java, MySQL, Flyway, Next.js, TypeScript, Tailwind and Docker. 291 backend tests, plus style and static analysis. Not yet: self-service password reset, e-mail delivery, single sign-on. Source: Siddhuperuri/faculty-apraisal." src="./assets/labels/fams-dark.svg" width="100%"></picture></a></p>
+
+<br>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/portfolio-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/portfolio-light.svg">
+  <img alt="Plate VIII. The title PORTFOLIO, drawn as exact construction geometry: public code, live on Vercel. Four boxes joined by arrows: content as typed project records, pages in Next.js and React, three.js and React Three Fiber for the scene, and GSAP and Framer Motion for motion. Below, nine squares, one per project record, the latest two filled, with an ember on the last." src="./assets/portfolio-dark.svg" width="100%">
+</picture>
+
+<p><a href="https://siddhartha-portfolio-nine.vercel.app"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/portfolio-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/portfolio-light.svg"><img alt="PORTFOLIO. Web portfolio, 2026, measured. My portfolio: the work on this page, set out as nine typed project records in a site built for a visual designer and creative front-end builder. Made with Next.js, React, TypeScript, Tailwind, three.js, React Three Fiber, GSAP and Framer Motion. Live on Vercel. Source: Siddhuperuri/siddhartha-portfolio." src="./assets/labels/portfolio-dark.svg" width="100%"></picture></a></p>
+
+<br>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/tetrix-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/tetrix-light.svg">
+  <img alt="Plate IX. The title TETRIX, drawn as a cloud of points, because the code is not public. A rules engine, pure TypeScript, with arrows out to a renderer, a HUD and effects: they read state and write nothing back. Three modes, three graphics presets. Dashed, not built: touch controls, music, the Overdrive mechanic." src="./assets/tetrix-dark.svg" width="100%">
+</picture>
+
+<p><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/tetrix-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/tetrix-light.svg"><img alt="TETRIX. 3D arcade game, 2026, inferred. A 3D take on Tetris where a pure rules engine drives every block, effect and camera move: the renderer reads game state and writes nothing back, so the visuals cannot drift from the rules. Three modes: Marathon, Sprint and Ultra. Made with TypeScript, React, three.js, React Three Fiber, Vitest and Playwright. 201 unit and 21 end-to-end tests at its last recorded run. Not yet: touch controls, music, the Overdrive mechanic; frame rate not measured on integrated GPUs or phones. A private repository, not yet public." src="./assets/labels/tetrix-dark.svg" width="100%"></picture></p>
+
+<br>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/halftone-gambit-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/halftone-gambit-light.svg">
+  <img alt="Plate X. The title HALFTONE GAMBIT, drawn as a cloud of points, because the code is not public. A pipeline of five boxes: rules in chess.js, the board, one glyph shader, a dither pass, and the screen. Stockfish in a worker and a semantic DOM board hang off the rules. Dashed, not built: drag to move, and a measurement on mobile." src="./assets/halftone-gambit-dark.svg" width="100%">
+</picture>
+
+<p><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/halftone-gambit-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/halftone-gambit-light.svg"><img alt="HALFTONE GAMBIT. 3D chess in ASCII glyphs, 2026, inferred. A 3D chess game drawn entirely in ASCII glyphs and GPU dithering, playable in the browser against a Stockfish engine or a second player. One shader draws every lit surface, and a semantic DOM board makes it playable without the 3D view. Made with TypeScript, React, React Three Fiber, three.js, chess.js and Zustand, with Stockfish as WebAssembly in a worker. Thirteen mate challenges verified by exhaustive search, and a perft test. Not yet: drag to move; not measured on mobile; progression is local and unverified. Stockfish is GPL-3.0, so distributing it means complying with the GPL. A private repository, not yet public." src="./assets/labels/halftone-gambit-dark.svg" width="100%"></picture></p>
+
+<br>
+
+<picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/not-yet-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="./assets/not-yet-light.svg">
-  <img alt="Plate VI. Not yet. Three names drawn only as sketches: SPECTRA, multimodal AI and computer vision; SYNCHRO, distributed systems and real-time; AETHER, creative computing and WebGL. Each has a dashed mark of its question. Nothing on this plate is lit." src="./assets/not-yet-dark.svg" width="100%">
+  <img alt="Plate XI. Not yet. Three names drawn only as sketches: SPECTRA, multimodal AI and computer vision; SYNCHRO, distributed systems and real-time; AETHER, creative computing and WebGL. Each has a dashed mark of its question. Nothing on this plate is lit." src="./assets/not-yet-dark.svg" width="100%">
 </picture>
 
 <p><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/not-yet-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/not-yet-light.svg"><img alt="Not yet: SPECTRA, SYNCHRO, AETHER. Sketched. Named, not built, and not yet printed as plates. Each holds a question instead of a description. SPECTRA: what does a machine notice, miss or mistake when it looks? SYNCHRO: what do state, latency and coordination feel like when systems move together? AETHER: what happens when WebGL, generative systems and spatial interfaces become an atmosphere?" src="./assets/labels/not-yet-dark.svg" width="100%"></picture></p>
@@ -77,7 +127,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/card-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="./assets/card-light.svg">
-  <img alt="Plate VII. The stack as a punched card: one row per work, one column per tool, grouped under sketches, infers, computes, arranges and measures. A hole means the tool is in that work. The full table follows as text." src="./assets/card-dark.svg" width="100%">
+  <img alt="Plate XII. The stack as a punched card: one row per work, one column per tool, grouped under sketches, infers, computes, arranges and measures. A hole means the tool is in that work. The full table follows as text." src="./assets/card-dark.svg" width="100%">
 </picture>
 
 <p><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/card-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/card-light.svg"><img alt="The stack, punched. Rows are works, columns are tools, and a hole is only punched where the work's repository or record shows the tool. Also in hand, with no public work to show for them yet: Photoshop, Illustrator, Lightroom, Canva, PyTorch, C. Also made: FAMS, a faculty appraisal system for a college; TETRIX, 3D Tetris; Halftone Gambit, 3D chess in ASCII glyphs; the last two are private repositories, shown on the portfolio. Earlier: Gravity Playground, a custom physics engine; Travelease, a location-based treasure hunt; PETPONKS, identity and wireframes." src="./assets/labels/card-dark.svg" width="100%"></picture></p>
@@ -110,7 +160,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/trace-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="./assets/trace-light.svg">
-  <img alt="Plate VIII. Trace: every day of the last 52 weeks as one mark on a line; days with public contributions rise from it. The totals are printed on the plate." src="./assets/trace-dark.svg" width="100%">
+  <img alt="Plate XIII. Trace: every day of the last 52 weeks as one mark on a line; days with public contributions rise from it. The totals are printed on the plate." src="./assets/trace-dark.svg" width="100%">
 </picture>
 
 <p><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/trace-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/trace-light.svg"><img alt="Trace, last 52 weeks, redrawn daily. Redrawn each morning from the GitHub API by a workflow in this repository, not by a stats service. The numbers are the API's, unrounded. Source: GitHub GraphQL API, contribution calendar. Workflow: .github/workflows/trace.yml, 06:47 IST." src="./assets/labels/trace-dark.svg" width="100%"></picture></p>
@@ -120,7 +170,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/end-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="./assets/end-light.svg">
-  <img alt="Plate IX, the last. Jack of all, master of none, but often times better than master of one. Left as a sketch; an ember waits below it." src="./assets/end-dark.svg" width="100%">
+  <img alt="Plate XIV, the last. Jack of all, master of none, but often times better than master of one. Left as a sketch; an ember waits below it." src="./assets/end-dark.svg" width="100%">
 </picture>
 
 <p><a href="https://github.com/Siddhuperuri/miracle"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/labels/end-dark.svg"><source media="(prefers-color-scheme: light)" srcset="./assets/labels/end-light.svg"><img alt="The last sentence of SIDDHARTHA, left as a sketch: nothing measures it. There is one more, at the bottom of the well. Plates drawn by tools/build_assets.py in the artwork's own stroke alphabet. No font files, no scripts, no third-party services; light and dark from one source." src="./assets/labels/end-dark.svg" width="100%"></picture></a></p>

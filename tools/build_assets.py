@@ -843,7 +843,252 @@ def vigil(t):
     return doc.svg()
 
 
-# ----------------------------------------------------------- PL. VI  NOT YET
+# ----------------------------------------- PL. VI to X  the other works
+def box(doc, x, y, w, h, lines, solid=True, ring=None):
+    """An outlined box with centred lines of micro-type: [(text, cap, colour)]."""
+    t = doc.t
+    doc.add('<rect x="%s" y="%s" width="%s" height="%s" fill="%s" stroke="%s" stroke-width="1.4"%s/>'
+            % (num(x), num(y), num(w), num(h), t["bg"], ring or t["fg"],
+               "" if solid else ' stroke-dasharray="3 4"'))
+    gap = 16
+    ty = y + h / 2 - (len(lines) - 1) * gap / 2 + 3
+    for s, cap, c in lines:
+        if S.text_width(s, 0.32) * cap > w - 10:
+            raise ValueError("%r does not fit a %d wide box" % (s, w))
+        doc.text(s, x + w / 2, ty, cap, c, anchor="middle")
+        ty += gap
+
+
+def dashed(doc, x0, x1, y, t):
+    doc.add('<path d="M%s %sH%s" stroke="%s" stroke-width="1.4" stroke-dasharray="4 6"/>'
+            % (num(x0), num(y), num(x1), t["fg34"]))
+
+
+def draw_vantage(doc, t, x0, x1):
+    doc.text("ONE AXIS · FOUR PLACES · NO CUTS BETWEEN THEM", x0, 128, 9, t["fg50"])
+    ya = 186
+    step = (x1 - x0 - 150) / 3
+    xs = [x0 + 6 + i * step for i in range(4)]
+    doc.add(hline(xs[0], xs[3], ya, t["fg34"]))
+    places = [("I · VANTAGE", "FIVE LAYERS SUM", "TO THE NAME"),
+              ("II · THE INSIDE", "110 LETTERS AROUND", "THE VISITOR"),
+              ("III · THE EDGE", "DENSITY DROPS TO", "ONE SENTENCE"),
+              ("IV · THE DEEP", "THE FLOOR LETS GO", "AND THE LAYERS FALL")]
+    for x, (a, b, c) in zip(xs, places):
+        doc.add('<circle cx="%s" cy="%s" r="5" fill="%s" stroke="%s" stroke-width="1.6"/>'
+                % (num(x), ya, t["bg"], t["fg"]))
+        doc.text(a, x - 5, ya + 28, 9, t["fg"])
+        doc.text(b, x - 5, ya + 46, 8, t["fg50"])
+        doc.text(c, x - 5, ya + 60, 8, t["fg50"])
+    doc.add('<circle class="tv" cx="%s" cy="%s" r="4.5" fill="%s"/>' % (num(xs[0]), ya, t["ember"]))
+    # five sheets of light, seen from the side, and two lines of sight
+    sy = 332
+    doc.text("FIVE SHEETS OF LIGHT, FIVE DEPTHS", x0, 286, 9, t["fg50"])
+    vx, sx = x0 + 14, [x0 + 120 + i * 34 for i in range(5)]
+    for x in sx:
+        doc.add(vline(x, sy - 42, sy + 42, t["fg50"], 1.6))
+    doc.add(line(vx, sy, sx[-1] + 24, sy, t["fg"], 1.4))
+    for x in sx:
+        doc.add('<circle cx="%s" cy="%s" r="3" fill="%s"/>' % (num(x), sy, t["fg"]))
+    doc.add(line(vx, sy + 14, sx[-1] + 24, sy + 14, t["fg34"], 1, ' stroke-dasharray="3 5"'))
+    for x, dy in zip(sx, (-6, 11, -17, 21, -9)):
+        doc.add('<circle cx="%s" cy="%s" r="3" stroke="%s"/>' % (num(x), sy + 14 + dy, t["fg50"]))
+    doc.text("V", vx - 4, sy - 12, 9, t["fg72"])
+    doc.text("FROM THE VANTAGE", sx[-1] + 40, sy + 4, 9, t["fg72"])
+    doc.text("THEY SUM", sx[-1] + 40, sy + 20, 9, t["fg72"])
+    doc.text("ONE STEP ASIDE", sx[-1] + 40, sy + 40, 9, t["fg50"])
+    doc.text("THEY SCATTER", sx[-1] + 40, sy + 56, 9, t["fg50"])
+    doc.text("STILLNESS RESOLVES · MOTION SCATTERS · ATTENTION PULLS", x0, 438, 9, t["fg72"])
+    motion(doc, "@keyframes tv{to{transform:translateX(%spx)}}"
+                ".tv{animation:tv 11s cubic-bezier(.5,0,.5,1) infinite alternate}"
+                % num(xs[3] - xs[0]))
+
+
+def draw_fams(doc, t, x0, x1):
+    doc.text("ONE FORM · THREE HANDS · EVERY STEP AUDITED", x0, 128, 9, t["fg50"])
+    bw, bh, by = 150, 68, 170
+    bx = [x0, (x0 + x1 - bw) / 2, x1 - bw]
+    box(doc, bx[0], by, bw, bh, [("FACULTY", 11, t["fg"]), ("11 SECTIONS", 8, t["fg50"]),
+                                  ("AND SELF-SCORES", 8, t["fg50"])])
+    box(doc, bx[1], by, bw, bh, [("HEAD OF DEPT.", 10, t["fg"]), ("APPROVES", 8, t["fg50"]),
+                                  ("AND FORWARDS", 8, t["fg50"])])
+    box(doc, bx[2], by, bw, bh, [("PRINCIPAL", 11, t["fg"]), ("THE FINAL", 8, t["fg50"]),
+                                  ("DECISION", 8, t["fg50"])])
+    for i in range(2):
+        arrow(doc, bx[i] + bw + 6, by + bh / 2, bx[i + 1] - 6, by + bh / 2, t["fg"], 1.4, 7)
+    doc.text("SUBMIT", (bx[0] + bw + bx[1]) / 2, by + bh / 2 - 12, 8, t["fg72"], anchor="middle")
+    doc.text("FORWARD", (bx[1] + bw + bx[2]) / 2, by + bh / 2 - 12, 8, t["fg72"], anchor="middle")
+    ay = 300
+    doc.add(hline(x0, x1, ay, t["fg34"]))
+    for c in bx:
+        doc.add(vline(c + bw / 2, by + bh + 8, ay - 4, t["fg20"]))
+    for i in range(0, 41):
+        x = x0 + i * (x1 - x0) / 40
+        doc.add(vline(x, ay - 4, ay + 4, t["fg50"]))
+    doc.add('<circle class="tv" cx="%s" cy="%s" r="4.5" fill="%s"/>' % (num(x0), ay, t["ember"]))
+    doc.text("AUDIT TRAIL · READ-ONLY FROM SUBMISSION", x0, ay + 28, 9, t["fg72"])
+    doc.text("PDF REPORT: DRAFT-WATERMARKED UNTIL APPROVED", x0, ay + 48, 9, t["fg72"])
+    dashed(doc, x0, x1, 408, t)
+    doc.text("NOT BUILT · SELF-SERVICE PASSWORD RESET · E-MAIL DELIVERY · SSO", x0, 428, 9,
+             t["fg50"])
+    motion(doc, "@keyframes tv{to{transform:translateX(%spx)}}"
+                ".tv{animation:tv 9s linear infinite}" % num(x1 - x0))
+
+
+def draw_portfolio(doc, t, x0, x1):
+    doc.text("FROM A RECORD TO A PAGE", x0, 128, 9, t["fg50"])
+    n, gap = 4, 30
+    bw = (x1 - x0 - gap * (n - 1)) / n
+    nodes = [("CONTENT", "TYPED PROJECT", "RECORDS"), ("PAGES", "NEXT.JS", "AND REACT"),
+             ("SCENE", "THREE.JS, REACT", "THREE FIBER"), ("MOTION", "GSAP, FRAMER", "MOTION")]
+    for i, (a, b, c) in enumerate(nodes):
+        bx = x0 + i * (bw + gap)
+        box(doc, bx, 160, bw, 78, [(a, 11, t["fg"]), (b, 8, t["fg50"]), (c, 8, t["fg50"])])
+        if i:
+            arrow(doc, bx - gap + 5, 199, bx - 5, 199, t["fg"], 1.4, 6)
+    doc.text("NINE PROJECT RECORDS", x0, 308, 9, t["fg50"])
+    sq = 22
+    for i in range(9):
+        x = x0 + i * (sq + 12)
+        doc.add('<rect x="%s" y="324" width="%s" height="%s" fill="%s" stroke="%s" stroke-width="1.4"/>'
+                % (num(x), sq, sq, t["fg"] if i >= 7 else t["bg"], t["fg"]))
+    ember(doc, x0 + 8 * (sq + 12) + sq / 2, 324 + sq + 22, 3.5, 9)
+    doc.text("THE LATEST TWO: TETRIX AND HALFTONE GAMBIT", x0, 392, 9, t["fg72"])
+    doc.text("EACH RECORD NAMES ITS TOOLS, ITS ROLE AND ITS LIMITS", x0, 412, 9, t["fg50"])
+
+
+def draw_tetrix(doc, t, x0, x1):
+    doc.text("THE RULES COME FIRST. EVERYTHING ELSE ONLY READS THEM.", x0, 128, 9, t["fg50"])
+    ex, ew, eh, ey = x0, 170, 120, 170
+    box(doc, ex, ey, ew, eh, [("RULES ENGINE", 11, t["fg"]), ("PURE TYPESCRIPT", 8, t["fg50"]),
+                              ("FIXED-STEP LOOP", 8, t["fg50"])])
+    rx, rw, rh = x1 - 190, 190, 44
+    outs = [("RENDERER", "ABOUT 14 DRAW CALLS"), ("HUD", "SHARED WITH THE MENUS"),
+            ("EFFECTS", "ONE PER KIND OF CLEAR")]
+    for i, (a, b) in enumerate(outs):
+        y = ey - 10 + i * 66
+        box(doc, rx, y, rw, rh, [(a, 10, t["fg"]), (b, 8, t["fg50"])])
+        arrow(doc, ex + ew + 6, ey + eh / 2, rx - 6, y + rh / 2, t["fg50"], 1.2, 6)
+    doc.text("THEY READ STATE", ex, ey + eh + 20, 8, t["fg72"])
+    doc.text("AND WRITE NOTHING BACK", ex, ey + eh + 34, 8, t["fg72"])
+    ember(doc, ex + 14, ey + 14, 3.5, 9)
+    doc.text("THREE MODES · MARATHON · SPRINT · ULTRA", x0, 352, 9, t["fg72"])
+    doc.text("THREE PRESETS · LOW · HIGH · ULTRA, EACH CHANGES REAL WORK", x0, 370, 9, t["fg72"])
+    doc.text("A SEEDABLE PIECE SEQUENCE FOR REPEATABLE TESTS", x0, 388, 9, t["fg50"])
+    dashed(doc, x0, x1, 410, t)
+    doc.text("NOT BUILT · TOUCH CONTROLS · MUSIC · THE OVERDRIVE MECHANIC", x0, 430, 9, t["fg50"])
+
+
+def draw_halftone(doc, t, x0, x1):
+    doc.text("RULES ARE AUTHORITATIVE. THE LOOK IS A PIPELINE OVER THEM.", x0, 128, 9, t["fg50"])
+    n, gap = 5, 26
+    bw = (x1 - x0 - gap * (n - 1)) / n
+    nodes = [("RULES", "CHESS.JS"), ("BOARD", "REACT THREE"), ("GLYPHS", "ONE SHADER"),
+             ("DITHER", "ORDERED"), ("SCREEN", "TEXT ON TOP")]
+    by, bh = 160, 62
+    for i, (a, b) in enumerate(nodes):
+        bx = x0 + i * (bw + gap)
+        box(doc, bx, by, bw, bh, [(a, 10, t["fg"]), (b, 7, t["fg50"])])
+        if i:
+            arrow(doc, bx - gap + 3, by + bh / 2, bx - 3, by + bh / 2, t["fg"], 1.4, 5)
+    ember(doc, x0 + 2 * (bw + gap) + bw / 2, by - 14, 3.5, 9)
+    # the engine and the accessible board both hang off the rules
+    r1 = x0 + bw / 2
+    box(doc, x0, 290, bw + 36, 54, [("STOCKFISH", 9, t["fg"]), ("WASM, IN A WORKER", 7, t["fg50"])])
+    arrow(doc, r1, 286, r1, by + bh + 6, t["fg50"], 1.2, 6)
+    bx2 = x0 + bw + gap + 26
+    box(doc, bx2, 290, bw + 70, 54,
+        [("DOM BOARD", 9, t["fg"]), ("PLAYABLE WITHOUT 3D", 7, t["fg50"])])
+    arrow(doc, bx2 + 20, 286, x0 + bw / 2 + 28, by + bh + 6, t["fg50"], 1.2, 6)
+    doc.text("SIX DIFFICULTY PRESETS · 13 MATE CHALLENGES, VERIFIED", x0, 380, 9, t["fg72"])
+    dashed(doc, x0, x1, 410, t)
+    doc.text("NOT BUILT · DRAG TO MOVE · NOT MEASURED ON MOBILE", x0, 430, 9, t["fg50"])
+
+
+WORKS_PLATES = {
+    "vantage": dict(
+        pl="PL. VI", title=["VANTAGE"], stage="design", bar="MEASURED · PUBLIC",
+        name="VANTAGE", kind="EXPLORABLE 3D ARTWORK", draw=draw_vantage,
+        sub="MEASURED: PUBLIC, AND IT RUNS",
+        lines=["FOUR PLACES ALONG ONE AXIS", "ONE LAW: STILLNESS RESOLVES", "TESTED END TO END"],
+        tools=["TYPESCRIPT · REACT · THREE.JS", "REACT THREE FIBER · VITE"],
+        alt="Plate VI. The title VANTAGE, drawn as exact construction geometry: public code, "
+            "live on GitHub Pages. An axis with four places: Vantage, The Inside, The Edge, The "
+            "Deep, and an ember travelling along it. Below, five sheets of light seen from the "
+            "side: from the vantage a line of sight passes through the same point on every "
+            "sheet and they sum; one step aside, the points no longer line up. Stillness "
+            "resolves. Motion scatters. Attention pulls."),
+    "fams": dict(
+        pl="PL. VII", title=["FAMS"], stage="design", bar="ARRANGED · PUBLIC",
+        name="FAMS", kind="FACULTY APPRAISAL MANAGEMENT SYSTEM", draw=draw_fams,
+        sub="ARRANGED: PUBLIC CODE, UNFINISHED",
+        lines=["A COLLEGE'S APPRAISAL FORM, ONLINE", "FACULTY → HEAD OF DEPT. → PRINCIPAL",
+               "291 BACKEND TESTS"],
+        tools=["JAVA · MYSQL · FLYWAY · DOCKER", "NEXT.JS · TYPESCRIPT · TAILWIND"],
+        alt="Plate VII. The title FAMS, drawn as exact construction geometry: public code. Three "
+            "boxes joined by arrows: Faculty, with eleven sections and self-scores; Head of "
+            "Department, who approves and forwards; Principal, the final decision. Beneath them "
+            "a line of ticks, the audit trail, with an ember travelling along it. Read-only from "
+            "submission. Dashed, not built: self-service password reset, e-mail delivery, SSO."),
+    "portfolio": dict(
+        pl="PL. VIII", title=["PORTFOLIO"], stage="design", bar="MEASURED · PUBLIC",
+        name="PORTFOLIO", kind="WEB PORTFOLIO", draw=draw_portfolio,
+        sub="MEASURED: PUBLIC, AND IT RUNS",
+        lines=["NINE PROJECTS AS TYPED RECORDS", "THREE.JS, REACT THREE FIBER, GSAP",
+               "LIVE ON VERCEL"],
+        tools=["NEXT.JS · TYPESCRIPT · TAILWIND", "THREE.JS · R3F · GSAP · FRAMER MOTION"],
+        alt="Plate VIII. The title PORTFOLIO, drawn as exact construction geometry: public code, "
+            "live on Vercel. Four boxes joined by arrows: content as typed project records, "
+            "pages in Next.js and React, three.js and React Three Fiber for the scene, and "
+            "GSAP and Framer Motion for motion. Below, nine squares, one per project record, the latest "
+            "two filled, with an ember on the last."),
+    "tetrix": dict(
+        pl="PL. IX", title=["TETRIX"], stage="field", bar="INFERRED · PRIVATE",
+        name="TETRIX", kind="3D ARCADE GAME", draw=draw_tetrix,
+        sub="INFERRED: BUILT, NOT YET PUBLIC",
+        lines=["A 3D TAKE ON TETRIS", "A PURE RULES ENGINE UNDERNEATH",
+               "201 UNIT, 21 END-TO-END TESTS"],
+        tools=["TYPESCRIPT · REACT · THREE.JS", "REACT THREE FIBER · VITEST · PLAYWRIGHT"],
+        alt="Plate IX. The title TETRIX, drawn as a cloud of points, because the code is not "
+            "public. A rules engine, pure TypeScript, with arrows out to a renderer, a HUD and "
+            "effects: they read state and write nothing back. Three modes, three graphics "
+            "presets. Dashed, not built: touch controls, music, the Overdrive mechanic."),
+    "halftone-gambit": dict(
+        pl="PL. X", title=["HALFTONE", "GAMBIT"], stage="field", bar="INFERRED · PRIVATE",
+        name="HALFTONE GAMBIT", kind="3D CHESS IN ASCII GLYPHS", draw=draw_halftone,
+        sub="INFERRED: BUILT, NOT YET PUBLIC",
+        lines=["PLAYABLE AGAINST STOCKFISH", "OR A SECOND PLAYER, IN THE BROWSER",
+               "13 MATE CHALLENGES, VERIFIED"],
+        tools=["TYPESCRIPT · REACT THREE FIBER · CHESS.JS", "STOCKFISH · ZUSTAND · SUPABASE"],
+        alt="Plate X. The title HALFTONE GAMBIT, drawn as a cloud of points, because the code "
+            "is not public. A pipeline of five boxes: rules in chess.js, the board, one glyph "
+            "shader, a dither pass, and the screen. Stockfish in a worker and a semantic DOM "
+            "board hang off the rules. Dashed, not built: drag to move, and a measurement on "
+            "mobile."),
+}
+
+
+def work(t, P):
+    H = 500
+    doc = Doc(t, H, "%s, %s" % (P["name"].title(), P["kind"].lower()), P["alt"])
+    frame(doc, P["pl"], "%s — %s" % (P["name"], P["kind"]), P["bar"])
+    lines = P["title"]
+    C = min(70, 440 / max(S.text_layout(s, 0.3)[1] for s in lines))
+    y = 214 if len(lines) == 1 else 110 + C
+    for i, s in enumerate(lines):
+        word(doc, s, M, y, C, P["stage"], weight=2.2, seed=3 + i * 11)
+        y += C * 1.22
+    dy = (y - C * 1.22) - 214
+    doc.text(P["sub"], M, 256 + dy, 9, t["fg50"])
+    for i, s in enumerate(P["lines"]):
+        doc.text(s, M, 312 + dy + i * 24, 11, t["fg72"])
+    for i, s in enumerate(P["tools"]):
+        doc.text(s, M, 404 + dy + i * 20, 10, t["fg50"])
+    P["draw"](doc, t, 560, R - 20)
+    return doc.svg()
+
+
+# ----------------------------------------------------------- PL. XI  NOT YET
 OPEN = [("SPECTRA", "MULTIMODAL AI / COMPUTER VISION"),
         ("SYNCHRO", "DISTRIBUTED SYSTEMS / REAL-TIME"),
         ("AETHER", "CREATIVE COMPUTING / WEBGL")]
@@ -852,12 +1097,12 @@ OPEN = [("SPECTRA", "MULTIMODAL AI / COMPUTER VISION"),
 def not_yet(t):
     H = 470
     doc = Doc(t, H, "Not yet: SPECTRA, SYNCHRO, AETHER",
-              "Plate VI. Three names drawn only as sketches, because nothing public exists for "
+              "Plate XI. Three names drawn only as sketches, because nothing public exists for "
               "them yet: SPECTRA, multimodal AI and computer vision; SYNCHRO, distributed systems "
               "and real-time; AETHER, creative computing and WebGL. Each has a dashed mark of its "
               "question. There is no ember and no ground: nothing here is lit, or printed, yet.",
               ground=False)
-    frame(doc, "PL. VI", "NOT YET", "NOTHING RESOLVES PAST THE EVIDENCE FOR IT")
+    frame(doc, "PL. XI", "NOT YET", "NOTHING RESOLVES PAST THE EVIDENCE FOR IT")
     third = CW / 3.0
     dash = ' stroke-dasharray="3 5"'
     for i, (name, kind) in enumerate(OPEN):
@@ -915,7 +1160,7 @@ def not_yet(t):
     return doc.svg()
 
 
-# ------------------------------------------------------------- PL. VII  card
+# ------------------------------------------------------------- PL. XII  card
 TOOLS = [
     ("01", "SKETCHES", ["FIGMA", "FRAMER"]),
     ("02", "INFERS", ["SCIKIT-LEARN", "XGBOOST", "EMBEDDINGS", "PGVECTOR"]),
@@ -946,11 +1191,11 @@ WORKS = [
 def card(t):
     H = 799
     doc = Doc(t, H, "The stack, as a punched card",
-              "Plate VII. A punched card: one row per work, one column per tool, grouped by the "
+              "Plate XII. A punched card: one row per work, one column per tool, grouped by the "
               "five verbs. A hole means the tool is in that work. " + " ".join(
                   "%s: %s." % (w.title(), ", ".join(sorted(s)) if s else "no holes yet")
                   for w, s in WORKS))
-    frame(doc, "PL. VII", "THE STACK, PUNCHED", "A HOLE MEANS THE TOOL IS IN THE WORK")
+    frame(doc, "PL. XII", "THE STACK, PUNCHED", "A HOLE MEANS THE TOOL IS IN THE WORK")
     cols = [(n, verb, tool) for n, verb, tools in TOOLS for tool in tools]
     cx0, cy0, cx1, cy1 = M, 112, R, H - 44
     lab_w = 212
@@ -1019,7 +1264,7 @@ def card(t):
     return doc.svg()
 
 
-# ------------------------------------------------------------ PL. VIII trace
+# ------------------------------------------------------------ PL. XIII trace
 def fetch_trace(token):
     q = ('query($l:String!){user(login:$l){contributionsCollection{contributionCalendar{'
          'totalContributions weeks{contributionDays{date contributionCount}}}}}}')
@@ -1046,10 +1291,10 @@ def trace(t, data):
     cmax = max(counts) or 1
     fmt = lambda iso: ".".join(reversed(iso.split("-")))
     doc = Doc(t, H, "Trace: public contributions, last 52 weeks",
-              "Plate VIII. Every day of the last year as one mark on a line, from %s to %s. "
+              "Plate XIII. Every day of the last year as one mark on a line, from %s to %s. "
               "Days with public contributions rise from the line. %d contributions on %d days."
               % (fmt(days[0][0]), fmt(days[-1][0]), total, active))
-    frame(doc, "PL. VIII", "TRACE — PUBLIC CONTRIBUTIONS, LAST 52 WEEKS",
+    frame(doc, "PL. XIII", "TRACE — PUBLIC CONTRIBUTIONS, LAST 52 WEEKS",
           "GITHUB API · %s" % fmt(data["fetched"]))
     base, x0, x1 = 236, M, R - 30
     step = (x1 - x0) / (len(days) - 1)
@@ -1092,17 +1337,17 @@ def trace(t, data):
     return doc.svg()
 
 
-# ------------------------------------------------------------ PL. IX  end
+# ------------------------------------------------------------ PL. XIV  end
 SENTENCE = ["JACK OF ALL, MASTER OF NONE,", "BUT OFTEN TIMES BETTER", "THAN MASTER OF ONE."]
 
 
 def end(t):
     H = 470
     doc = Doc(t, H, "Jack of all, master of none, but often times better than master of one",
-              "Plate IX, the last. The sentence 'Jack of all, master of none, but often times "
+              "Plate XIV, the last. The sentence 'Jack of all, master of none, but often times "
               "better than master of one', left as a sketch: it never reaches the last stage. "
               "An ember waits below it. The wish is at the bottom of the well.")
-    frame(doc, "PL. IX", "THE EDGE", "END OF PLATES")
+    frame(doc, "PL. XIV", "THE EDGE", "END OF PLATES")
     C = 40
     doc.add('<g class="sw">')
     for i, ln in enumerate(SENTENCE):
@@ -1207,8 +1452,57 @@ LABELS = {
               ("NOT YET", "ANY MEASURED ACCURACY: NO LABELLED DATA, SO NO PRECISION OR RECALL. FIRE AND "
                           "SMOKE ARE DECLARED ABSENT. NO SIGNED INSTALLER, NO LONG SOAK RUN, NO LICENCE CHOSEN"),
               ("SOURCE", "SIDDHUPERURI/VIGIL-88 →")]),
+    "vantage": dict(
+        pl="PL. VI", name="VANTAGE", kind="EXPLORABLE 3D ARTWORK", stage="2026 · MEASURED",
+        body="AN EXPLORABLE 3D VERSION OF SIDDHARTHA: FIVE LAYERS OF LIGHT AT FIVE DEPTHS THAT SUM "
+             "INTO A NAME FROM ONE POINT, AND ONLY IF YOU STOP. FOUR PLACES ALONG ONE AXIS, WITH "
+             "NO CUTS BETWEEN THEM. ONE LAW GOVERNS IT: STILLNESS RESOLVES, MOTION SCATTERS, "
+             "ATTENTION PULLS.",
+        rows=[("MADE WITH", "TYPESCRIPT, REACT, REACT THREE FIBER, THREE.JS, VITE"),
+              ("TESTS", "19 UNIT, 21 END-TO-END AND A FRAME-RATE TEST ON THE REAL GPU"),
+              ("LIVE", "SIDDHUPERURI.GITHUB.IO/VANTAGE →"),
+              ("SOURCE", "SIDDHUPERURI/VANTAGE →")]),
+    "fams": dict(
+        pl="PL. VII", name="FAMS", kind="FACULTY APPRAISAL MANAGEMENT SYSTEM", stage="2026 · ARRANGED",
+        body="A DIGITAL VERSION OF A COLLEGE'S FACULTY SELF-APPRAISAL FORM. FACULTY COMPLETE IT "
+             "SECTION BY SECTION AND SUBMIT IT TO THEIR HEAD OF DEPARTMENT, WHO APPROVES AND "
+             "FORWARDS IT TO THE PRINCIPAL FOR THE FINAL DECISION, AND EVERY STEP IS AUDITED.",
+        rows=[("MADE WITH", "JAVA, MYSQL, FLYWAY · NEXT.JS, TYPESCRIPT, TAILWIND · DOCKER"),
+              ("TESTS", "291 BACKEND TESTS, PLUS STYLE AND STATIC ANALYSIS"),
+              ("NOT YET", "SELF-SERVICE PASSWORD RESET, E-MAIL DELIVERY, SSO"),
+              ("SOURCE", "SIDDHUPERURI/FACULTY-APRAISAL →")]),
+    "portfolio": dict(
+        pl="PL. VIII", name="PORTFOLIO", kind="WEB PORTFOLIO", stage="2026 · MEASURED",
+        body="MY PORTFOLIO: THE WORK ON THIS PAGE, SET OUT AS NINE TYPED PROJECT RECORDS IN A SITE "
+             "BUILT FOR A VISUAL DESIGNER AND CREATIVE FRONT-END BUILDER.",
+        rows=[("MADE WITH", "NEXT.JS, REACT, TYPESCRIPT, TAILWIND · THREE.JS, REACT THREE FIBER, "
+                            "GSAP, FRAMER MOTION"),
+              ("LIVE", "SIDDHARTHA-PORTFOLIO-NINE.VERCEL.APP →"),
+              ("SOURCE", "SIDDHUPERURI/SIDDHARTHA-PORTFOLIO →")]),
+    "tetrix": dict(
+        pl="PL. IX", name="TETRIX", kind="3D ARCADE GAME", stage="2026 · INFERRED",
+        body="A 3D TAKE ON TETRIS WHERE A PURE RULES ENGINE DRIVES EVERY BLOCK, EFFECT AND CAMERA "
+             "MOVE: THE RENDERER READS GAME STATE AND WRITES NOTHING BACK, SO THE VISUALS CANNOT "
+             "DRIFT FROM THE RULES. THREE MODES: MARATHON, SPRINT AND ULTRA.",
+        rows=[("MADE WITH", "TYPESCRIPT, REACT, THREE.JS, REACT THREE FIBER · VITEST, PLAYWRIGHT"),
+              ("TESTS", "201 UNIT AND 21 END-TO-END, AT ITS LAST RECORDED RUN"),
+              ("NOT YET", "TOUCH CONTROLS, MUSIC, THE OVERDRIVE MECHANIC. FRAME RATE NOT MEASURED ON "
+                          "INTEGRATED GPUS OR PHONES"),
+              ("SOURCE", "PRIVATE REPOSITORY, NOT YET PUBLIC")]),
+    "halftone-gambit": dict(
+        pl="PL. X", name="HALFTONE GAMBIT", kind="3D CHESS IN ASCII GLYPHS", stage="2026 · INFERRED",
+        body="A 3D CHESS GAME DRAWN ENTIRELY IN ASCII GLYPHS AND GPU DITHERING, PLAYABLE IN THE "
+             "BROWSER AGAINST A STOCKFISH ENGINE OR A SECOND PLAYER. ONE SHADER DRAWS EVERY LIT "
+             "SURFACE, AND A SEMANTIC DOM BOARD MAKES IT PLAYABLE WITHOUT THE 3D VIEW.",
+        rows=[("MADE WITH", "TYPESCRIPT, REACT, REACT THREE FIBER, THREE.JS, CHESS.JS, ZUSTAND · "
+                            "STOCKFISH, AS WEBASSEMBLY IN A WORKER"),
+              ("HOLDS", "THE RULES IN ONE PLACE, 13 MATE CHALLENGES VERIFIED BY EXHAUSTIVE SEARCH, "
+                        "AND A PERFT TEST"),
+              ("NOT YET", "DRAG TO MOVE. NOT MEASURED ON MOBILE. PROGRESSION IS LOCAL AND UNVERIFIED"),
+              ("LICENCE", "STOCKFISH IS GPL-3.0, SO DISTRIBUTING IT MEANS COMPLYING WITH THE GPL"),
+              ("SOURCE", "PRIVATE REPOSITORY, NOT YET PUBLIC")]),
     "not-yet": dict(
-        pl="PL. VI", name="NOT YET", kind="SPECTRA · SYNCHRO · AETHER", stage="SKETCHED",
+        pl="PL. XI", name="NOT YET", kind="SPECTRA · SYNCHRO · AETHER", stage="SKETCHED",
         body="NAMED, NOT BUILT, AND NOT YET PRINTED AS PLATES. EACH HOLDS A QUESTION INSTEAD OF "
              "A DESCRIPTION.",
         rows=[("SPECTRA", "WHAT DOES A MACHINE NOTICE, MISS OR MISTAKE WHEN IT LOOKS?"),
@@ -1217,7 +1511,7 @@ LABELS = {
               ("AETHER", "WHAT HAPPENS WHEN WEBGL, GENERATIVE SYSTEMS AND SPATIAL INTERFACES "
                          "BECOME AN ATMOSPHERE?")]),
     "card": dict(
-        pl="PL. VII", name="THE STACK", kind="PUNCHED", stage="WORKS × TOOLS",
+        pl="PL. XII", name="THE STACK", kind="PUNCHED", stage="WORKS × TOOLS",
         body="ROWS ARE WORKS, COLUMNS ARE TOOLS, AND A HOLE IS ONLY PUNCHED WHERE THE WORK'S "
              "REPOSITORY OR RECORD SHOWS THE TOOL.",
         rows=[("ALSO IN HAND", "PHOTOSHOP, ILLUSTRATOR, LIGHTROOM, CANVA, PYTORCH, C. NO PUBLIC WORK "
@@ -1228,7 +1522,7 @@ LABELS = {
               ("EARLIER", "GRAVITY PLAYGROUND, A CUSTOM PHYSICS ENGINE · TRAVELEASE, A "
                           "LOCATION-BASED TREASURE HUNT · PETPONKS, IDENTITY AND WIREFRAMES")]),
     "trace": dict(
-        pl="PL. VIII", name="TRACE", kind="LAST 52 WEEKS", stage="REDRAWN DAILY",
+        pl="PL. XIII", name="TRACE", kind="LAST 52 WEEKS", stage="REDRAWN DAILY",
         body="REDRAWN EACH MORNING FROM THE GITHUB API BY A WORKFLOW IN THIS REPOSITORY, NOT BY "
              "A STATS SERVICE. THE NUMBERS ARE THE API'S, UNROUNDED.",
         rows=[("SOURCE", "GITHUB GRAPHQL API · CONTRIBUTION CALENDAR"),
@@ -1375,7 +1669,8 @@ def load_trace(fetch):
 def main(argv):
     data = load_trace("--fetch" in argv)
     plates = [("hero", hero), ("artwork", artwork), ("orbit", orbit), ("helios", helios),
-              ("vigil-88", vigil), ("not-yet", not_yet), ("card", card), ("trace", lambda t: trace(t, data)),
+              ("vigil-88", vigil)] + [(k, lambda t, k=k: work(t, WORKS_PLATES[k]))
+              for k in WORKS_PLATES] + [("not-yet", not_yet), ("card", card), ("trace", lambda t: trace(t, data)),
               ("end", end)]
     plates += [("labels/" + k, lambda t, k=k: label(t, k)) for k in LABELS]
     plates += [("labels/statement", statement), ("labels/end", end_label)]

@@ -27,7 +27,7 @@ Micro-type is pooled: each glyph is defined once in `<defs>` and placed with `<u
 **Colour.** Ground, paper, ember: the artwork's palette. Paper is the only text
 colour. Ember marks the one curious thing on each plate: the shared A, V\*, the
 frontier of ORBIT's pipeline, the width of HELIOS's interval, VIGIL-88's latest frame,
-the card's corner cut, today. PL. VI has no ember, because nothing on it is lit yet.
+the card's corner cut, today. PL. XI has no ember, because nothing on it is lit yet.
 
 **Stages.** The artwork's five layers are the page's grammar. The hero shows all
 five: `sketch` (trace), `field` (inferred cloud), `lattice` (computed cells),
@@ -36,9 +36,9 @@ only as far as its evidence goes:
 
 | Stage | Means | Now |
 |---|---|---|
-| measured | public, and it runs | SIDDHARTHA |
-| arranged | public, unfinished | ORBIT, HELIOS, VIGIL-88 |
-| inferred | built, not yet public | none |
+| measured | public, and it runs | SIDDHARTHA, VANTAGE, PORTFOLIO |
+| arranged | public, unfinished | ORBIT, HELIOS, VIGIL-88, FAMS |
+| inferred | built, not yet public | TETRIX, HALFTONE GAMBIT (private repositories, shown on the portfolio) |
 | sketched | named, no code yet | SPECTRA, SYNCHRO, AETHER |
 
 When that changes, change the stage in the plate function and the legend line in
@@ -75,10 +75,10 @@ static state is the complete image: no scan bar, no curtain, every observation s
 | III ORBIT | the ember runs the seven stages and dies at chat; dependency arrows redraw in the one allowed direction | what exists, and the rule that holds it |
 | IV HELIOS | observations arrive through the day, a gap marking now; the dashed forecast flows; the title cloud shimmers | a forecast meeting its data |
 | V VIGIL-88 | frames arrive one by one; each is answered by a ring, filled where something is detected; a solid evidence line accumulates to a verified event and an incident; a dashed line marks what is not measured | a frame is evidence, not a verdict; accuracy is unmeasured |
-| VI not yet | streams advance and stop short of the line; three clocks run at different rates; the sphere turns | intentions, not yet resolved |
-| VII card | a reader scans the rows; light passes through each row's holes as it goes | a hole is where light gets through |
-| VIII trace | a pen redraws the year to today, then rests | the record, replayed |
-| IX end | the hand keeps redrawing the sentence; the room sways | it never reaches the last stage |
+| XI not yet | streams advance and stop short of the line; three clocks run at different rates; the sphere turns | intentions, not yet resolved |
+| XII card | a reader scans the rows; light passes through each row's holes as it goes | a hole is where light gets through |
+| XIII trace | a pen redraws the year to today, then rests | the record, replayed |
+| XIV end | the hand keeps redrawing the sentence; the room sways | it never reaches the last stage |
 | Statement | the five verbs light in reading order; the key's A performs each stage | the grammar of the page |
 | Labels, links | rules draw and words set as they arrive; arrows nudge toward their links | where to go next |
 
@@ -103,6 +103,7 @@ stats service is involved, and the numbers on the plate are exactly the API's.
 | ORBIT pipeline, what is built | `ORBIT_STAGES`, `ORBIT_BUILT` |
 | HELIOS facts, schematic | `helios()` |
 | VIGIL-88 lanes and facts | `vigil()` |
+| VANTAGE, FAMS, PORTFOLIO, TETRIX, HALFTONE GAMBIT (PL. VI to X) | `WORKS_PLATES` (facts and diagram per work), `work()`, `draw_*()` |
 | Unbuilt projects | `OPEN` |
 | The punched card | `TOOLS` (columns), `WORKS` (rows, with the tools each is made with) |
 | Closing sentence | `SENTENCE` |
