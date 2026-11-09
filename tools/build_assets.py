@@ -397,8 +397,7 @@ def hero(t):
     doc.add(crops(t, W, H))
 
     # frame: a title, one rule, and the two lines the name sits between
-    doc.text("PL. I", M, 62, 11, t["fg"], cls="rv")
-    doc.text("JAI SAI SIDDHARTHA PERURI", M + 66, 62, 11, t["fg72"], cls="rv")
+    doc.text("JAI SAI SIDDHARTHA PERURI", M, 62, 11, t["fg"], cls="rv")
     doc.text("COMPUTER SCIENCE · INDIA", R, 62, 11, t["fg50"], anchor="end", cls="rv")
     doc.add(hline(M, R, 84, t["fg20"], extra=' class="ln" pathLength="1"'))
     for yy in (cap, base):
@@ -467,10 +466,10 @@ EMBER = ("@keyframes br{0%,100%{opacity:.2}50%{opacity:.85}}"
 
 
 def frame(doc, pl, left, right, rule=84):
+    """A title and one rule. `pl` is kept for the callers and not drawn."""
     t = doc.t
     doc.add(crops(t, doc.w, doc.h))
-    pw = doc.text(pl, M, 62, 11, t["fg"])
-    doc.text(left, M + pw + 22, 62, 11, t["fg72"])
+    doc.text(left, M, 62, 11, t["fg"])
     if right:
         doc.text(right, R, 62, 11, t["fg50"], anchor="end")
     doc.add(hline(M, R, rule, t["fg20"]))
@@ -535,16 +534,16 @@ def artwork(t):
     frame(doc, "PL. II", "SIDDHARTHA — AN INTERACTIVE ARTWORK ABOUT A PERSON",
           "SIDDHUPERURI/MIRACLE")
     word(doc, "SIDDHARTHA", M, 190, 44, "measure", weight=6)
-    doc.text("MEASURED: PUBLIC, AND IT RUNS", M, 226, 9, t["fg50"])
+    doc.text("RUNNING · PUBLIC CODE", M, 226, 9, t["fg50"])
     doc.text("HTML · CSS · JAVASCRIPT", M, 270, 11, t["fg72"])
     doc.text("NO FRAMEWORK · NO BUILD STEP · NO FONT FILES", M, 292, 11, t["fg50"])
     for i, law in enumerate(("STILLNESS RESOLVES.", "MOTION SCATTERS.", "ATTENTION PULLS.")):
         doc.text(law, M, 350 + i * 30, 15, t["fg"] if i == 0 else t["fg72"], weight=1.6)
-    doc.text("THE ONE LAW OF ITS WORLD", M, 432, 9, t["fg50"])
+    doc.text("THE RULES OF ITS WORLD", M, 432, 9, t["fg50"])
 
     # the vantage: five sheets at five depths, seen edge-on from the side
     vx, vy = 660, 292
-    depth = [(820, "TRACE"), (902, "FIELD"), (984, "LATTICE"), (1066, "DESIGN"), (1150, "INSTRUMENT")]
+    depth = [(820, ""), (902, ""), (984, ""), (1066, ""), (1150, "")]
     k = 0.26
     us = (-0.9, -0.55, -0.2, 0.12, 0.44, 0.8)
     far = depth[-1][0]
@@ -555,7 +554,6 @@ def artwork(t):
         doc.add(vline(sx, vy - h - 8, vy + h + 8, t["fg50"] if i else t["fg72"], 1.2))
         ticks = "".join("M%s %sh-8" % (num(sx + 4), num(vy + u * h)) for u in us)
         doc.add('<path d="%s" stroke="%s" stroke-width="2.2"/>' % (ticks, t["fg"]))
-        doc.text(name, sx, vy - h - 18, 8, t["fg50"], anchor="middle")
     # a displaced eye, just off V*: its ray through a mark on the nearest sheet misses
     # that mark on every sheet behind it, by more the deeper the sheet
     ox, oy = vx + 4, vy + 30
@@ -579,12 +577,9 @@ def artwork(t):
                 ".hit{fill-opacity:0;animation:hit 11s ease infinite}" % (swing, num(s0), num(m0)))
     doc.text("MOVE: THEY SLIDE APART", ox + 6, oy + 30, 9, t["fg72"])
     ember(doc, vx, vy, 6, 14)
-    doc.text("V*", vx - 24, vy + 5, 12, t["fg"], anchor="end")
     doc.text("STAND STILL HERE:", vx - 24, vy + 34, 9, t["fg72"], anchor="end")
     doc.text("THEY ADD UP TO A WORD", vx - 24, vy + 52, 9, t["fg72"], anchor="end")
-    doc.text("NEAREST", depth[0][0], 112, 8, t["fg50"], anchor="middle")
-    doc.text("FARTHEST", far, 112, 8, t["fg50"], anchor="middle")
-    arrow(doc, depth[0][0] + 34, 108, far - 46, 108, t["fg34"], 1, 5)
+    doc.text("FIVE LAYERS OF LIGHT, AT FIVE DEPTHS", far, 112, 9, t["fg50"], anchor="end")
     return doc.svg()
 
 
@@ -602,12 +597,12 @@ def orbit(t):
               "solid. An ember pulse runs through the stages and stops at chat. "
               "Below, the dependency direction enforced in CI: composition, api, application "
               "and infrastructure, domain, core.")
-    frame(doc, "PL. III", "ORBIT — KNOWLEDGE AND DOCUMENT PLATFORM", "IN DEVELOPMENT · PUBLIC")
+    frame(doc, "PL. III", "ORBIT — KNOWLEDGE AND DOCUMENT PLATFORM", "IN PROGRESS · PUBLIC")
     word(doc, "ORBIT", M, 214, 96, "design", weight=2.6)
-    doc.text("ARRANGED: PUBLIC CODE, UNFINISHED", M, 256, 9, t["fg50"])
-    doc.text("M0–M7 IMPLEMENTED", M, 312, 11, t["fg72"])
-    doc.text("NOT PRODUCTION-READY: ITS README SAYS SO", M, 336, 11, t["fg72"])
-    doc.text("24 ARCHITECTURE DECISION RECORDS", M, 360, 11, t["fg72"])
+    doc.text("IN PROGRESS · PUBLIC CODE", M, 256, 9, t["fg50"])
+    doc.text("ALL SEVEN STAGES BUILT", M, 312, 11, t["fg72"])
+    doc.text("NOT PRODUCTION-READY", M, 336, 11, t["fg72"])
+    doc.text("24 WRITTEN DESIGN DECISIONS", M, 360, 11, t["fg72"])
     doc.text("FASTAPI · NEXT.JS · POSTGRESQL + PGVECTOR", M, 404, 10, t["fg50"])
     doc.text("CELERY · REDIS · MINIO · DOCKER", M, 424, 10, t["fg50"])
 
@@ -662,8 +657,8 @@ def orbit(t):
                 ".da{animation:da 8s cubic-bezier(.4,0,.2,1) infinite both}"
                 ".d1{animation-delay:.4s}.d2{animation-delay:.8s}.d3{animation-delay:1.2s}")
     doc.text("×", 880, dy + 5, 12, t["fg72"], weight=1.4)
-    doc.text("DEPENDENCY DIRECTION · ENFORCED IN CI", 560, 408, 9, t["fg50"])
-    doc.text("APPLICATION × INFRASTRUCTURE: NEITHER MAY IMPORT THE OTHER", 560, 428, 9, t["fg50"])
+    doc.text("EACH LAYER MAY ONLY USE THE ONES TO ITS RIGHT", 560, 408, 9, t["fg50"])
+    doc.text("CHECKED ON EVERY BUILD", 560, 428, 9, t["fg50"])
     return doc.svg()
 
 
@@ -676,9 +671,9 @@ def helios(t):
               "forecast, a hatched band for the calibrated prediction interval, and observed "
               "points. Facts: physics plus machine learning, XGBoost with hold-out R-squared 0.856, "
               "calibrated prediction intervals.")
-    frame(doc, "PL. IV", "HELIOS — SOLAR ENERGY INTELLIGENCE", "IN DEVELOPMENT · PUBLIC")
+    frame(doc, "PL. IV", "HELIOS — SOLAR ENERGY INTELLIGENCE", "IN PROGRESS · PUBLIC")
     word(doc, "HELIOS", M, 214, 96, "design", weight=2.6)
-    doc.text("ARRANGED: PUBLIC CODE, UNFINISHED", M, 256, 9, t["fg50"])
+    doc.text("IN PROGRESS · PUBLIC CODE", M, 256, 9, t["fg50"])
     facts = ["PHYSICS + MACHINE LEARNING", "XGBOOST · HOLD-OUT R² 0.856",
              "CALIBRATED PREDICTION INTERVALS", "ONE-SECOND CALCULATOR", "FOURTEEN-VIEW CONSOLE"]
     for i, f in enumerate(facts):
@@ -757,9 +752,9 @@ def vigil(t):
               "verified event and a durable incident. Below, a dashed line for what is not measured: "
               "detection accuracy, and fire and smoke, which are declared absent. An ember marks "
               "the latest frame. A frame is evidence, not a verdict.")
-    frame(doc, "PL. V", "VIGIL-88 — INCIDENT DETECTION ACROSS TIME", "P0–P6 BUILT · PUBLIC")
+    frame(doc, "PL. V", "VIGIL-88 — INCIDENT DETECTION ACROSS TIME", "IN PROGRESS · PUBLIC")
     word(doc, "VIGIL-88", M, 214, 70, "design", weight=2.2)
-    doc.text("ARRANGED: PUBLIC CODE, UNFINISHED", M, 256, 9, t["fg50"])
+    doc.text("IN PROGRESS · PUBLIC CODE", M, 256, 9, t["fg50"])
     doc.text("FRAMES → TRACKS → EVENTS → INCIDENTS", M, 312, 11, t["fg72"])
     doc.text("A DESKTOP CONSOLE AND INSTALLER", M, 336, 11, t["fg72"])
     doc.text("ACCURACY IS NOT MEASURED YET", M, 360, 11, t["fg72"])
@@ -982,9 +977,9 @@ def draw_halftone(doc, t, x0, x1):
 
 WORKS_PLATES = {
     "vantage": dict(
-        pl="PL. VI", title=["VANTAGE"], stage="design", bar="MEASURED · PUBLIC",
+        pl="PL. VI", title=["VANTAGE"], stage="design", bar="RUNNING · PUBLIC",
         name="VANTAGE", kind="EXPLORABLE 3D ARTWORK", draw=draw_vantage,
-        sub="MEASURED: PUBLIC, AND IT RUNS",
+        sub="RUNNING · PUBLIC CODE",
         lines=["FOUR PLACES ALONG ONE AXIS", "ONE LAW: STILLNESS RESOLVES", "TESTED END TO END"],
         tools=["TYPESCRIPT · REACT · THREE.JS", "REACT THREE FIBER · VITE"],
         alt="Plate VI. The title VANTAGE, drawn as exact construction geometry: public code, "
@@ -994,9 +989,9 @@ WORKS_PLATES = {
             "sheet and they sum; one step aside, the points no longer line up. Stillness "
             "resolves. Motion scatters. Attention pulls."),
     "fams": dict(
-        pl="PL. VII", title=["FAMS"], stage="design", bar="ARRANGED · PUBLIC",
+        pl="PL. VII", title=["FAMS"], stage="design", bar="IN PROGRESS · PUBLIC",
         name="FAMS", kind="FACULTY APPRAISAL MANAGEMENT SYSTEM", draw=draw_fams,
-        sub="ARRANGED: PUBLIC CODE, UNFINISHED",
+        sub="IN PROGRESS · PUBLIC CODE",
         lines=["A COLLEGE'S APPRAISAL FORM, ONLINE", "FACULTY → HEAD OF DEPT. → PRINCIPAL",
                "291 BACKEND TESTS"],
         tools=["JAVA · MYSQL · FLYWAY · DOCKER", "NEXT.JS · TYPESCRIPT · TAILWIND"],
@@ -1006,9 +1001,9 @@ WORKS_PLATES = {
             "a line of ticks, the audit trail, with an ember travelling along it. Read-only from "
             "submission. Dashed, not built: self-service password reset, e-mail delivery, SSO."),
     "portfolio": dict(
-        pl="PL. VIII", title=["PORTFOLIO"], stage="design", bar="MEASURED · PUBLIC",
+        pl="PL. VIII", title=["PORTFOLIO"], stage="design", bar="RUNNING · PUBLIC",
         name="PORTFOLIO", kind="WEB PORTFOLIO", draw=draw_portfolio,
-        sub="MEASURED: PUBLIC, AND IT RUNS",
+        sub="RUNNING · PUBLIC CODE",
         lines=["NINE PROJECTS AS TYPED RECORDS", "THREE.JS, REACT THREE FIBER, GSAP",
                "LIVE ON VERCEL"],
         tools=["NEXT.JS · TYPESCRIPT · TAILWIND", "THREE.JS · R3F · GSAP · FRAMER MOTION"],
@@ -1018,9 +1013,9 @@ WORKS_PLATES = {
             "GSAP and Framer Motion for motion. Below, nine squares, one per project record, the latest "
             "two filled, with an ember on the last."),
     "tetrix": dict(
-        pl="PL. IX", title=["TETRIX"], stage="field", bar="INFERRED · PRIVATE",
+        pl="PL. IX", title=["TETRIX"], stage="field", bar="PRIVATE",
         name="TETRIX", kind="3D ARCADE GAME", draw=draw_tetrix,
-        sub="INFERRED: BUILT, NOT YET PUBLIC",
+        sub="PRIVATE · BUILT, NOT PUBLIC",
         lines=["A 3D TAKE ON TETRIS", "A PURE RULES ENGINE UNDERNEATH",
                "201 UNIT, 21 END-TO-END TESTS"],
         tools=["TYPESCRIPT · REACT · THREE.JS", "REACT THREE FIBER · VITEST · PLAYWRIGHT"],
@@ -1029,9 +1024,9 @@ WORKS_PLATES = {
             "effects: they read state and write nothing back. Three modes, three graphics "
             "presets. Dashed, not built: touch controls, music, the Overdrive mechanic."),
     "halftone-gambit": dict(
-        pl="PL. X", title=["HALFTONE", "GAMBIT"], stage="field", bar="INFERRED · PRIVATE",
+        pl="PL. X", title=["HALFTONE", "GAMBIT"], stage="field", bar="PRIVATE",
         name="HALFTONE GAMBIT", kind="3D CHESS IN ASCII GLYPHS", draw=draw_halftone,
-        sub="INFERRED: BUILT, NOT YET PUBLIC",
+        sub="PRIVATE · BUILT, NOT PUBLIC",
         lines=["PLAYABLE AGAINST STOCKFISH", "OR A SECOND PLAYER, IN THE BROWSER",
                "13 MATE CHALLENGES, VERIFIED"],
         tools=["TYPESCRIPT · REACT THREE FIBER · CHESS.JS", "STOCKFISH · ZUSTAND · SUPABASE"],
@@ -1077,7 +1072,7 @@ def not_yet(t):
               "and real-time; AETHER, creative computing and WebGL. Each has a dashed mark of its "
               "question. There is no ember and no ground: nothing here is lit, or printed, yet.",
               ground=False)
-    frame(doc, "PL. XI", "NOT YET", "NOTHING RESOLVES PAST THE EVIDENCE FOR IT")
+    frame(doc, "", "IDEAS, NOT BUILT YET", "")
     third = CW / 3.0
     dash = ' stroke-dasharray="3 5"'
     for i, (name, kind) in enumerate(OPEN):
@@ -1086,7 +1081,7 @@ def not_yet(t):
             doc.add(vline(x - 18, 108, H - 60, t["fg12"]))
         word(doc, name, x, 196, 50, "sketch", seed=90 + i * 13, weight=1.5, passes=2)
         doc.text(kind, x, 236, 10, t["fg72"])
-        doc.text("SKETCHED: NAMED, NO CODE YET", x, 258, 8, t["fg50"])
+        doc.text("IDEA · NO CODE YET", x, 258, 8, t["fg50"])
         c, my = t["fg34"], 346
         if name == "SPECTRA":      # an image, a text and a signal approach a line and stop short
             lx = x + 250
@@ -1125,8 +1120,6 @@ def not_yet(t):
                         % (num(cx), my, 3.5 * n + 1, num(cx), my, num(r * q), r, c, dash),
                         '<ellipse cx="%s" cy="%s" rx="%s" ry="%s" stroke="%s"%s/>'
                         % (num(cx), my, r, num(r * q), c, dash))
-    doc.text("EVERY NAME ON THESE PLATES IS DRAWN ONLY AS FAR AS ITS EVIDENCE GOES", M, H - 34, 9,
-             t["fg50"])
     motion(doc, "@keyframes mv{to{stroke-dashoffset:-16}}.mv{animation:mv 1.4s linear infinite}"
                 "@keyframes ck{to{transform:translateX(30px)}}.ck{animation:ck 3s linear infinite}"
                 ".ck1{animation-duration:3.35s}.ck2{animation-duration:3.8s}"
@@ -1137,11 +1130,11 @@ def not_yet(t):
 
 # ------------------------------------------------------------- PL. XII  card
 TOOLS = [
-    ("01", "SKETCHES", ["FIGMA", "FRAMER"]),
-    ("02", "INFERS", ["SCIKIT-LEARN", "XGBOOST", "EMBEDDINGS", "PGVECTOR"]),
-    ("03", "COMPUTES", ["PYTHON", "TYPESCRIPT", "JAVASCRIPT", "JAVA", "CELERY"]),
-    ("04", "ARRANGES", ["NEXT.JS", "TAILWIND", "HTML + CSS", "THREE.JS", "R3F", "GSAP", "SVG"]),
-    ("05", "MEASURES", ["FASTAPI", "POSTGRESQL", "REDIS", "MINIO", "DOCKER", "GH ACTIONS"]),
+    ("01", "DESIGN", ["FIGMA", "FRAMER"]),
+    ("02", "ML", ["SCIKIT-LEARN", "XGBOOST", "EMBEDDINGS", "PGVECTOR"]),
+    ("03", "LANGUAGES", ["PYTHON", "TYPESCRIPT", "JAVASCRIPT", "JAVA", "CELERY"]),
+    ("04", "FRONT END", ["NEXT.JS", "TAILWIND", "HTML + CSS", "THREE.JS", "R3F", "GSAP", "SVG"]),
+    ("05", "BACK END", ["FASTAPI", "POSTGRESQL", "REDIS", "MINIO", "DOCKER", "GH ACTIONS"]),
 ]
 # work -> tools it is made with, as its repository or record shows
 WORKS = [
@@ -1170,7 +1163,7 @@ def card(t):
               "five verbs. A hole means the tool is in that work. " + " ".join(
                   "%s: %s." % (w.title(), ", ".join(sorted(s)) if s else "no holes yet")
                   for w, s in WORKS))
-    frame(doc, "PL. XII", "THE STACK, PUNCHED", "A HOLE MEANS THE TOOL IS IN THE WORK")
+    frame(doc, "", "THE STACK", "A MARK MEANS THE PROJECT USES THE TOOL")
     cols = [(n, verb, tool) for n, verb, tools in TOOLS for tool in tools]
     cx0, cy0, cx1, cy1 = M, 112, R, H - 44
     lab_w = 212
@@ -1184,13 +1177,11 @@ def card(t):
     i = 0
     for n, verb, tools in TOOLS:
         a, b = colx[i] - step / 2 + 3, colx[i + len(tools) - 1] + step / 2 - 3
-        doc.text(n, a, 132, 9, t["fg50"])
         doc.text(verb, a, 150, 9, t["fg"])
         doc.add(hline(a, b, 160, t["fg50"]))
         i += len(tools)
     for x, (n, verb, tool) in zip(colx, cols):
         rtext(doc, tool, x + 4, 290, 9, t["fg72"])
-        doc.text("%d" % (cols.index((n, verb, tool)) + 1), x, 306, 7, t["fg34"], anchor="middle")
     hole_w, hole_h = 9, 15
     row_y = [rows_y0 + r * rh + rh / 2 + (30 if not used else 0) for r, (_, used) in enumerate(WORKS)]
     y_top, y_bot = row_y[0], row_y[-1]
@@ -1199,7 +1190,7 @@ def card(t):
         open_ = not used
         y = rows_y0 + r * rh + rh / 2 + (30 if open_ else 0)
         if open_ and WORKS[r - 1][1]:
-            doc.text("NOT YET PUNCHED", cx0 + 22, y - rh / 2 - 9, 8, t["fg50"])
+            doc.text("IDEAS · NO TOOLS YET", cx0 + 22, y - rh / 2 - 9, 8, t["fg50"])
         doc.text(work, cx0 + 22, y + 4, 10, t["fg50"] if open_ else t["fg"])
         if r and not (open_ and WORKS[r - 1][1]):
             doc.add(hline(cx0 + 22, cx1 - 16, y - rh / 2, t["fg12"]))
@@ -1234,8 +1225,6 @@ def card(t):
     doc.add('<path class="er" d="M%s %sL%s %s" stroke="%s" stroke-width="2"/>'
             % (num(cx0), num(cy0 + 26), num(cx0 + 26), num(cy0), t["ember"]))
     motion(doc, EMBER)
-    doc.text("WORKS × TOOLS", cx0 + 22, cy1 - 14, 8, t["fg50"])
-    doc.text("SIDDHUPERURI · 2026", cx1 - 16, cy1 - 14, 8, t["fg50"], anchor="end")
     return doc.svg()
 
 
@@ -1285,8 +1274,9 @@ def trace(t, data):
         d = dt.date.fromisoformat(iso)
         if d.day == 1:
             doc.add(vline(x, base + 8, base + 16, t["fg50"]))
-            doc.text(d.strftime("%b").upper() + (" %d" % d.year if d.month == 1 else ""),
-                     x, base + 34, 8, t["fg50"])
+            if x < x1 - 40:
+                doc.text(d.strftime("%b").upper() + (" %d" % d.year if d.month == 1 else ""),
+                         x, base + 34, 8, t["fg50"])
     doc.add('<path d="%s" stroke="%s" stroke-width="1.5"/>' % ("".join(quiet), t["fg34"]))
     if marks:
         doc.add('<path d="%s" stroke="%s" stroke-width="2.2" stroke-linecap="butt"/>'
@@ -1321,8 +1311,8 @@ def end(t):
     doc = Doc(t, H, "Jack of all, master of none, but often times better than master of one",
               "Plate XIV, the last. The sentence 'Jack of all, master of none, but often times "
               "better than master of one', left as a sketch: it never reaches the last stage. "
-              "An ember waits below it. The wish is at the bottom of the well.")
-    frame(doc, "PL. XIV", "THE EDGE", "END OF PLATES")
+              "An ember waits below it.")
+    frame(doc, "", "SIDDHARTHA PERURI", "")
     C = 40
     doc.add('<g class="sw">')
     for i, ln in enumerate(SENTENCE):
@@ -1330,11 +1320,10 @@ def end(t):
         word(doc, ln, (W - w) / 2, 168 + i * 74, C, "sketch", seed=300 + i * 40, weight=1.5, passes=2,
              cls="rd l%d" % i)
     doc.add("</g>")
-    ember(doc, W / 2, 360, 5, 12)
-    doc.text("THE WISH IS AT THE BOTTOM OF THE WELL", W / 2, 398, 9, t["fg50"], anchor="middle")
+    ember(doc, W / 2, 372, 5, 12)
     doc.add(hline(M, R, H - 58, t["fg20"]))
-    doc.text("SIDDHARTHA / 2026", M, H - 30, 11, t["fg72"])
-    doc.text("SET IN ITS OWN ALPHABET · NO FONT FILES", R, H - 30, 11, t["fg50"], anchor="end")
+    doc.text("THANKS FOR READING", M, H - 30, 11, t["fg72"])
+    doc.text("2026", R, H - 30, 11, t["fg50"], anchor="end")
     # the room breathes, very slowly
     motion(doc, "@keyframes sw{from{transform:translateX(-5px)}to{transform:translateX(5px)}}"
                 ".sw{animation:sw 11s ease-in-out infinite alternate}" + REDRAW +
@@ -1387,119 +1376,95 @@ def text_arrow(doc, s, x, y, cap, color, weight=None, cls="lr"):
 
 LABELS = {
     "artwork": dict(
-        pl="PL. II", name="SIDDHARTHA", kind="INTERACTIVE ARTWORK", stage="2026 · MEASURED",
-        body="AN ARTWORK ABOUT A PERSON, AND THE SOURCE OF EVERY DRAWING ON THIS PAGE. THE NAME "
-             "IS FIVE SHEETS OF LIGHT AT FIVE DEPTHS; FROM EXACTLY ONE POINT THEY ADD UP TO A WORD. "
-             "ONE CONTINUOUS WORLD IN FOUR PARTS, AND IT CAN BE PULLED OUT OF ITS OWN WINDOW.",
-        rows=[("MADE WITH", "HTML, CSS, JAVASCRIPT · THREE.JS, VENDORED, FOR THREE MOMENTS"),
-              ("WITHOUT", "A FRAMEWORK, A BUILD STEP, FONT FILES OR NETWORK REQUESTS"),
-              ("CONTINUED IN", "VANTAGE: AN EXPLORABLE 3D VERSION OF THE SAME IDEA, IN FOUR PLACES · "
-                               "REACT THREE FIBER, TYPESCRIPT, TESTED END TO END"),
+        pl="", name="SIDDHARTHA", kind="INTERACTIVE ARTWORK", stage="RUNNING",
+        body="AN ARTWORK ABOUT A PERSON, AND THE SOURCE OF EVERY DRAWING ON THIS PAGE. THE NAME IS "
+             "FIVE LAYERS OF LIGHT AT FIVE DEPTHS, AND FROM ONE POINT THEY ADD UP TO A WORD.",
+        rows=[("MADE WITH", "HTML, CSS, JAVASCRIPT AND THREE.JS. NO FRAMEWORK, NO BUILD STEP"),
+              ("CONTINUED IN", "VANTAGE, AN EXPLORABLE 3D VERSION"),
               ("SOURCE", "SIDDHUPERURI/MIRACLE →")]),
     "orbit": dict(
-        pl="PL. III", name="ORBIT", kind="KNOWLEDGE AND DOCUMENT PLATFORM", stage="2026 · ARRANGED",
-        body="UPLOAD DOCUMENTS INTO A WORKSPACE AND ASK QUESTIONS ANSWERED FROM THEIR CONTENTS, "
-             "CITED TO THE EXACT PASSAGE. IDENTITY, WORKSPACES, UPLOAD, THE ASYNCHRONOUS PIPELINE, "
-             "RETRIEVAL AND GROUNDED ANSWERING ARE IMPLEMENTED; IT IS NOT PRODUCTION-READY. A "
-             "MODULAR MONOLITH WHOSE LAYERING FAILS THE BUILD IF IT IS BROKEN.",
-        rows=[("MADE WITH", "PYTHON, FASTAPI, CELERY · NEXT.JS, REACT, TYPESCRIPT, TAILWIND"),
-              ("STORES", "POSTGRESQL + PGVECTOR · REDIS · MINIO"),
-              ("SHIPS WITH", "DOCKER · GITHUB ACTIONS · 24 DECISION RECORDS"),
+        pl="", name="ORBIT", kind="KNOWLEDGE AND DOCUMENT PLATFORM", stage="IN PROGRESS",
+        body="UPLOAD DOCUMENTS INTO A WORKSPACE AND ASK QUESTIONS, ANSWERED FROM THEIR CONTENTS WITH "
+             "A CITATION TO THE EXACT PASSAGE. BUILT END TO END, BUT NOT PRODUCTION-READY.",
+        rows=[("MADE WITH", "PYTHON, FASTAPI, CELERY, NEXT.JS, TYPESCRIPT"),
+              ("STORES", "POSTGRESQL, PGVECTOR, REDIS, MINIO"),
               ("SOURCE", "SIDDHUPERURI/ORBIT →")]),
     "helios": dict(
-        pl="PL. IV", name="HELIOS", kind="SOLAR ENERGY INTELLIGENCE", stage="2026 · ARRANGED",
-        body="PHYSICS AND MACHINE LEARNING FOR SOLAR FORECASTING, WITH CALIBRATED PREDICTION "
-             "INTERVALS: A FORECAST THAT SAYS HOW SURE IT IS. TWO INTERFACES OVER ONE ENGINE, A "
-             "ONE-SECOND CALCULATOR AND A FOURTEEN-VIEW ANALYSIS CONSOLE.",
-        rows=[("MODEL", "XGBOOST · HOLD-OUT R² 0.856"),
-              ("MADE WITH", "PYTHON, FASTAPI, SCIKIT-LEARN · NEXT.JS"),
-              ("THE CURVE", "A SCHEMATIC, NOT ITS DATA"),
+        pl="", name="HELIOS", kind="SOLAR ENERGY FORECASTING", stage="IN PROGRESS",
+        body="SOLAR FORECASTING WITH PHYSICS AND MACHINE LEARNING, WITH PREDICTION INTERVALS THAT SAY "
+             "HOW SURE IT IS. A QUICK CALCULATOR AND A FOURTEEN-VIEW ANALYSIS CONSOLE.",
+        rows=[("MODEL", "XGBOOST, HOLD-OUT R² 0.856"),
+              ("MADE WITH", "PYTHON, FASTAPI, SCIKIT-LEARN, NEXT.JS"),
+              ("NOTE", "THE CURVE ON THE PLATE IS A SCHEMATIC, NOT ITS DATA"),
               ("SOURCE", "SIDDHUPERURI/HELIOS →")]),
     "vigil-88": dict(
-        pl="PL. V", name="VIGIL-88", kind="INCIDENT DETECTION ACROSS TIME", stage="2026 · ARRANGED",
-        body="A COMPUTER-VISION PLATFORM THAT REASONS ACROSS TIME: A FRAME IS EVIDENCE, NOT A "
-             "VERDICT. P0 TO P6 ARE BUILT: FRAMES BECOME TRACKS, TRACKS BECOME EVIDENCE, AND "
-             "VERIFIED EVIDENCE BECOMES A DURABLE INCIDENT, ON A LIVE CAMERA, WITH A DESKTOP "
-             "CONSOLE AND A WINDOWS INSTALLER. LOCAL-FIRST, WITH NO FACIAL RECOGNITION OR IDENTITY "
-             "PROFILING.",
-        rows=[("MADE WITH", "PYTHON, PYDANTIC · YOLOX ON ONNX RUNTIME · OPENCV · SQLITE · ELECTRON, TYPESCRIPT"),
-              ("HOLDS", "LAYERED IMPORTS, A PURE DOMAIN LAYER AND ONE CLOCK MODULE, CHECKED BY MACHINE"),
-              ("NOT YET", "ANY MEASURED ACCURACY: NO LABELLED DATA, SO NO PRECISION OR RECALL. FIRE AND "
-                          "SMOKE ARE DECLARED ABSENT. NO SIGNED INSTALLER, NO LONG SOAK RUN, NO LICENCE CHOSEN"),
+        pl="", name="VIGIL-88", kind="INCIDENT DETECTION", stage="IN PROGRESS",
+        body="A COMPUTER-VISION SYSTEM THAT DETECTS INCIDENTS BY REASONING ACROSS TIME, NOT FRAME BY "
+             "FRAME. IT RUNS ON A LIVE CAMERA, WITH A DESKTOP CONSOLE AND A WINDOWS INSTALLER. NO "
+             "FACIAL RECOGNITION.",
+        rows=[("MADE WITH", "PYTHON, YOLOX ON ONNX RUNTIME, OPENCV, SQLITE, ELECTRON"),
+              ("NOT YET", "ANY MEASURED ACCURACY, FIRE AND SMOKE DETECTION, A SIGNED INSTALLER, A "
+                          "LICENCE"),
               ("SOURCE", "SIDDHUPERURI/VIGIL-88 →")]),
     "vantage": dict(
-        pl="PL. VI", name="VANTAGE", kind="EXPLORABLE 3D ARTWORK", stage="2026 · MEASURED",
-        body="AN EXPLORABLE 3D VERSION OF SIDDHARTHA: FIVE LAYERS OF LIGHT AT FIVE DEPTHS THAT SUM "
-             "INTO A NAME FROM ONE POINT, AND ONLY IF YOU STOP. FOUR PLACES ALONG ONE AXIS, WITH "
-             "NO CUTS BETWEEN THEM. ONE LAW GOVERNS IT: STILLNESS RESOLVES, MOTION SCATTERS, "
-             "ATTENTION PULLS.",
-        rows=[("MADE WITH", "TYPESCRIPT, REACT, REACT THREE FIBER, THREE.JS, VITE"),
-              ("TESTS", "19 UNIT, 21 END-TO-END AND A FRAME-RATE TEST ON THE REAL GPU"),
+        pl="", name="VANTAGE", kind="EXPLORABLE 3D ARTWORK", stage="RUNNING",
+        body="AN EXPLORABLE 3D VERSION OF SIDDHARTHA: FIVE LAYERS OF LIGHT THAT ADD UP TO A NAME FROM "
+             "ONE POINT, AND ONLY IF YOU STAND STILL. FOUR PLACES, WITH NO CUTS BETWEEN THEM.",
+        rows=[("MADE WITH", "TYPESCRIPT, REACT THREE FIBER, THREE.JS"),
+              ("TESTS", "19 UNIT AND 21 END-TO-END"),
               ("LIVE", "SIDDHUPERURI.GITHUB.IO/VANTAGE →"),
               ("SOURCE", "SIDDHUPERURI/VANTAGE →")]),
     "fams": dict(
-        pl="PL. VII", name="FAMS", kind="FACULTY APPRAISAL MANAGEMENT SYSTEM", stage="2026 · ARRANGED",
-        body="A DIGITAL VERSION OF A COLLEGE'S FACULTY SELF-APPRAISAL FORM. FACULTY COMPLETE IT "
-             "SECTION BY SECTION AND SUBMIT IT TO THEIR HEAD OF DEPARTMENT, WHO APPROVES AND "
-             "FORWARDS IT TO THE PRINCIPAL FOR THE FINAL DECISION, AND EVERY STEP IS AUDITED.",
-        rows=[("MADE WITH", "JAVA, MYSQL, FLYWAY · NEXT.JS, TYPESCRIPT, TAILWIND · DOCKER"),
-              ("TESTS", "291 BACKEND TESTS, PLUS STYLE AND STATIC ANALYSIS"),
-              ("NOT YET", "SELF-SERVICE PASSWORD RESET, E-MAIL DELIVERY, SSO"),
+        pl="", name="FAMS", kind="FACULTY APPRAISAL SYSTEM", stage="IN PROGRESS",
+        body="A COLLEGE'S FACULTY SELF-APPRAISAL FORM, ONLINE. FACULTY FILL IT IN AND SUBMIT IT, THEIR "
+             "HEAD OF DEPARTMENT APPROVES IT, THE PRINCIPAL DECIDES, AND EVERY STEP IS RECORDED.",
+        rows=[("MADE WITH", "JAVA, MYSQL, NEXT.JS, TYPESCRIPT, DOCKER"),
+              ("TESTS", "291 BACKEND TESTS"),
+              ("NOT YET", "PASSWORD RESET, E-MAIL, SINGLE SIGN-ON"),
               ("SOURCE", "SIDDHUPERURI/FACULTY-APRAISAL →")]),
     "portfolio": dict(
-        pl="PL. VIII", name="PORTFOLIO", kind="WEB PORTFOLIO", stage="2026 · MEASURED",
-        body="MY PORTFOLIO: THE WORK ON THIS PAGE, SET OUT AS NINE TYPED PROJECT RECORDS IN A SITE "
-             "BUILT FOR A VISUAL DESIGNER AND CREATIVE FRONT-END BUILDER.",
-        rows=[("MADE WITH", "NEXT.JS, REACT, TYPESCRIPT, TAILWIND · THREE.JS, REACT THREE FIBER, "
-                            "GSAP, FRAMER MOTION"),
+        pl="", name="PORTFOLIO", kind="WEB PORTFOLIO", stage="RUNNING",
+        body="MY PORTFOLIO: THE WORK ON THIS PAGE AS NINE PROJECT RECORDS, IN A SITE FOR A VISUAL "
+             "DESIGNER AND CREATIVE FRONT-END BUILDER.",
+        rows=[("MADE WITH", "NEXT.JS, TYPESCRIPT, TAILWIND, THREE.JS, GSAP"),
               ("LIVE", "SIDDHARTHA-PORTFOLIO-NINE.VERCEL.APP →"),
               ("SOURCE", "SIDDHUPERURI/SIDDHARTHA-PORTFOLIO →")]),
     "tetrix": dict(
-        pl="PL. IX", name="TETRIX", kind="3D ARCADE GAME", stage="2026 · INFERRED",
-        body="A 3D TAKE ON TETRIS WHERE A PURE RULES ENGINE DRIVES EVERY BLOCK, EFFECT AND CAMERA "
-             "MOVE: THE RENDERER READS GAME STATE AND WRITES NOTHING BACK, SO THE VISUALS CANNOT "
-             "DRIFT FROM THE RULES. THREE MODES: MARATHON, SPRINT AND ULTRA.",
-        rows=[("MADE WITH", "TYPESCRIPT, REACT, THREE.JS, REACT THREE FIBER · VITEST, PLAYWRIGHT"),
-              ("TESTS", "201 UNIT AND 21 END-TO-END, AT ITS LAST RECORDED RUN"),
-              ("NOT YET", "TOUCH CONTROLS, MUSIC, THE OVERDRIVE MECHANIC. FRAME RATE NOT MEASURED ON "
-                          "INTEGRATED GPUS OR PHONES"),
-              ("SOURCE", "PRIVATE REPOSITORY, NOT YET PUBLIC")]),
+        pl="", name="TETRIX", kind="3D ARCADE GAME", stage="PRIVATE",
+        body="A 3D TAKE ON TETRIS. A SEPARATE RULES ENGINE RUNS THE GAME AND THE GRAPHICS ONLY READ "
+             "FROM IT, SO THEY CAN NEVER DISAGREE. THREE MODES: MARATHON, SPRINT, ULTRA.",
+        rows=[("MADE WITH", "TYPESCRIPT, REACT, THREE.JS"),
+              ("TESTS", "201 UNIT AND 21 END-TO-END"),
+              ("NOT YET", "TOUCH CONTROLS, MUSIC"),
+              ("SOURCE", "PRIVATE, NOT PUBLIC YET")]),
     "halftone-gambit": dict(
-        pl="PL. X", name="HALFTONE GAMBIT", kind="3D CHESS IN ASCII GLYPHS", stage="2026 · INFERRED",
-        body="A 3D CHESS GAME DRAWN ENTIRELY IN ASCII GLYPHS AND GPU DITHERING, PLAYABLE IN THE "
-             "BROWSER AGAINST A STOCKFISH ENGINE OR A SECOND PLAYER. ONE SHADER DRAWS EVERY LIT "
-             "SURFACE, AND A SEMANTIC DOM BOARD MAKES IT PLAYABLE WITHOUT THE 3D VIEW.",
-        rows=[("MADE WITH", "TYPESCRIPT, REACT, REACT THREE FIBER, THREE.JS, CHESS.JS, ZUSTAND · "
-                            "STOCKFISH, AS WEBASSEMBLY IN A WORKER"),
-              ("HOLDS", "THE RULES IN ONE PLACE, 13 MATE CHALLENGES VERIFIED BY EXHAUSTIVE SEARCH, "
-                        "AND A PERFT TEST"),
-              ("NOT YET", "DRAG TO MOVE. NOT MEASURED ON MOBILE. PROGRESSION IS LOCAL AND UNVERIFIED"),
-              ("LICENCE", "STOCKFISH IS GPL-3.0, SO DISTRIBUTING IT MEANS COMPLYING WITH THE GPL"),
-              ("SOURCE", "PRIVATE REPOSITORY, NOT YET PUBLIC")]),
+        pl="", name="HALFTONE GAMBIT", kind="3D CHESS IN ASCII", stage="PRIVATE",
+        body="3D CHESS DRAWN ENTIRELY IN ASCII CHARACTERS, PLAYABLE IN THE BROWSER AGAINST STOCKFISH "
+             "OR A SECOND PLAYER. AN ACCESSIBLE BOARD LETS YOU PLAY WITHOUT THE 3D VIEW.",
+        rows=[("MADE WITH", "TYPESCRIPT, REACT THREE FIBER, CHESS.JS, STOCKFISH"),
+              ("NOT YET", "DRAG TO MOVE. NOT TESTED ON MOBILE"),
+              ("NOTE", "STOCKFISH IS GPL-3.0, WHICH MATTERS BEFORE THIS IS PUBLISHED"),
+              ("SOURCE", "PRIVATE, NOT PUBLIC YET")]),
     "not-yet": dict(
-        pl="PL. XI", name="NOT YET", kind="SPECTRA · SYNCHRO · AETHER", stage="SKETCHED",
-        body="NAMED, NOT BUILT, AND NOT YET PRINTED AS PLATES. EACH HOLDS A QUESTION INSTEAD OF "
-             "A DESCRIPTION.",
+        pl="", name="IDEAS", kind="SPECTRA · SYNCHRO · AETHER", stage="NO CODE YET",
+        body="NAMED, NOT BUILT. EACH IS A QUESTION RATHER THAN A DESCRIPTION.",
         rows=[("SPECTRA", "WHAT DOES A MACHINE NOTICE, MISS OR MISTAKE WHEN IT LOOKS?"),
               ("SYNCHRO", "WHAT DO STATE, LATENCY AND COORDINATION FEEL LIKE WHEN SYSTEMS MOVE "
                           "TOGETHER?"),
               ("AETHER", "WHAT HAPPENS WHEN WEBGL, GENERATIVE SYSTEMS AND SPATIAL INTERFACES "
                          "BECOME AN ATMOSPHERE?")]),
     "card": dict(
-        pl="PL. XII", name="THE STACK", kind="PUNCHED", stage="WORKS × TOOLS",
-        body="ROWS ARE WORKS, COLUMNS ARE TOOLS, AND A HOLE IS ONLY PUNCHED WHERE THE WORK'S "
-             "REPOSITORY OR RECORD SHOWS THE TOOL.",
+        pl="", name="THE STACK", kind="TOOLS BY PROJECT", stage="",
+        body="EACH ROW IS A PROJECT AND EACH COLUMN A TOOL. A MARK MEANS THE PROJECT'S REPOSITORY OR "
+             "RECORD SHOWS THAT TOOL.",
         rows=[("ALSO IN HAND", "PHOTOSHOP, ILLUSTRATOR, LIGHTROOM, CANVA, PYTORCH, C. NO PUBLIC WORK "
                                "TO SHOW FOR THEM YET."),
-              ("ALSO MADE", "FAMS, A FACULTY APPRAISAL SYSTEM FOR A COLLEGE · TETRIX, 3D TETRIS · "
-                            "HALFTONE GAMBIT, 3D CHESS IN ASCII GLYPHS. THE LAST TWO ARE PRIVATE "
-                            "REPOSITORIES, SHOWN ON THE PORTFOLIO."),
               ("EARLIER", "GRAVITY PLAYGROUND, A CUSTOM PHYSICS ENGINE · TRAVELEASE, A "
                           "LOCATION-BASED TREASURE HUNT · PETPONKS, IDENTITY AND WIREFRAMES")]),
     "trace": dict(
-        pl="PL. XIII", name="TRACE", kind="LAST 52 WEEKS", stage="REDRAWN DAILY",
-        body="REDRAWN EACH MORNING FROM THE GITHUB API BY A WORKFLOW IN THIS REPOSITORY, NOT BY "
-             "A STATS SERVICE. THE NUMBERS ARE THE API'S, UNROUNDED.",
+        pl="", name="TRACE", kind="LAST 52 WEEKS", stage="UPDATED DAILY",
+        body="DRAWN EACH MORNING FROM THE GITHUB API BY A WORKFLOW IN THIS REPOSITORY, NOT BY A STATS "
+             "SERVICE. THE NUMBERS ARE EXACTLY THE API'S.",
         rows=[("SOURCE", "GITHUB GRAPHQL API · CONTRIBUTION CALENDAR"),
               ("WORKFLOW", ".GITHUB/WORKFLOWS/TRACE.YML · 06:47 IST")]),
 }
@@ -1510,18 +1475,18 @@ def label(t, key):
     doc = Doc(t, 0, "%s: %s" % (d["name"].title(), d["kind"].lower()), d["body"].capitalize(),
               ground=False)
     doc.add(hline(M, R, 8, t["fg20"], extra=' class="ln" pathLength="1"'))
-    doc.text(d["pl"], M, 40, 10, t["fg50"], cls="lr")
-    ly = 72
+    ly = 52
     doc.text(d["name"], M, ly, 21, t["fg"], weight=2, cls="lr")
     ly += 28
     for ln in wrap_caps(d["kind"], 11, LC - M - 48):
         doc.text(ln, M, ly, 11, t["fg72"], cls="lr")
         ly += 19
-    doc.text(d["stage"], M, ly + 6, 10, t["fg50"], cls="lr")
-    ry = 72
-    for ln in wrap_caps(d["body"], 15, R - LC):
-        doc.text(ln, LC, ry, 15, t["fg72"], weight=1.45, cls="lr")
-        ry += 27
+    if d["stage"]:
+        doc.text(d["stage"], M, ly + 6, 10, t["fg50"], cls="lr")
+    ry = 52
+    for ln in wrap_caps(d["body"], 13, R - LC):
+        doc.text(ln, LC, ry, 13, t["fg72"], weight=1.3, cls="lr")
+        ry += 24
     ry += 14
     kw = 150
     for k, v in d["rows"]:
@@ -1543,8 +1508,8 @@ def statement(t):
     doc = Doc(t, 0, "Jai Sai Siddhartha Peruri",
               "Jai Sai Siddhartha Peruri, computer science, India. I design and build interfaces, "
               "models and systems. The projects below are drawn only as far as they exist: "
-              "sketched, named with no code yet; inferred, built but not yet public; arranged, "
-              "public but unfinished; measured, public and running.", ground=False)
+              "idea, no code yet; private, built but not public; in progress, public but unfinished; "
+              "running, public and working.", ground=False)
     cx, y = W / 2, 34
     rich(doc, [("JAI SAI SIDDHARTHA PERURI", fg), ("·", dim), ("COMPUTER SCIENCE", t["fg72"]),
                ("·", dim), ("INDIA", t["fg72"])], cx, y, 12, "middle")
@@ -1557,8 +1522,8 @@ def statement(t):
     y += 40
     doc.add(hline(cx - 150, cx + 150, y - 24, t["fg20"]))
     y += 34
-    key = [("sketch", "SKETCHED", "NAMED, NO CODE YET"), ("field", "INFERRED", "BUILT, NOT YET PUBLIC"),
-           ("design", "ARRANGED", "PUBLIC, UNFINISHED"), ("measure", "MEASURED", "PUBLIC, AND IT RUNS")]
+    key = [("sketch", "IDEA", "NO CODE YET"), ("field", "PRIVATE", "BUILT, NOT PUBLIC"),
+           ("design", "IN PROGRESS", "PUBLIC, UNFINISHED"), ("measure", "RUNNING", "PUBLIC, AND IT RUNS")]
     C, step = 34, 250
     for i, (stage, name, means) in enumerate(key):
         ix = cx + (i - 1.5) * step
@@ -1592,10 +1557,8 @@ def end_label(t):
               "artwork's own stroke alphabet. No font files, no scripts, no third-party services; "
               "light and dark printed from one source.", ground=False)
     cx = W / 2
-    doc.text("THE LAST SENTENCE OF SIDDHARTHA, LEFT AS A SKETCH: NOTHING MEASURES IT.", cx, 40, 13,
+    doc.text("EVERY IMAGE ON THIS PAGE IS DRAWN BY CODE, IN THE ALPHABET OF THE ARTWORK.", cx, 52, 13,
              t["fg72"], anchor="middle", cls="lr")
-    doc.text("THERE IS ONE MORE, AT THE BOTTOM OF THE WELL.", cx, 64, 13, t["fg72"], anchor="middle",
-             cls="lr")
     doc.add(hline(cx - 60, cx + 60, 100, t["fg20"]))
     doc.text("PLATES DRAWN BY TOOLS/BUILD_ASSETS.PY IN THE ARTWORK'S OWN STROKE ALPHABET", cx, 132, 9,
              t["fg50"], anchor="middle", cls="lr")
